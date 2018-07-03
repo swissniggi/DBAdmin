@@ -1,0 +1,195 @@
+body{
+    background-color: lightblue;
+    height: 100vh;
+    
+    font-family: arial,tahoma,helvetica,sans-serif;
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.form-div{
+    width: 400px;
+
+    padding-top: 20px;
+    padding-right: 20px;
+    
+    border: 2px black solid;
+}
+
+#overload{
+    height: 100vh;
+    width: 100vh;
+    
+    display: none;
+    position: absolute;
+    z-index: 1;
+}
+
+/* von www.w3schools.com/howto/howto_css_loader.asp */
+#load{
+    width: 90px;
+    height: 90px;
+    margin-top: 45px;
+    margin-left: 145px;
+    
+    display: none;
+    position: absolute;
+    z-index: 2;
+    
+    border: 20px solid lightgrey;
+    border-top: 20px solid lightgreen;
+    border-radius: 50%;
+    
+    animation: spin 2s linear infinite;
+}
+
+/* von www.w3schools.com/howto/howto_css_loader.asp */
+@keyframes spin{
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* -------------- */
+/* Login */
+/* -------------- */
+
+.label{
+    width: 160px;
+    height: 30px;
+    margin-bottom: 20px;
+    margin-left: 20px;  
+    
+    display: inline-block;
+}
+
+.input_text{
+    width: 180px;
+    height: 30px;
+    margin-left: 20px;
+}
+
+.input_submit{
+    width: 140px;
+    height: 30px;
+    margin-left: 20px;
+}
+
+.input_submit:hover{
+    cursor: pointer;
+}
+
+/* -------------- */
+/* Hauptansicht */
+/* -------------- */
+
+#dbform{
+    margin-bottom: 0;
+}
+
+.db_table{
+    width: 621px;
+    margin-bottom: 40px;
+    
+    border-collapse: collapse;
+    background-color: white;
+}
+
+col{
+    width: 33%;
+}
+
+.db_table td:nth-child(2){
+    border-left: 2px solid black;
+    border-right: 2px solid black;
+}
+
+.db_table th{
+    font-size: 20px;
+    line-height: 28px;
+    
+    color: darkslategray;
+    background-color: lightskyblue;
+    
+    border-bottom: 2px solid darkslategray;
+}
+
+.odd{
+    background-color: aliceblue;
+}
+
+.db_table tr td:hover{
+    cursor: pointer;
+}
+
+.db_table tr td{
+    font-size: 18px;
+    line-height: 26px;
+    text-align: center;
+}
+
+.db_label{
+    margin-left: 20px;
+    padding-left: 27px;
+    width: 380px;
+    
+    font-size: 12px;
+    
+    display: block;
+}
+
+.dump_label{
+    font-size: 12px;
+}
+
+.db_text{
+    width: 178px;
+    margin-left: 49px; 
+}
+
+.input_db{
+    width: 180px;
+    margin-bottom: 20px;
+    
+    font-size: 12px;
+}
+
+#select{
+    margin-left: 20px;
+    width: 180px;
+    height: 29px;
+    
+    font-size: 12px;
+    text-align: center;
+}
+
+#checkbox{
+    margin-left: 22px;
+    margin-bottom: 20px;
+    vertical-align: sub;
+}
+
+/* -------------- */
+/* Logout */
+/* -------------- */
+
+.form_header{
+    top: 0;
+    right: 20px;
+    height: 60px;
+    padding-top: 20px;
+    position: absolute;
+}
+
+.input_logout{
+    height: 40px;
+    width: 120px;
+    
+    font-size: 18px;
+}
+
+.input_logout:hover{
+    cursor: pointer;
+}
