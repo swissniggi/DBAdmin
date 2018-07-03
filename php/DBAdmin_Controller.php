@@ -9,78 +9,82 @@ class DBAdmin_Controller {
      * Intepretiert die übergebenen Werte
      */
     public function getRequest() {
-        // Instanz von Klasse DBAdmin_GUI erstellen
-        if ($this->gui == null) {
-            require_once 'DBAdmin_GUI.php';
-            $this->gui = new DBAdmin_GUI();
-        }
-        
-        // Loginfunktion aufrufen
-        if (isset($_POST['username'])) {
-            $this->loginUser();
-        
-        // Operation 'Datenbank löschen' wurde gestartet
-        } else if (isset($_POST['delete'])) {
-            $this->openRootDbConnection();
-            $msg = $this->deleteDatabase($_POST['selectedDB']);
-            $this->gui->showMessage($msg);
-            
-        // Operation 'Datenbank erstellen' wurde gestartet
-        } else if (isset($_POST['create'])) {
-            $this->openRootDbConnection();
-            $msg = $this->createDatabase($_POST['dbname']);
-            $this->gui->showMessage($msg);
-            
-        // Operation 'Datenbank importieren' wurde gestartet
-        } else if (isset($_POST['insert'])) {
-            $newDb = null;          
-            // wenn DB ausgewählt wurde:
-            // Name der DB als Importziel setzen
-            if (isset($_POST['selectedDB']) && $_POST['selectedDB'] !== '') {                
-                $newDb = $_POST['selectedDB'].'.sql';
-                
-            // wenn DB-Name eingegeben wurde:
-            // DB erstellen
-            } else if (isset($_POST['dbname']) && $_POST['dbname'] !== '') {
-                $newDb = $_POST['dbname'].'.sql';
-                $this->openRootDbConnection();
-                $return = $this->createDatabase($_POST['dbname']);
-                // Vorgang abbrechen falls Datenbank bereits existiert
-                // oder CREATE fehlgeschlagen ist
-                if ($return === 'exists') {
-                    $this->gui->showMessage('exists');
-                    exit();
-                } else if ($return === false) {
-                    $this->gui->showMessage(false);
-                }           
+        try {
+            // Instanz von Klasse DBAdmin_GUI erstellen
+            if ($this->gui == null) {
+                require_once 'DBAdmin_GUI.php';
+                $this->gui = new DBAdmin_GUI();
             }
-            // Dump importieren
-            $msg = $this->importDatabase($_POST['dbselect'], $newDb, isset($_POST['dumpdelete']));
-            $this->gui->showMessage($msg);
-            
-        // Operation 'Datenbank umbenennen' wurde gestartet
-        } else if (isset($_POST['rename'])) {
-            $this->openRootDbConnection();
-            $msg = $this->renameDatabase($_POST['dbname'], $_POST['selectedDB']);
-            $this->gui->showMessage($msg);
-        
-        // Operation 'Datenbank duplizieren' wurde gestartet
-        } else if (isset($_POST['duplicate'])) {
-            $this->openRootDbConnection();
-            $msg = $this->duplicateDatabase($_POST['dbname'], $_POST['selectedDB']);
-            $this->gui->showMessage($msg);
-                
-        // Logoutfuntkion aufrufen
-        } else if (isset($_POST['logout'])) {
-            $this->logoutUser();
-            
-        // GUI der Hauptansicht neu laden
-        } else if (isset($_SESSION['id'])) {
-            $this->gui->renderGUI('main');
-            
-        // GUI der Loginansicht laden
-        } else {
-            $this->gui->renderGUI('login');
+
+            // Loginfunktion aufrufen
+            if (isset($_POST['username'])) {
+                $this->loginUser();
+
+            // Operation 'Datenbank löschen' wurde gestartet
+            } else if (isset($_POST['delete'])) {
+                $this->openRootDbConnection();
+                $msg = $this->deleteDatabase($_POST['selectedDB']);
+                $this->gui->showMessage($msg);
+
+            // Operation 'Datenbank erstellen' wurde gestartet
+            } else if (isset($_POST['create'])) {
+                $this->openRootDbConnection();
+                $msg = $this->createDatabase($_POST['dbname']);
+                $this->gui->showMessage($msg);
+
+            // Operation 'Datenbank importieren' wurde gestartet
+            } else if (isset($_POST['insert'])) {
+                $newDb = null;          
+                // wenn DB ausgewählt wurde:
+                // Name der DB als Importziel setzen
+                if (isset($_POST['selectedDB']) && $_POST['selectedDB'] !== '') {                
+                    $newDb = $_POST['selectedDB'].'.sql';
+
+                // wenn DB-Name eingegeben wurde:
+                // DB erstellen
+                } else if (isset($_POST['dbname']) && $_POST['dbname'] !== '') {
+                    $newDb = $_POST['dbname'].'.sql';
+                    $this->openRootDbConnection();
+                    $return = $this->createDatabase($_POST['dbname']);
+                    // Vorgang abbrechen falls Datenbank bereits existiert
+                    // oder CREATE fehlgeschlagen ist
+                    if ($return === 'exists') {
+                        $this->gui->showMessage('exists');
+                        exit();
+                    } else if ($return === false) {
+                        $this->gui->showMessage(false);
+                    }           
+                }
+                // Dump importieren
+                $msg = $this->importDatabase($_POST['dbselect'], $newDb, isset($_POST['dumpdelete']));
+                $this->gui->showMessage($msg);
+
+            // Operation 'Datenbank umbenennen' wurde gestartet
+            } else if (isset($_POST['rename'])) {
+                $this->openRootDbConnection();
+                $msg = $this->renameDatabase($_POST['dbname'], $_POST['selectedDB']);
+                $this->gui->showMessage($msg);
+
+            // Operation 'Datenbank duplizieren' wurde gestartet
+            } else if (isset($_POST['duplicate'])) {
+                $this->openRootDbConnection();
+                $msg = $this->duplicateDatabase($_POST['dbname'], $_POST['selectedDB']);
+                $this->gui->showMessage($msg);
+
+            // Logoutfuntkion aufrufen
+            } else if (isset($_POST['logout'])) {
+                $this->logoutUser();
+
+            // GUI der Hauptansicht neu laden
+            } else if (isset($_SESSION['id'])) {
+                $this->gui->renderGUI('main');
+
+            // GUI der Loginansicht laden
+            } else {
+                $this->gui->renderGUI('login');
+            }
+        } catch (Exception $ex) {
+            $this->gui->showMessage($ex);
         }
     }
     
@@ -103,8 +107,8 @@ class DBAdmin_Controller {
      * Überprüft die Logindaten
      */
     private function loginUser() {
-        $username = htmlspecialchars($_POST['username']);
-        $password = htmlspecialchars($_POST['passwort']);
+        $username = $_POST['username'];
+        $password = $_POST['passwort'];
         require_once 'DBAdmin_Model.php';
         $this->model = new DBAdmin_Model();
         $con = $this->model->openDbConnection($username, $password);
