@@ -72,7 +72,7 @@ class DBAdmin_GUI {
                 . '<col class="col">'
                 . '</colgroup>'
                 . '<tr>'
-                . '<th>Tabellenname</th>'
+                . '<th>Datenbankname</th>'
                 . '<th>Zuletzt geändert</th>'
                 . '<th>Importdatum</th>'
                 . '</tr>';
