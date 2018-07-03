@@ -189,6 +189,8 @@ class DBAdmin_GUI {
                 break;
             case false: 
                 echo '<script type="text/javascript">alert("Fehler beim Ausführen der Operation.")</script>';
+            default:
+                echo '<script type="text/javascript">alert('.$msg.')</script>';
         }
         
         header('refresh:0.5;url=index.php');
