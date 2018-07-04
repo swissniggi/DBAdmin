@@ -5,24 +5,36 @@ class DBAdmin_Model {
     public $rootPdo = null;
     
     /**
-     * Erstellt eine Verbindung zum MySQL-Server
-     * @param string $username
-     * @param string $password
-     * @return boolean|PDO
-     */
-    public function openDbConnection($host, $username, $password) {
-        $pdo = new PDO('mysql:host='.$host.'\'', $username, $password);
-        return $pdo;     
-    }
-    
-    
-    /**
      * Beendet die Datenbankverbindung
      * @param PDO $pdo
      */
     public function closeDbConnection($pdo) {
         $pdo = null;
     }
+    
+    
+    /**
+     * Erstellt eine Datenbank
+     * @param string $dbname
+     * @return boolean
+     */
+    public function createDatabase($dbname) {
+        $createDb = $this->rootPdo->prepare(
+            "CREATE DATABASE IF NOT EXISTS ".$dbname." CHARACTER SET utf8 COLLATE utf8_general_ci;"
+            );
+        return $createDb->execute();
+    }
+        
+    
+    /**
+     * Löscht eine Datenbank
+     * @param string $dbname
+     * @return boolean
+     */
+    public function deleteDatabase($dbname) {
+        $deleteDB = $this->rootPdo->prepare("DROP DATABASE ".$dbname.";");
+        return $deleteDB->execute();
+    }        
     
     
     /**
@@ -37,6 +49,33 @@ class DBAdmin_Model {
         $selectUserRights->bindParam(':username', $username);
         $selectUserRights->execute();
         $result = $selectUserRights->fetchAll();
+        return $result;
+    }
+    
+    /**
+     * Erstellt eine Verbindung zum MySQL-Server
+     * @param string $username
+     * @param string $password
+     * @return boolean|PDO
+     */
+    public function openDbConnection($host, $username, $password) {
+        $pdo = new PDO("mysql:host=$host;", $username, $password);
+        return $pdo;     
+    }    
+        
+    
+    /**
+     * Sucht eine bestimmte Datenbank
+     * @param string $dbname
+     * @return array
+     */
+    public function selectDatabase($dbname) {
+        $selectDB = $this->rootPdo->prepare(
+            "SELECT SCHEMA_NAME FROM information_schema.SCHEMATA WHERE SCHEMA_NAME = :name;"
+            );
+        $selectDB->bindParam(':name', $dbname);
+        $selectDB->execute();
+        $result = $selectDB->fetchAll();
         return $result;
     }
     
@@ -62,24 +101,8 @@ class DBAdmin_Model {
         $result = $selectDBs->fetchAll();
         return $result;
     }
-    
-    
-    /**
-     * Sucht eine bestimmte Datenbank
-     * @param string $dbname
-     * @return array
-     */
-    public function selectDatabase($dbname) {
-        $selectDB = $this->rootPdo->prepare(
-            "SELECT SCHEMA_NAME FROM information_schema.SCHEMATA WHERE SCHEMA_NAME = :name;"
-            );
-        $selectDB->bindParam(':name', $dbname);
-        $selectDB->execute();
-        $result = $selectDB->fetchAll();
-        return $result;
-    }
-    
-    
+
+        
     /**
      * Gibt das Erstellungsdatum der Datenbank zurück
      * @param string $dbname
@@ -94,23 +117,6 @@ class DBAdmin_Model {
         $selectDate->bindParam(':dbname', $db);
         $selectDate->execute();
         $result = $selectDate->fetchAll();
-        return $result;
-    }
-    
-    
-    /**
-     * Gibt das Datum der letzten Änderung zurück
-     * @param string $dbname
-     * @return array
-     */
-    public function selectLastUpdateDate($dbname) {
-        $selectUpdate = $this->rootPdo->prepare(
-            "SELECT IF(MAX(DATE(UPDATE_TIME)) IS NULL, MAX(DATE(CREATE_TIME)), MAX(DATE(UPDATE_TIME)))"
-            ."FROM information_schema.TABLES WHERE TABLE_SCHEMA = :dbname;"
-            );
-        $selectUpdate->bindParam(':dbname', $dbname);
-        $selectUpdate->execute();
-        $result = $selectUpdate->fetchAll();
         return $result;
     }
     
@@ -135,26 +141,19 @@ class DBAdmin_Model {
     
     
     /**
-     * Löscht eine Datenbank
+     * Gibt das Datum der letzten Änderung zurück
      * @param string $dbname
-     * @return boolean
+     * @return array
      */
-    public function deleteDatabase($dbname) {
-        $deleteDB = $this->rootPdo->prepare("DROP DATABASE ".$dbname.";");
-        return $deleteDB->execute();
-    }
-    
-    
-    /**
-     * Erstellt eine Datenbank
-     * @param string $dbname
-     * @return boolean
-     */
-    public function createDatabase($dbname) {
-        $createDb = $this->rootPdo->prepare(
-            "CREATE DATABASE IF NOT EXISTS ".$dbname." CHARACTER SET utf8 COLLATE utf8_general_ci;"
+    public function selectLastUpdateDate($dbname) {
+        $selectUpdate = $this->rootPdo->prepare(
+            "SELECT IF(MAX(DATE(UPDATE_TIME)) IS NULL, MAX(DATE(CREATE_TIME)), MAX(DATE(UPDATE_TIME)))"
+            ."FROM information_schema.TABLES WHERE TABLE_SCHEMA = :dbname;"
             );
-        return $createDb->execute();
+        $selectUpdate->bindParam(':dbname', $dbname);
+        $selectUpdate->execute();
+        $result = $selectUpdate->fetchAll();
+        return $result;
     }
 }
 

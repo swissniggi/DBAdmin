@@ -44,6 +44,28 @@ class DBAdmin_GUI {
                 break;
         }
     }
+        
+    
+    /**
+     * Erstellt das Drop-Down-Menu mit den Dumps
+     * @return string
+     */
+    private function showDumpDropDown() {
+        require_once 'DBAdmin_FileReader.php';
+        $fileReader = new DBAdmin_FileReader();
+        $dumpList = $fileReader->getDumpList();
+        
+        $dropDown = '<select id="select" name="dbselect" size="1" form="dbform">';
+        $dropDown .= '<option value="">-- Dump auswählen --</option>';
+        
+        // pro Dumpname eine Option erstellen
+        for ($i = 0; $i < count($dumpList); $i++) {
+            $dropDown .= '<option value="'.$dumpList[$i].'">'.$dumpList[$i].'</option>';
+        }
+        
+        $dropDown .= '</select>';
+        return $dropDown;
+    }
     
     
     /**
@@ -56,10 +78,9 @@ class DBAdmin_GUI {
         require_once 'DBAdmin_Model.php';
         $model = new DBAdmin_Model();
         // Benutzername und Passwort aus JSON-File holen
-        $rootUsername = json_decode(file_get_contents('config/config.json'))->username;
-        $rootPassword = json_decode(file_get_contents('config/config.json'))->password;
         // Datenbankverbindung herstellen
-        $model->rootPdo = $model->openDbConnection($rootUsername, $rootPassword);
+        $conf = DBAdmin_Controller::_setDbData();
+        $model->rootPdo = $model->openDbConnection($conf["host"], $conf["user"], $conf["password"]);
         
         // alle Datenbanknamen abfragen, für die der Benutzer Berechtigung hat
         $databases = $model->selectDatabases($userShort, $root);
@@ -118,30 +139,8 @@ class DBAdmin_GUI {
         $HTMLTable .= '</table>';
         return $HTMLTable;
     }
-    
-    
-    /**
-     * Erstellt das Drop-Down-Menu mit den Dumps
-     * @return string
-     */
-    private function showDumpDropDown() {
-        require_once 'DBAdmin_FileReader.php';
-        $fileReader = new DBAdmin_FileReader();
-        $dumpList = $fileReader->getDumpList();
-        
-        $dropDown = '<select id="select" name="dbselect" size="1" form="dbform">';
-        $dropDown .= '<option value="">-- Dump auswählen --</option>';
-        
-        // pro Dumpname eine Option erstellen
-        for ($i = 0; $i < count($dumpList); $i++) {
-            $dropDown .= '<option value="'.$dumpList[$i].'">'.$dumpList[$i].'</option>';
-        }
-        
-        $dropDown .= '</select>';
-        return $dropDown;
-    }
-    
-    
+
+     
     /**
      * Gibt eine vordefinierte Meldung aus
      * @param string $msg
@@ -190,7 +189,7 @@ class DBAdmin_GUI {
             case false: 
                 echo '<script type="text/javascript">alert("Fehler beim Ausführen der Operation.")</script>';
             default:
-                echo '<script type="text/javascript">alert('.$msg.')</script>';
+                echo '<script type="text/javascript">alert("'.$msg.'")</script>';
         }
         
         header('refresh:0.5;url=index.php');
