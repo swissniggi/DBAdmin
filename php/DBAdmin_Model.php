@@ -34,22 +34,6 @@ class DBAdmin_Model {
     public function deleteDatabase($dbname) {
         $deleteDB = $this->rootPdo->prepare("DROP DATABASE ".$dbname.";");
         return $deleteDB->execute();
-    }        
-    
-    
-    /**
-     * Liest die Benutzerrechte aus der Datenbank
-     * @param string $username
-     * @return array
-     */
-    public function getUserRights($username) {
-        $selectUserRights = $this->rootPdo->prepare(
-                "SELECT * FROM mysql.user WHERE user = :username;"
-                );
-        $selectUserRights->bindParam(':username', $username);
-        $selectUserRights->execute();
-        $result = $selectUserRights->fetchAll();
-        return $result;
     }
     
     
@@ -155,6 +139,36 @@ class DBAdmin_Model {
         $selectUpdate->bindParam(':dbname', $dbname);
         $selectUpdate->execute();
         $result = $selectUpdate->fetchAll();
+        return $result;
+    }     
+    
+    
+    /**
+     * Liest die Benutzerrechte aus der Datenbank
+     * @param string $username
+     * @return array
+     */
+    public function selectUserRights($username) {
+        $selectUserRights = $this->rootPdo->prepare(
+                "SELECT * FROM mysql.user WHERE user = :username;"
+                );
+        $selectUserRights->bindParam(':username', $username);
+        $selectUserRights->execute();
+        $result = $selectUserRights->fetchAll();
+        return $result;
+    }
+    
+    
+    /**
+     * Liest alle MySQL-Benutzer aus
+     * @return type array
+     */
+    public function selectUsers() {
+        $selectUsers = $this->rootPdo->prepare(
+                "SELECT User FROM mysql.user;"
+                );
+        $selectUsers->execute();
+        $result = $selectUsers->fetchAll();
         return $result;
     }
 }

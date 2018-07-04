@@ -61,8 +61,7 @@ class DBAdmin_GUI {
         // pro Dumpname eine Option erstellen
         for ($i = 0; $i < count($dumpList); $i++) {
             $dropDown .= '<option value="'.$dumpList[$i].'">'.$dumpList[$i].'</option>';
-        }
-        
+        }        
         $dropDown .= '</select>';
         return $dropDown;
     }
@@ -134,8 +133,7 @@ class DBAdmin_GUI {
                         . '<td class="tablecells">'.$databases[$i]['SCHEMA_NAME'].'</td>'
                         . '<td id="db_date">'.$dates[$i].'</td>'
                         . '<td>'.$import[$i].'</tr>';
-        }
-        
+        }      
         $HTMLTable .= '</table>';
         return $HTMLTable;
     }
@@ -165,6 +163,9 @@ class DBAdmin_GUI {
             case 'exists': 
                 echo '<script type="text/javascript">alert("Eine Datenbank mit diesem Namen existiert bereits!")</script>'; 
                 break;
+            case 'usernotexists':
+                echo '<script type="text/javascript">alert("Ein Benutzer mit dem angegebenen Kürzel existiert nicht.")</script>';
+                break;
             case 'createok': 
                 echo '<script type="text/javascript">alert("Datenbank erfolgreich erstellt.")</script>'; 
                 break;
@@ -188,8 +189,7 @@ class DBAdmin_GUI {
                 break;
             case false: 
                 echo '<script type="text/javascript">alert("Fehler beim Ausführen der Operation.")</script>';
-        }
-        
+        }        
         header('refresh:0.5;url=index.php');
     }       
 }
