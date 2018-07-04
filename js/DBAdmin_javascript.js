@@ -92,7 +92,7 @@ function checkFields() {
     $username = document.getElementById('username');
     $password = document.getElementById('passwort');
     
-    if ($username.value === '' || $password.value == '') {
+    if ($username.value === '' || $password.value === '') {
         alert('Bitte fülle alle Felder aus!');
         return false;
     } else {
