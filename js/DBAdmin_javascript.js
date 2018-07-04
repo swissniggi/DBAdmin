@@ -10,7 +10,7 @@ function changeColor(cellId) {
     var cells = document.getElementsByClassName('tablecells');
     
     for (var i = 0; i < rows.length; i++) {
-        if (rows[i].id == id) {
+        if (rows[i].id === id) {
             if (rows[i].style.backgroundColor !== 'lightpink') {
                 rows[i].style.backgroundColor = 'lightpink';
                 document.getElementById('hiddenfield').value = cells[i].innerHTML;
@@ -40,7 +40,7 @@ function changeColor(cellId) {
 function checkDbname() {
     var dbname = document.getElementById('dbname');
     
-    if (dbname.value == '') {
+    if (dbname.value === '') {
         alert('Kein Datenbankname gewählt.');
         return false;
     } else {
@@ -92,7 +92,7 @@ function checkFields() {
     $username = document.getElementById('username');
     $password = document.getElementById('passwort');
     
-    if ($username.value == '' || $password.value == '') {
+    if ($username.value === '' || $password.value == '') {
         alert('Bitte fülle alle Felder aus!');
         return false;
     } else {
@@ -109,7 +109,7 @@ function checkFields() {
 function checkHiddenField() {
     var hiddenField = document.getElementById('hiddenfield');
     
-    if (hiddenField.value == '') {
+    if (hiddenField.value === '') {
         alert('Keine Datenbank ausgewählt.');
         return false;
     } else {
