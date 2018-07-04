@@ -84,7 +84,7 @@ class DBAdmin_Controller {
                 $this->gui->renderGUI('login');
             }
         } catch (Exception $ex) {
-            $this->gui->showMessage($ex->getMessage());
+            $this->gui->showMessage($ex->getCode());
         }
     }
     
@@ -211,18 +211,14 @@ class DBAdmin_Controller {
     private function getUserRights($username) {
         $result = $this->model->getUserRights($username);
         
-        if ($result !== false) {
-            // die Berechtigungen sind im Array unter Index 2 - 30 zu finden
-            // Y = hat Berechtigung, N = hat Berechtigung nicht
-            for ($i = 2; $i <= 30; $i++) {
-                if ($result[0][$i] !== 'Y') {
-                    return false;
-                }
+        // die Berechtigungen sind im Array unter Index 2 - 30 zu finden
+        // Y = hat Berechtigung, N = hat Berechtigung nicht
+        for ($i = 2; $i <= 30; $i++) {
+            if ($result[0][$i] !== 'Y') {
+                return false;
             }
-            return true;
-        } else {
-            return 'dberror';
         }
+        return true;
     }    
     
     
@@ -255,24 +251,11 @@ class DBAdmin_Controller {
         require_once 'DBAdmin_Model.php';
         $this->model = new DBAdmin_Model();
         $config = self::_setDbData();
-        $con = $this->model->openDbConnection($config["host"], $username, $password);
-        
-        // Vorgang abbrechen wenn Datenbankverbindung fehlschlägt
-        if ($con === false) {
-            $this->gui->showMessage('loginfail');
-            exit();
-        } 
-        
+        $con = $this->model->openDbConnection($config["host"], $username, $password);               
         $this->model->closeDbConnection($con);
 
         // mit root zur Datenbank verbinden
         $this->openRootDbConnection();
-
-        // eruieren, ob Datenbankverbindung erfolgreich
-        if ($this->model->rootPdo === false) {
-            $this->gui->showMessage('noconnection');
-            exit();
-        }
         // eruieren ob der eingeloggte User root-Rechte hat
         $root = $this->getUserRights($username);
         $this->model->closeDbConnection($this->model->rootPdo);
@@ -281,9 +264,6 @@ class DBAdmin_Controller {
         if (!$root) {
             $userShort = substr($username, 0, 2);
             $_SESSION['userShort'] = $userShort;
-        } else if ($root === 'dberror') {
-            $this->gui->showMessage($root);
-            exit();
         } else {
             $_SESSION['userShort'] = '';
         }
@@ -366,9 +346,9 @@ class DBAdmin_Controller {
     }
 
     
-    // -------------------- //
-    ## Statische Funktionen##
-    // -------------------- //   
+    // --------------------- //
+     ## Statische Funktionen##
+    // --------------------- //   
     
     /**
      * Überprüft den Datenbanknamen
@@ -393,7 +373,8 @@ class DBAdmin_Controller {
         
     
     /**
-     * Liest die Anmeldedaten für MySQL aus dem Config-File 
+     * Liest die Anmeldedaten für MySQL aus dem Config-File
+     * @return array
      */
     public static function _setDbData() {
         // Benutzername und Passwort aus Config-File holen
