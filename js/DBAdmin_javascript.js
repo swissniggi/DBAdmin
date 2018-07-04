@@ -1,21 +1,4 @@
 /**
- * Überprüft ob ein Benutzername und ein Passwort eingegeben wurden
- * @returns {Boolean}
- */
-function checkFields() {
-    $username = document.getElementById('username');
-    $password = document.getElementById('passwort');
-    
-    if ($username.value == '' || $password.value == '') {
-        alert('Bitte fülle alle Felder aus!');
-        return false;
-    } else {
-        return true;
-    }
-}
-
-
-/**
  * Ändert die Hintergrundfarbe der ausgewählten Tabellenzelle
  * Schreibt den Namen der ausgewählten DB ins hiddenField
  * @param {integer} cellId
@@ -51,93 +34,6 @@ function changeColor(cellId) {
 
 
 /**
- * Fragt nach, ob die Datenbank wirklich gelöscht werden soll
- * @returns {Boolean}
- */
-function confirmDelete() {
-    var load = document.getElementById('load');
-    var overload = document.getElementById('overload');
-    
-    if (checkHiddenField()) {
-        overload.style.display = 'block';
-        load.style.display = 'block';
-        return confirm('Willst du die Ausgewählte Datenbank wirklich löschen?');
-    } else {
-        return false;
-    }
-}
-
-
-/**
- * Fragt nach, ob die Datenbank wirklich umbenannt werden soll
- * @returns {Boolean}
- */
-function confirmRename() {
-    var hiddenfield = document.getElementById('hiddenfield').value;
-    var dbname = document.getElementById('dbname').value;
-    var load = document.getElementById('load');
-    var overload = document.getElementById('overload');
-    
-    if (checkHiddenField() && checkDbname()) {
-        if (hiddenfield === dbname) {
-            alert('Der neue Datenbankname muss sich vom aktuellen Namen unterscheiden!');
-            return false;
-        } else {
-            overload.style.display = 'block';
-            load.style.display = 'block';
-            return confirm('Willst du die Datenbank wirklich umbenennen?');
-        }
-    } else {
-        return false;
-    }
-}
-
-
-/**
- * Stellt sicher, dass eine Datenbank zum Duplizieren
- * und ein neuer Datenbankname ausgewählt wird
- * @returns {Boolean}
- */
-function confirmDuplicate() {
-    var hiddenfield = document.getElementById('hiddenfield').value;
-    var dbname = document.getElementById('dbname').value;
-    var load = document.getElementById('load');
-    var overload = document.getElementById('overload');
-    
-    
-    if (checkHiddenField() && checkDbname()) {
-        if (hiddenfield === dbname) {
-            alert('Der neue Datenbankname muss sich vom aktuellen Namen unterscheiden!');
-            return false;
-        } else {
-            overload.style.display = 'block';
-            load.style.display = 'block';
-            return true;
-        }
-    } else {
-        return false;
-    }
-}
-
-
-/**
- * Prüft, ob das Hiddenfield einen Wert enthält
- * --> true = Datenbank ausgewählt
- * @returns {Boolean}
- */
-function checkHiddenField() {
-    var hiddenField = document.getElementById('hiddenfield');
-    
-    if (hiddenField.value == '') {
-        alert('Keine Datenbank ausgewählt.');
-        return false;
-    } else {
-        return true;       
-    }
-}
-
-
-/**
  * Prüft, ob ein Datenbankname eingegeben wurde.
  * @returns {Boolean}
  */
@@ -150,15 +46,6 @@ function checkDbname() {
     } else {
         return true;
     }
-}
-
-
-/**
- * Fragt nach, ob sich der Benutzer wirklich ausloggen möchte
- * @returns {Boolean}
- */
-function confirmLogout() {
-    return confirm('Willst du dich wirklich ausloggen?');
 }
 
 
@@ -197,3 +84,114 @@ function checkDump() {
 }
 
 
+/**
+ * Überprüft ob ein Benutzername und ein Passwort eingegeben wurden
+ * @returns {Boolean}
+ */
+function checkFields() {
+    $username = document.getElementById('username');
+    $password = document.getElementById('passwort');
+    
+    if ($username.value == '' || $password.value == '') {
+        alert('Bitte fülle alle Felder aus!');
+        return false;
+    } else {
+        return true;
+    }
+}
+
+
+/**
+ * Prüft, ob das Hiddenfield einen Wert enthält
+ * --> true = Datenbank ausgewählt
+ * @returns {Boolean}
+ */
+function checkHiddenField() {
+    var hiddenField = document.getElementById('hiddenfield');
+    
+    if (hiddenField.value == '') {
+        alert('Keine Datenbank ausgewählt.');
+        return false;
+    } else {
+        return true;       
+    }
+}
+
+
+/**
+ * Fragt nach, ob die Datenbank wirklich gelöscht werden soll
+ * @returns {Boolean}
+ */
+function confirmDelete() {
+    var load = document.getElementById('load');
+    var overload = document.getElementById('overload');
+    
+    if (checkHiddenField()) {
+        overload.style.display = 'block';
+        load.style.display = 'block';
+        return confirm('Willst du die Ausgewählte Datenbank wirklich löschen?');
+    } else {
+        return false;
+    }
+}
+
+
+/**
+ * Stellt sicher, dass eine Datenbank zum Duplizieren
+ * und ein neuer Datenbankname ausgewählt wird
+ * @returns {Boolean}
+ */
+function confirmDuplicate() {
+    var hiddenfield = document.getElementById('hiddenfield').value;
+    var dbname = document.getElementById('dbname').value;
+    var load = document.getElementById('load');
+    var overload = document.getElementById('overload');
+    
+    
+    if (checkHiddenField() && checkDbname()) {
+        if (hiddenfield === dbname) {
+            alert('Der neue Datenbankname muss sich vom aktuellen Namen unterscheiden!');
+            return false;
+        } else {
+            overload.style.display = 'block';
+            load.style.display = 'block';
+            return true;
+        }
+    } else {
+        return false;
+    }
+}
+
+
+/**
+ * Fragt nach, ob sich der Benutzer wirklich ausloggen möchte
+ * @returns {Boolean}
+ */
+function confirmLogout() {
+    return confirm('Willst du dich wirklich ausloggen?');
+}
+
+
+/**
+ * Fragt nach, ob die Datenbank wirklich umbenannt werden soll
+ * @returns {Boolean}
+ */
+function confirmRename() {
+    var hiddenfield = document.getElementById('hiddenfield').value;
+    var dbname = document.getElementById('dbname').value;
+    var load = document.getElementById('load');
+    var overload = document.getElementById('overload');
+    
+    if (checkHiddenField() && checkDbname()) {
+        if (hiddenfield === dbname) {
+            alert('Der neue Datenbankname muss sich vom aktuellen Namen unterscheiden!');
+            return false;
+        } else {
+            overload.style.display = 'block';
+            load.style.display = 'block';
+            return confirm('Willst du die Datenbank wirklich umbenennen?');
+        }
+    } else {
+        return false;
+    }
+}

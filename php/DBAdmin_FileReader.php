@@ -1,22 +1,37 @@
 <?php
 
-class DBAdmin_FileReader {
+class DBAdmin_FileReader {       
     
     /**
-     * Erstellt eine Liste mit allen Dumps
-     * @return array
+     * Exportiert einen Dump via Kommandozeilenbefehl
+     * @param string $dbname
+     * @return integer
      */
-    public function getDumpList() {
-        $dumpDirectory = realpath('dumps');
-        $files = scandir($dumpDirectory);
-        $dumpList = [];
+    public function createDump($dbname) {
+        // Namen der Zieldatenbank definieren
+        $db_parts = explode('.', $dbname);
+        $db = $db_parts[0];
+        // Pfad des Config-Files angeben
+        // es enthält den MySQL-Benutzernamen und das Passwort, sowie den Hostnamen
+        $conf = realpath('config/mysql.conf');
+        // Dumppfad definieren
+        $dbpath = realpath('dumps/').'\\'.$_SESSION['id'].'.sql';
         
-        for ($i = 2; $i < count($files); $i++) {
-            $dumpList[] = $files[$i];
-        }       
-        return $dumpList;
+        // Dump exportieren
+        $command = 'mysqldump --defaults-file="'.$conf.'" --events --routines --triggers '.$db.' > "'.$dbpath.'"';    
+        exec($command, $out, $return);
+        return $return;
     }
+        
     
+    /**
+     * Löscht einen Dump
+     * @param string $path
+     */
+    private function deleteDump($path) {
+        unlink($path);
+    }
+        
     
     /**
      * Importiert einen Dump via Kommandozeilenbefehl
@@ -49,32 +64,17 @@ class DBAdmin_FileReader {
     
     
     /**
-     * Exportiert einen Dump via Kommandozeilenbefehl
-     * @param string $dbname
-     * @return integer
+     * Erstellt eine Liste mit allen Dumps
+     * @return array
      */
-    public function createDump($dbname) {
-        // Namen der Zieldatenbank definieren
-        $db_parts = explode('.', $dbname);
-        $db = $db_parts[0];
-        // Pfad des Config-Files angeben
-        // es enthält den MySQL-Benutzernamen und das Passwort, sowie den Hostnamen
-        $conf = realpath('config/mysql.conf');
-        // Dumppfad definieren
-        $dbpath = realpath('dumps/').'\\'.$_SESSION['id'].'.sql';
+    public function getDumpList() {
+        $dumpDirectory = realpath('dumps');
+        $files = scandir($dumpDirectory);
+        $dumpList = [];
         
-        // Dump exportieren
-        $command = 'mysqldump --defaults-file="'.$conf.'" --events --routines --triggers '.$db.' > "'.$dbpath.'"';    
-        exec($command, $out, $return);
-        return $return;
-    }
-    
-    
-    /**
-     * Löscht einen Dump
-     * @param string $path
-     */
-    private function deleteDump($path) {
-        unlink($path);
+        for ($i = 2; $i < count($files); $i++) {
+            $dumpList[] = $files[$i];
+        }       
+        return $dumpList;
     }
 }
