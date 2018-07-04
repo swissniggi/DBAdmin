@@ -147,10 +147,10 @@ class DBAdmin_GUI {
      */
     public function showMessage($msg) {
         switch ($msg) {
-            case 'loginfail': 
+            case 1045: 
                 echo '<script type="text/javascript">alert("Benutzer unbekannt oder Passwort falsch!")</script>'; 
                 break;
-            case 'noconnection': 
+            case 2002: 
                 echo '<script type="text/javascript">alert("Datenbankverbindung fehlgeschlagen!")</script>'; 
                 break;
             case 'norights': 
@@ -183,13 +183,11 @@ class DBAdmin_GUI {
             case 'logout': 
                 echo '<script type="text/javascript">alert("Du hast dich erfolgreich ausgeloggt.")</script>'; 
                 break;
-            case 'dberror':
-                echo '<script type="text/javascript">alert("Datenbankfehler! Login nicht möglich!")</script>';
+            case 'HY000':
+                echo '<script type="text/javascript">alert("Datenbankfehler! Server nicht erreichbar!")</script>';
                 break;
             case false: 
                 echo '<script type="text/javascript">alert("Fehler beim Ausführen der Operation.")</script>';
-            default:
-                echo '<script type="text/javascript">alert("'.$msg.'")</script>';
         }
         
         header('refresh:0.5;url=index.php');

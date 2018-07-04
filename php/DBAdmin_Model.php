@@ -52,6 +52,7 @@ class DBAdmin_Model {
         return $result;
     }
     
+    
     /**
      * Erstellt eine Verbindung zum MySQL-Server
      * @param string $username
@@ -60,6 +61,7 @@ class DBAdmin_Model {
      */
     public function openDbConnection($host, $username, $password) {
         $pdo = new PDO("mysql:host=$host;", $username, $password);
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         return $pdo;     
     }    
         
@@ -156,4 +158,3 @@ class DBAdmin_Model {
         return $result;
     }
 }
-
