@@ -90,12 +90,42 @@ class DBAdmin_Controller {
     
     
     /**
+     * Überprüft den Datenbanknamen
+     * @param string $dbname
+     * @return boolean|string
+     */
+    private function checkDbname($dbname) {            
+        $match = preg_match('/^dev_[a-z]{2}_[a-z]{2,3}_[a-z]{1,50}$/', $dbname);
+        $dbSubstrings= explode('_', $dbname);
+        
+        $users = $this->model->selectUsers();
+        
+        if ($match === 1) {
+            if (!$_SESSION['root'] && $dbSubstrings[1] !== $_SESSION['userShort']) {
+                return 'norights';
+            } else if ($_SESSION['root']) {
+                for ($i = 0; $i < count($users); $i++) {
+                    if (strpos($users[$i][0], $dbSubstrings[1]) === 0) {
+                        return true;
+                    }
+                }
+                return 'usernotexists';
+            } else {
+                return true;
+            }
+        } else {
+            return 'wrongname';
+        }
+    }
+    
+    
+    /**
      * Erstellt eine neue Datenbank
      * @param string $dbname
      * @return boolean|string
      */
     private function createDatabase($dbname) {
-        $check = self::_checkDbname($dbname);
+        $check = $this->checkDbname($dbname);
         if ($check !== true) {
             $this->gui->showMessage($check);
             exit();
@@ -124,7 +154,7 @@ class DBAdmin_Controller {
      * @return boolean|string
      */
     private function deleteDatabase($dbname) {
-        $check = self::_checkDbname($dbname);
+        $check = $this->checkDbname($dbname);
         if ($check !== true) {
             $this->gui->showMessage($check);
             exit();
@@ -152,7 +182,7 @@ class DBAdmin_Controller {
         $oldDbFile = $oldDbname.'.sql';
         
         // Datenbankname prüfen
-        $check = self::_checkDbname($oldDbname);
+        $check = $this->checkDbname($newDbname);
         if ($check !== true) {
             $this->gui->showMessage($check);
             exit();
@@ -209,7 +239,7 @@ class DBAdmin_Controller {
      * @return boolean
      */
     private function getUserRights($username) {
-        $result = $this->model->getUserRights($username);
+        $result = $this->model->selectUserRights($username);
         
         // die Berechtigungen sind im Array unter Index 2 - 30 zu finden
         // Y = hat Berechtigung, N = hat Berechtigung nicht
@@ -246,7 +276,7 @@ class DBAdmin_Controller {
      * Überprüft die Logindaten
      */
     private function loginUser() {
-        $username = $_POST['username'];
+        $username = strtolower($_POST['username']);
         $password = $_POST['passwort'];
         require_once 'DBAdmin_Model.php';
         $this->model = new DBAdmin_Model();
@@ -306,7 +336,7 @@ class DBAdmin_Controller {
         $newDbFile = $newDbname.'.sql';
         $oldDbFile = $oldDbname.'.sql';
         
-        $check = self::_checkDbname($oldDbname);
+        $check = $this->checkDbname($newDbname);
         if ($check !== true) {
             $this->gui->showMessage($check);
             exit();
@@ -348,29 +378,7 @@ class DBAdmin_Controller {
     
     // --------------------- //
      ## Statische Funktionen##
-    // --------------------- //   
-    
-    /**
-     * Überprüft den Datenbanknamen
-     * @param string $dbname
-     * @return boolean|string
-     */
-    private static function _checkDbname($dbname) {
-        $dbSubstrings= explode('_', $dbname);
-    
-        $match = preg_match('/^dev_[a-z]{2}_[a-z]{2,3}_[a-z]{1,50}$/', $dbname);
-        
-        if ($match === 1) {
-            if (!$_SESSION['root'] && $dbSubstrings[1] !== $_SESSION['userShort']) {
-                return 'norights';
-            } else {
-                return true;
-            }
-        } else {
-            return 'wrongname';
-        }
-    }
-        
+    // --------------------- //             
     
     /**
      * Liest die Anmeldedaten für MySQL aus dem Config-File
