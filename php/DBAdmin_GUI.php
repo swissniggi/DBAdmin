@@ -97,7 +97,7 @@ class DBAdmin_GUI {
                 . '<th>Importdatum</th>'
                 . '</tr>';
         
-        $dates = [];
+        $change = [];
         $import = [];
         
         for ($d = 0; $d < count($databases); $d++) {
@@ -109,7 +109,7 @@ class DBAdmin_GUI {
                 $date = $model->selectDbCreateDate($databases[$d]['SCHEMA_NAME']);
             }
             
-            $dates[] = date("d.m.Y", strtotime($date[0][0]));
+            $change[] = date("d.m.Y", strtotime($date[0][0]));
             // Datum des letzten Imports ermitteln
             $date = $model->selectImportDate($databases[$d]['SCHEMA_NAME']);
             
@@ -133,7 +133,7 @@ class DBAdmin_GUI {
             
             $HTMLTable .= '<tr  id="td'.$no.'" class="'.$class.'" onclick="changeColor('.$no.')">'
                         . '<td class="tablecells">'.$databases[$i]['SCHEMA_NAME'].'</td>'
-                        . '<td id="db_date">'.$dates[$i].'</td>'
+                        . '<td id="db_date">'.$change[$i].'</td>'
                         . '<td>'.$import[$i].'</tr>';
         }      
         $HTMLTable .= '</table>';
