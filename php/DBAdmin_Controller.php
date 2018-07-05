@@ -266,6 +266,8 @@ class DBAdmin_Controller {
         
         if ($return === 0) {
             return 'importok';
+        } else if (is_string($return)) {
+            return $return;
         } else {
             return false;
         }       
@@ -308,7 +310,6 @@ class DBAdmin_Controller {
      * Logt den angemeldeten Benutzer aus
      */
     private function logoutUser() {
-        session_unset();
         session_destroy();
         $this->gui->showMessage('logout');
     }
