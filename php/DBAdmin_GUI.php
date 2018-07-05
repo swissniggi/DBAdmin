@@ -126,9 +126,11 @@ class DBAdmin_GUI {
         for ($i = 0; $i < count($databases); $i++) {
             $no = $i+1;
             $class = 'tablerows';
+            
             if ($i%2 !== 0) {
                 $class .= ' odd';
             }
+            
             $HTMLTable .= '<tr  id="td'.$no.'" class="'.$class.'" onclick="changeColor('.$no.')">'
                         . '<td class="tablecells">'.$databases[$i]['SCHEMA_NAME'].'</td>'
                         . '<td id="db_date">'.$dates[$i].'</td>'
@@ -148,8 +150,10 @@ class DBAdmin_GUI {
             case 1045: 
                 echo '<script type="text/javascript">alert("Benutzer unbekannt oder Passwort falsch!")</script>'; 
                 break;
-            case 2002: 
-                echo '<script type="text/javascript">alert("Datenbankverbindung fehlgeschlagen!")</script>'; 
+            case 2002:
+            case 'HY000':
+                echo '<script type="text/javascript">alert("Datenbankverbindung fehlgeschlagen!\r\nDu wirst aus Sicherheitsgründen ausgeloggt.")</script>';
+                session_destroy();
                 break;
             case 'norights': 
                 echo '<script type="text/javascript">alert("Du hast keine Berechtigung für diesen Vorgang!")</script>'; 
@@ -165,6 +169,9 @@ class DBAdmin_GUI {
                 break;
             case 'usernotexists':
                 echo '<script type="text/javascript">alert("Ein Benutzer mit dem angegebenen Kürzel existiert nicht.")</script>';
+                break;
+            case 'nodump':
+                echo '<script type="text/javascript">alert("Die ausgewählte SQL-Datei scheint kein Dump zu sein!\r\nOperation abgebrochen!")</script>';
                 break;
             case 'createok': 
                 echo '<script type="text/javascript">alert("Datenbank erfolgreich erstellt.")</script>'; 
@@ -183,9 +190,6 @@ class DBAdmin_GUI {
                 break;
             case 'logout': 
                 echo '<script type="text/javascript">alert("Du hast dich erfolgreich ausgeloggt.")</script>'; 
-                break;
-            case 'HY000':
-                echo '<script type="text/javascript">alert("Datenbankfehler! Server nicht erreichbar!")</script>';
                 break;
             case false: 
                 echo '<script type="text/javascript">alert("Fehler beim Ausführen der Operation.")</script>';

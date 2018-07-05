@@ -25,15 +25,6 @@ class DBAdmin_FileReader {
         
     
     /**
-     * Löscht einen Dump
-     * @param string $path
-     */
-    private function deleteDump($path) {
-        unlink($path);
-    }
-        
-    
-    /**
      * Importiert einen Dump via Kommandozeilenbefehl
      * @param string|null $oldDbname
      * @param string|null $newDbname
@@ -45,19 +36,29 @@ class DBAdmin_FileReader {
         $dbname = $newDbname === null ? $oldDbname : $newDbname;
         $db_parts = explode('.', $dbname);
         $db = $db_parts[0];
+        
         // Pfad des Config-Files angeben
         // es enthält den MySQL-Benutzernamen und das Passwort, sowie den Hostnamen
         $conf = realpath('config/mysql.conf');
+        
         // Dumpnamen definieren
         $dumpPath = $oldDbname === null ? $_SESSION['id'].'.sql' : $oldDbname;
         $dbpath = realpath('dumps/').'\\'.$dumpPath;
+        
+        // Prüfen ob die gewählte Datei tatsächlich ein Dump ist
+        $file = new SplFileObject($dbpath);
+        $file->seek(0);
+        $content = $file->current();
+        if (strpos($content, 'MySQL dump') === false) {
+            return 'nodump';
+        }
         
         // Dump importieren
         $command = 'mysql --defaults-file="'.$conf.'" '.$db.' < "'.$dbpath.'"';    
         exec($command, $out, $return);
         
         if ($delete && $return === 0) {
-            $this->deleteDump($dbpath);
+            unlink($dbpath);
         }
         return $return;
     }
