@@ -77,11 +77,11 @@ class DBAdmin_GUI {
                 . '<div class="modalbox_inhalt">'               
                 . '<div class="inbox">'
                 . '<label class="dump_label" id="checkboxlabel"><input id="checkbox" type="checkbox" name="dumpdelete" value="1">&nbsp;Dump nach Import löschen</label>'
-                . '<button class="close" onclick="close()">&times;</button>'
+                . '<input type="submit" class="close" onclick="return closeModalBox()" value="&times" />'
                 . $this->showDumpDropDown()
                 . '<input type="text" name="dbname" id="dbname" class="db_text" placeholder="Datenbankname" />'
                 . '<input type="submit" class="input_db" id="insert" name="insert" onclick="return checkDump()" value="OK" />'
-                . '<input type="submit" class="input_db" id="create" name="create" onclick="return checkDbname()" value="OK" />'               
+                . '<input type="submit" class="input_db" id="create" name="create" onclick="return checkDbname(1)" value="OK" />'               
                 . '</div>'
                 . '</div></div>'
                 . '<div id="overload"><div id="load"></div></div>'
@@ -143,17 +143,17 @@ class DBAdmin_GUI {
                         . '<img class="img" id="ren'.$no.'" src="png/edit.PNG" onclick="showRename('.$no.')" /></td></tr>';
         }      
         $HTMLTable .= '</table>'
-                   .  '<input type="hidden" id="hiddenfield" name="selectedDB" value="" />'
-                   . '<div id="modalbox2" class="modalbox">'
-                   . '<div class="modalbox_inhalt">'               
-                   . '<div class="inbox">'
-                   . '<button class="close" onclick="close()">&times;</button>'
-                   . '<input type="text" name="dbname2" id="dbname2" class="db_text" placeholder="Datenbankname" />'
-                   . '<input type="submit" class="input_db" id="duplicate" name="duplicate" onclick="return confirmDuplicate('.$no.')" value="OK" />'
-                   . '<input type="submit" class="input_db" id="rename" name="rename" onclick="return confirmRename('.$no.')" value="OK" />'               
-                   . '</div>'
-                   . '</div></div>'
-                   .  '</form>';
+                    . '<input type="hidden" id="hiddenfield" name="selectedDB" value="" />'
+                    . '<div id="modalbox2" class="modalbox">'
+                    . '<div class="modalbox_inhalt">'               
+                    . '<div class="inbox">'
+                    . '<input type="submit" class="close" onclick="return closeModalBox()" value="&times" />'
+                    . '<input type="text" name="dbname2" id="dbname2" class="db_text" placeholder="Datenbankname" />'
+                    . '<input type="submit" class="input_db" id="duplicate" name="duplicate" onclick="return confirmDuplicate('.$no.')" value="OK" />'
+                    . '<input type="submit" class="input_db" id="rename" name="rename" onclick="return confirmRename('.$no.')" value="OK" />'               
+                    . '</div>'
+                    . '</div></div>'
+                    . '</form>';
         return $HTMLTable;
     }
 

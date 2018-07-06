@@ -57,11 +57,10 @@ class DBAdmin_FileReader {
         
         // Dump importieren
         $command = 'mysql --defaults-file="'.$conf.'" '.$db.' < "'.$dbpath.'"';    
-        exec($command, $out, $return);                
+        exec($command, $out, $return);
         
         if ($delete && $return === 0) {            
-            unlink($dbpath);           
-            $test = error_get_last();
+            unlink($dbpath);
         }
         return $return;
     }

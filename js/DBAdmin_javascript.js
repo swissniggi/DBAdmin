@@ -1,27 +1,21 @@
 
 /**
  * Prüft, ob ein Datenbankname eingegeben wurde.
- * @returns {Boolean|String}
+ * @param (int) version
+ * @returns {Boolean|Element.value}
  */
-function checkDbname() {
-    var dbname = document.getElementById('dbname').value;
+function checkDbname(version) {
+    if (version === 1) {
+        var dbname = document.getElementById('dbname').value;
+    } else {
+        var dbname = document.getElementById('dbname2').value;
+    }
     
     if (dbname === '') {
         alert('Kein Datenbankname gewählt.');
         return false;
     } else {
         return dbname;
-    }
-}
-
-function checkDbname2() {
-    var dbname2 = document.getElementById('dbname2').value;
-    
-    if (dbname2 === '') {
-        alert('Kein Datenbankname gewählt.');
-        return false;
-    } else {
-        return dbname2;
     }
 }
 
@@ -106,7 +100,13 @@ function confirmDelete(Id) {
     setHiddenField(Id);
     overload.style.display = 'block';
     load.style.display = 'block';
-    return confirm('Willst du die Ausgewählte Datenbank wirklich löschen?');
+    if (confirm('Willst du die Ausgewählte Datenbank wirklich löschen?')) {
+        return true;
+    } else {
+        overload.style.display = 'none';
+        load.style.display = 'none';
+        return false;
+    }
 }
 
 
@@ -120,7 +120,7 @@ function confirmDuplicate() {
     var load = document.getElementById('load');
     var overload = document.getElementById('overload');
     
-    var dbname = checkDbname2();
+    var dbname = checkDbname(2);
     
     if (dbname === hiddenfield) {
             alert('Der neue Datenbankname muss sich vom aktuellen Namen unterscheiden!');
@@ -155,7 +155,7 @@ function confirmRename() {
     var load = document.getElementById('load');
     var overload = document.getElementById('overload');
     
-    var dbname = checkDbname2();
+    var dbname = checkDbname(2);
     
     if (dbname === hiddenfield) {
             alert('Der neue Datenbankname muss sich vom aktuellen Namen unterscheiden!');
@@ -235,10 +235,12 @@ function showRename(Id) {
 
 /**
  * Modal-Box schliessen
+ * @returns {boolean}
  */
 function closeModalBox() {
     var modalbox = document.getElementById('modalbox');
     var modalbox2 = document.getElementById('modalbox2');
     modalbox.style.display = "none";
     modalbox2.style.display = "none";
+    return false;
 };
