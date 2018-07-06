@@ -1,50 +1,27 @@
-/**
- * Ändert die Hintergrundfarbe der ausgewählten Tabellenzelle
- * Schreibt den Namen der ausgewählten DB ins hiddenField
- * @param {integer} cellId
- * @returns {undefined}
- */
-function changeColor(cellId) {
-    var id = 'td'+cellId;
-    var rows = document.getElementsByClassName('tablerows');
-    var cells = document.getElementsByClassName('tablecells');
-    
-    for (var i = 0; i < rows.length; i++) {
-        if (rows[i].id === id) {
-            if (rows[i].style.backgroundColor !== 'lightpink') {
-                rows[i].style.backgroundColor = 'lightpink';
-                document.getElementById('hiddenfield').value = cells[i].innerHTML;
-            } else {
-                if (i%2 === 0) {
-                    rows[i].style.backgroundColor = 'white';
-                } else {
-                    rows[i].style.backgroundColor = 'aliceblue';
-                }
-                document.getElementById('hiddenfield').value = '';
-            }
-        } else {
-            if (i%2 === 0) {
-                rows[i].style.backgroundColor = 'white';
-            } else {
-                rows[i].style.backgroundColor = 'aliceblue';
-            }
-        }
-    }        
-}
-
 
 /**
  * Prüft, ob ein Datenbankname eingegeben wurde.
- * @returns {Boolean}
+ * @returns {Boolean|String}
  */
 function checkDbname() {
-    var dbname = document.getElementById('dbname');
+    var dbname = document.getElementById('dbname').value;
     
-    if (dbname.value === '') {
+    if (dbname === '') {
         alert('Kein Datenbankname gewählt.');
         return false;
     } else {
-        return true;
+        return dbname;
+    }
+}
+
+function checkDbname2() {
+    var dbname2 = document.getElementById('dbname2').value;
+    
+    if (dbname2 === '') {
+        alert('Kein Datenbankname gewählt.');
+        return false;
+    } else {
+        return dbname2;
     }
 }
 
@@ -63,21 +40,15 @@ function checkDump() {
     } else {
         var load = document.getElementById('load');
         var overload = document.getElementById('overload');
+        var dbname = document.getElementById('dbname').value;
         
-        if (document.getElementById('hiddenfield').value !== '') {
-            if (confirm('Willst du die Datenbank wirklich überschreiben?')) {
-                overload.style.display = 'block';
-                load.style.display = 'block';
-                return true;
-            } else {
-                return false;
-            }
-        } else if (document.getElementById('dbname').value !== '') {
+        if (dbname !== '') {
+            closeModalBox();
             overload.style.display = 'block';
             load.style.display = 'block';
             return true;
         } else {
-            alert('Du musst eine Datenbank aus der Tabelle auswählen \noder einen Datenbanknamen eingeben!');
+            alert("Kein Datenbankname eingegeben!");
             return false;
         }
     }
@@ -102,37 +73,40 @@ function checkFields() {
 
 
 /**
- * Prüft, ob das Hiddenfield einen Wert enthält
+ * Ausgewählte Datenbank in Hiddenfiel schreiben
  * --> true = Datenbank ausgewählt
+ * @param {int} cellId
  * @returns {Boolean}
  */
-function checkHiddenField() {
+function setHiddenField(cellId) {
     var hiddenField = document.getElementById('hiddenfield');
     
-    if (hiddenField.value === '') {
-        alert('Keine Datenbank ausgewählt.');
-        return false;
-    } else {
-        return true;       
+    var id = 'td'+cellId;
+    var rows = document.getElementsByClassName('tablerows');
+    var cells = document.getElementsByClassName('tablecells');
+    
+    for (var i = 0; i < rows.length; i++) {
+        if (rows[i].id === id) {
+            hiddenField.value = cells[i].innerHTML;
+            break;
+        }
     }
 }
 
 
 /**
  * Fragt nach, ob die Datenbank wirklich gelöscht werden soll
+ * @param {int} Id
  * @returns {Boolean}
  */
-function confirmDelete() {
+function confirmDelete(Id) {
     var load = document.getElementById('load');
     var overload = document.getElementById('overload');
     
-    if (checkHiddenField()) {
-        overload.style.display = 'block';
-        load.style.display = 'block';
-        return confirm('Willst du die Ausgewählte Datenbank wirklich löschen?');
-    } else {
-        return false;
-    }
+    setHiddenField(Id);
+    overload.style.display = 'block';
+    load.style.display = 'block';
+    return confirm('Willst du die Ausgewählte Datenbank wirklich löschen?');
 }
 
 
@@ -143,23 +117,23 @@ function confirmDelete() {
  */
 function confirmDuplicate() {
     var hiddenfield = document.getElementById('hiddenfield').value;
-    var dbname = document.getElementById('dbname').value;
     var load = document.getElementById('load');
     var overload = document.getElementById('overload');
     
+    var dbname = checkDbname2();
     
-    if (checkHiddenField() && checkDbname()) {
-        if (hiddenfield === dbname) {
+    if (dbname === hiddenfield) {
             alert('Der neue Datenbankname muss sich vom aktuellen Namen unterscheiden!');
             return false;
-        } else {
-            overload.style.display = 'block';
-            load.style.display = 'block';
-            return true;
-        }
-    } else {
+    } else if (!dbname) {
         return false;
+    } else {
+        overload.style.display = 'block';
+        load.style.display = 'block';
+        closeModalBox();
+        return true;
     }
+
 }
 
 
@@ -178,20 +152,93 @@ function confirmLogout() {
  */
 function confirmRename() {
     var hiddenfield = document.getElementById('hiddenfield').value;
-    var dbname = document.getElementById('dbname').value;
     var load = document.getElementById('load');
     var overload = document.getElementById('overload');
     
-    if (checkHiddenField() && checkDbname()) {
-        if (hiddenfield === dbname) {
+    var dbname = checkDbname2();
+    
+    if (dbname === hiddenfield) {
             alert('Der neue Datenbankname muss sich vom aktuellen Namen unterscheiden!');
             return false;
-        } else {
-            overload.style.display = 'block';
-            load.style.display = 'block';
-            return confirm('Willst du die Datenbank wirklich umbenennen?');
-        }
-    } else {
+    } else if (!dbname) {
         return false;
+    } else {
+        overload.style.display = 'block';
+        load.style.display = 'block';
+        closeModalBox();
+        return confirm('Willst du die Datenbank wirklich umbenennen?');
     }
 }
+
+
+/**
+ * Pop-Up zur Eingabe des Datenbanknamens anzeigen
+ * Version: duplizieren
+ * @param {int} Id
+ */
+function showDuplicate(Id) {
+    setHiddenField(Id);
+    var modalbox2 = document.getElementById('modalbox2');
+    var duplicate = document.getElementById('duplicate');
+    var name = document.getElementById('dbname2');
+    modalbox2.style.display = "block";
+    name.style = "margin-top: 40px";
+    duplicate.style = "margin-top: 40px; display: inline-block";
+}
+
+
+/**
+ * Pop-Up zur Eingabe des Datenbanknamens anzeigen
+ * Version: importieren
+ */
+function showDumps() {
+    var modalbox = document.getElementById('modalbox');
+    var insert = document.getElementById('insert');
+    var select = document.getElementById('select');
+    var checkbox = document.getElementById('checkboxlabel');
+    insert.style.display = "inline-block";
+    modalbox.style.display = "block";
+    select.style.display = "block";
+    checkbox.style.display = "inline-block";
+}
+
+
+/**
+ * Pop-Up zur Eingabe des Datenbanknamens anzeigen
+ * Version: erstellen
+ */
+function showNameField() {
+    var modalbox = document.getElementById('modalbox');
+    var create = document.getElementById('create');
+    var name = document.getElementById('dbname');
+    modalbox.style.display = "block";
+    name.style = "margin-top: 40px";
+    create.style = "margin-top: 40px; display: inline-block";
+}
+
+
+/**
+ * Pop-Up zur Eingabe des Datenbanknamens anzeigen
+ * Version: umbenennen
+ * @param {int} Id
+ */
+function showRename(Id) {
+    setHiddenField(Id);
+    var modalbox2 = document.getElementById('modalbox2');
+    var rename = document.getElementById('rename');
+    var name = document.getElementById('dbname2');
+    modalbox2.style.display = "block";
+    name.style = "margin-top: 40px";
+    rename.style = "margin-top: 40px; display: inline-block";
+}
+
+
+/**
+ * Modal-Box schliessen
+ */
+function closeModalBox() {
+    var modalbox = document.getElementById('modalbox');
+    var modalbox2 = document.getElementById('modalbox2');
+    modalbox.style.display = "none";
+    modalbox2.style.display = "none";
+};
