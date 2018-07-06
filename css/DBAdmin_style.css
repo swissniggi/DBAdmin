@@ -238,6 +238,10 @@ col{
     display: inline-block;
 }
 
+.db_text::placeholder{
+    text-align: center;
+}
+
 #select{
     width: 240px;
     height: 40px;
