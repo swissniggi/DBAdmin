@@ -234,13 +234,19 @@ function showRename(Id) {
 
 
 /**
- * Modal-Box schliessen
+ * Modal-Box schliessen und Styles zurücksetzen
  * @returns {boolean}
  */
 function closeModalBox() {
     var modalbox = document.getElementById('modalbox');
     var modalbox2 = document.getElementById('modalbox2');
+    var items = document.getElementsByClassName('nosee');
+    
     modalbox.style.display = "none";
     modalbox2.style.display = "none";
+    
+    for (var i = 0; i < items.length; i++) {
+        items[i].removeAttribute('style');
+    }
     return false;
 };
