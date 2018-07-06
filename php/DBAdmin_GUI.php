@@ -39,7 +39,7 @@ class DBAdmin_GUI {
         $fileReader = new DBAdmin_FileReader();
         $dumpList = $fileReader->getDumpList();
         
-        $dropDown = '<select id="select" name="dbselect" size="1" form="dbform">';
+        $dropDown = '<select id="select" class="nosee" name="dbselect" size="1" form="dbform">';
         $dropDown .= '<option value="">-- Dump auswählen --</option>';
         
         // pro Dumpname eine Option erstellen
@@ -76,12 +76,12 @@ class DBAdmin_GUI {
                 . '<div id="modalbox" class="modalbox">'
                 . '<div class="modalbox_inhalt">'               
                 . '<div class="inbox">'
-                . '<label class="dump_label" id="checkboxlabel"><input id="checkbox" type="checkbox" name="dumpdelete" value="1">&nbsp;Dump nach Import löschen</label>'
+                . '<label class="dump_label nosee" id="checkboxlabel"><input id="checkbox" type="checkbox" name="dumpdelete" value="1">&nbsp;Dump nach Import löschen</label>'
                 . '<input type="submit" class="close" onclick="return closeModalBox()" value="&times" />'
                 . $this->showDumpDropDown()
-                . '<input type="text" name="dbname" id="dbname" class="db_text" placeholder="Datenbankname" />'
-                . '<input type="submit" class="input_db" id="insert" name="insert" onclick="return checkDump()" value="OK" />'
-                . '<input type="submit" class="input_db" id="create" name="create" onclick="return checkDbname(1)" value="OK" />'               
+                . '<input type="text" name="dbname" id="dbname" class="db_text nosee" placeholder="Datenbankname" />'
+                . '<input type="submit" class="input_db nosee" id="insert" name="insert" onclick="return checkDump()" value="OK" />'
+                . '<input type="submit" class="input_db nosee" id="create" name="create" onclick="return checkDbname(1)" value="OK" />'               
                 . '</div>'
                 . '</div></div>'
                 . '<div id="overload"><div id="load"></div></div>'
@@ -149,8 +149,8 @@ class DBAdmin_GUI {
                     . '<div class="inbox">'
                     . '<input type="submit" class="close" onclick="return closeModalBox()" value="&times" />'
                     . '<input type="text" name="dbname2" id="dbname2" class="db_text" placeholder="Datenbankname" />'
-                    . '<input type="submit" class="input_db" id="duplicate" name="duplicate" onclick="return confirmDuplicate('.$no.')" value="OK" />'
-                    . '<input type="submit" class="input_db" id="rename" name="rename" onclick="return confirmRename('.$no.')" value="OK" />'               
+                    . '<input type="submit" class="input_db nosee" id="duplicate" name="duplicate" onclick="return confirmDuplicate('.$no.')" value="OK" />'
+                    . '<input type="submit" class="input_db nosee" id="rename" name="rename" onclick="return confirmRename('.$no.')" value="OK" />'               
                     . '</div>'
                     . '</div></div>'
                     . '</form>';
