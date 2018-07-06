@@ -37,6 +37,10 @@ class DBAdmin_Model {
     }
     
     
+    /**
+     * Speichert das aktuelle Datum nach erfolgtem Import
+     * @param string $dbname
+     */
     public function setImportDate($dbname) {
         $insertImportDate = $this->rootPdo->prepare(
                 "INSERT INTO devimport.lastimport (dbname, importdate)"
@@ -90,31 +94,13 @@ class DBAdmin_Model {
             $param = 'dev_'.$userShort.'%';
             $selectDBs->bindParam(':name', $param);
         } else {
-            $param = 'dev_%';
+            $param = 'dev\_%';
             $selectDBs->bindParam(':name', $param);
         }
         $selectDBs->execute();
         $result = $selectDBs->fetchAll();
         return $result;
-    }
-
-        
-    /**
-     * Gibt das Erstellungsdatum der Datenbank zurück
-     * @param string $dbname
-     * @return array
-     */
-    public function selectDbCreateDate($dbname) {
-        $selectDate = $this->rootPdo->prepare(
-            "SELECT MAX(DATE(last_seen)) FROM sys.x\$statement_analysis "
-            . "WHERE query LIKE 'CREATE SCHEMA%' AND query LIKE :dbname;"
-            );
-        $db = '%'.$dbname.'%';
-        $selectDate->bindParam(':dbname', $db);
-        $selectDate->execute();
-        $result = $selectDate->fetchAll();
-        return $result;
-    }
+    }        
     
     
     /**
