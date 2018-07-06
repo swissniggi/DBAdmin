@@ -49,16 +49,19 @@ class DBAdmin_FileReader {
         $file = new SplFileObject($dbpath);
         $file->seek(0);
         $content = $file->current();
+        
         if (strpos($content, 'MySQL dump') === false) {
             return 'nodump';
         }
+        $file = null;
         
         // Dump importieren
         $command = 'mysql --defaults-file="'.$conf.'" '.$db.' < "'.$dbpath.'"';    
-        exec($command, $out, $return);
+        exec($command, $out, $return);                
         
-        if ($delete && $return === 0) {
-            unlink($dbpath);
+        if ($delete && $return === 0) {            
+            unlink($dbpath);           
+            $test = error_get_last();
         }
         return $return;
     }

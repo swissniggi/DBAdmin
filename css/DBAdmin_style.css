@@ -1,5 +1,5 @@
 body{
-    background-color: lightblue;
+    background-color: #91e4fb;
     height: 100vh;
     
     font-family: arial,tahoma,helvetica,sans-serif;
@@ -8,6 +8,7 @@ body{
     align-items: center;
     justify-content: center;
     flex-direction: column;
+    overflow: hidden;
 }
 
 .form-div{
@@ -20,8 +21,10 @@ body{
 }
 
 #overload{
-    height: 100vh;
-    width: 100vh;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    left: 0;
     
     display: none;
     position: absolute;
@@ -32,11 +35,11 @@ body{
 #load{
     width: 90px;
     height: 90px;
-    margin-top: 45px;
-    margin-left: 145px;
+    margin-top: 48%;
+    margin-left: auto;
+    margin-right: auto;
     
     display: none;
-    position: absolute;
     z-index: 2;
     
     border: 20px solid lightgrey;
@@ -69,6 +72,8 @@ body{
     width: 180px;
     height: 30px;
     margin-left: 20px;
+    
+    border: 1px solid #e6e6f2;
 }
 
 .input_submit{
@@ -87,11 +92,83 @@ body{
 
 #dbform{
     margin-bottom: 0;
+    max-width: 680px;
+    width: 80%;
 }
 
-.db_table{
-    width: 621px;
+.modalbox{
+    display: none;
+    position: fixed;
+    z-index: 1;
+    
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    
+    overflow: hidden;
+    
+    background-color: rgb(0,0,0);
+    background-color: rgba(0,0,0,0.6);
+}
+
+.modalbox_inhalt{
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 20%;
+
+    border: none;
+    width: 60%;
+    height: 60%;
+    
+    background-color: transparent;
+}
+
+.close{
+    float: right;
+    padding-bottom: 4px;
+    margin-right: -40px;
+    
+    font-size: 28px;
+    font-weight: bold;
+    
+    background-color: red;
+    color: #fff;
+    border: none;
+}
+
+.close:hover{
+    cursor: pointer;
+}
+
+.inbox{
+    width: 310px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0px 40px 40px 40px;
+    background-color: steelblue;
+}
+
+.input_db{
+    width: 60px;
+    height: 40px;
+    
+    background-color: lightgreen;
+    border: none;
+    
+    margin-left: 10px;
+    margin-top: 10px;
+    position: absolute;   
+    display: none;
+}
+
+#checkboxlabel{
+    display: none;
+}
+
+.db_table{   
     margin-bottom: 40px;
+    margin-top: 5px;
     
     border-collapse: collapse;
     background-color: white;
@@ -101,27 +178,16 @@ col{
     width: 33%;
 }
 
-.db_table td:nth-child(2){
-    border-left: 2px solid black;
-    border-right: 2px solid black;
-}
-
 .db_table th{
     font-size: 20px;
     line-height: 28px;
     
     color: darkslategray;
-    background-color: lightskyblue;
-    
-    border-bottom: 2px solid darkslategray;
+    background-color: #a8c6fa;
 }
 
 .odd{
-    background-color: aliceblue;
-}
-
-.db_table tr td:hover{
-    cursor: pointer;
+    background-color: #cae4f7;
 }
 
 .db_table tr td{
@@ -130,45 +196,64 @@ col{
     text-align: center;
 }
 
-.db_label{
-    margin-left: 20px;
-    padding-left: 27px;
-    width: 380px;
-    
-    font-size: 12px;
-    
-    display: block;
+.img{
+    width: 25px;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.img:hover{
+    cursor: pointer;
+}
+
+#import{
+    height: 25px;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+#import:hover{
+    cursor: pointer;
+}
+
+#plus{
+    width: 25px;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+#plus:hover{
+    cursor: pointer;
 }
 
 .dump_label{
-    font-size: 12px;
+    font-size: 18px;
 }
 
 .db_text{
-    width: 178px;
-    margin-left: 49px; 
-}
-
-.input_db{
-    width: 180px;
-    margin-bottom: 20px;
+    width: 240px;
+    height: 40px;
+    margin-top: 10px;
     
-    font-size: 12px;
+    font-size: 18px;
+    display: inline-block;
 }
 
 #select{
-    margin-left: 20px;
-    width: 180px;
-    height: 29px;
+    width: 240px;
+    height: 40px;
     
-    font-size: 12px;
+    font-size: 18px;
     text-align: center;
+    
+    background-color: white;
+    border: 1px solid #e6e6f2;
+    
+    display: none;
 }
 
 #checkbox{
-    margin-left: 22px;
     margin-bottom: 20px;
-    vertical-align: sub;
+    margin-top: 60px;
 }
 
 /* -------------- */
@@ -184,10 +269,8 @@ col{
 }
 
 .input_logout{
-    height: 40px;
-    width: 120px;
-    
-    font-size: 18px;
+    width: 50px;    
+    border: none;
 }
 
 .input_logout:hover{

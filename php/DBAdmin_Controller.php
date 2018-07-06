@@ -21,7 +21,7 @@ class DBAdmin_Controller {
                 $this->loginUser();
 
             // Operation 'Datenbank löschen' wurde gestartet
-            } else if (isset($_POST['delete'])) {
+            } else if (isset($_POST['delete_x'])) {
                 $this->openRootDbConnection();
                 $msg = $this->deleteDatabase($_POST['selectedDB']);
                 $this->gui->showMessage($msg);
@@ -34,41 +34,28 @@ class DBAdmin_Controller {
 
             // Operation 'Datenbank importieren' wurde gestartet
             } else if (isset($_POST['insert'])) {
-                $newDb = null;          
-                // wenn DB ausgewählt wurde:
-                // Name der DB als Importziel setzen
-                if (isset($_POST['selectedDB']) && $_POST['selectedDB'] !== '') {                
-                    $newDb = $_POST['selectedDB'].'.sql';
-
-                // wenn DB-Name eingegeben wurde:
-                // DB erstellen
-                } else if (isset($_POST['dbname']) && $_POST['dbname'] !== '') {
-                    $newDb = $_POST['dbname'].'.sql';
-                    $this->openRootDbConnection();
-                    $return = $this->createDatabase($_POST['dbname']);
-                    // Vorgang abbrechen falls Datenbank bereits existiert
-                    // oder CREATE fehlgeschlagen ist
-                    if ($return === 'exists') {
-                        $this->gui->showMessage('exists');
-                        exit();
-                    } else if ($return === false) {
-                        $this->gui->showMessage(false);
-                    }           
-                }
+                $newDb = null;
+                // DB erstellen falls nicht vorhanden
+                $newDb = $_POST['dbname'].'.sql';
+                $this->openRootDbConnection();
+                $this->createDatabase($_POST['dbname']);         
                 // Dump importieren
                 $msg = $this->importDatabase($_POST['dbselect'], $newDb, isset($_POST['dumpdelete']));
+                if (!!$msg) {
+                    $this->model->setImportDate($_POST['dbname']);
+                }
                 $this->gui->showMessage($msg);
 
             // Operation 'Datenbank umbenennen' wurde gestartet
             } else if (isset($_POST['rename'])) {
                 $this->openRootDbConnection();
-                $msg = $this->renameDatabase($_POST['dbname'], $_POST['selectedDB']);
+                $msg = $this->renameDatabase($_POST['dbname2'], $_POST['selectedDB']);
                 $this->gui->showMessage($msg);
 
             // Operation 'Datenbank duplizieren' wurde gestartet
             } else if (isset($_POST['duplicate'])) {
                 $this->openRootDbConnection();
-                $msg = $this->duplicateDatabase($_POST['dbname'], $_POST['selectedDB']);
+                $msg = $this->duplicateDatabase($_POST['dbname2'], $_POST['selectedDB']);
                 $this->gui->showMessage($msg);
 
             // Logoutfuntkion aufrufen
@@ -203,13 +190,14 @@ class DBAdmin_Controller {
             $msg = $this->importDatabase(null, $newDbFile, true);
         } else {
             return false;
-        }
+        }                
         
-        $this->model->closeDbConnection($this->model->rootPdo);
-        
-        if (!$msg) {
+        if (!$msg) {            
+            $this->model->closeDbConnection($this->model->rootPdo);
             return false;
         } else {
+            $this->model->setImportDate($newDbname);
+            $this->model->closeDbConnection($this->model->rootPdo);
             return 'duplicateok';
         }
     }

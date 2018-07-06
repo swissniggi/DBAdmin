@@ -21,26 +21,10 @@ class DBAdmin_GUI {
             // GUI der Hauptansicht erstellen
             case 'main':  
                 echo '<form class="form_header" method="post" action="">';
-                echo '<input type="submit" class="input_logout" id="logout" name="logout" value="Logout" onclick="return confirmLogout()">';
+                echo '<input type="image" class="input_logout" id="logout" name="logout" src="png/logout.PNG" onclick="return confirmLogout()">';
                 echo '</form>';                          
                 // HTML-Tabelle generieren
-                echo $this->showHTMLTable();          
-                echo '<div class="form-div">';
-                echo '<div id="overload"><div id="load"></div></div>';
-                echo '<form method="post" id="dbform" action="">';
-                echo '<input type="hidden" id="hiddenfield" name="selectedDB" value="">';
-                echo '<input type="submit" class="input_submit input_db" name="create" value="Datenbank erstellen" onclick="return checkDbname()" />';
-                echo '<input type="submit" class="input_submit input_db" name="delete" value="Datenbank löschen" onclick="return confirmDelete()" />';                          
-                echo '<label class="label db_label">neuer Datenbankname:<input type="text" class="input_text db_text" id="dbname" name="dbname" /></label>';
-                echo '<input type="submit" class="input_submit input_db" name="rename" value="Datenbank umbenennen" onclick="return confirmRename()" />';
-                echo '<input type="submit" class="input_submit input_db" name="duplicate" value="Datenbank duplizieren" onclick="return confirmDuplicate()" />';
-                echo '<input type="submit" class="input_submit input_db" name="insert" value="Dump importieren" onclick="return checkDump()" />';
-                // Drop-Down Menu generieren
-                echo $this->showDumpDropDown();
-                echo '<br />';
-                echo '<label class="dump_label"><input id="checkbox" type="checkbox" name="dumpdelete" value="1">&nbsp;Dump nach Import löschen</label>';
-                echo '</form>';
-                echo '</div>';
+                echo $this->showHTMLTable();
                 break;
         }
     }
@@ -84,8 +68,25 @@ class DBAdmin_GUI {
         // alle Datenbanknamen abfragen, für die der Benutzer Berechtigung hat
         $databases = $model->selectDatabases($userShort, $root);
         
-        // Header der HTML-Tabelle erstellen
-        $HTMLTable = '<table class="db_table">'
+        
+        $HTMLTable = '<form id="dbform" method="post" action="">'
+                // Erstell- und Importbutton inkl. Modalbox
+                . '<img id="plus" src="png/plus.PNG" onclick="showNameField()"/>'
+                . '<img id="import" src="png/import.PNG" onclick="showDumps()"></img>'
+                . '<div id="modalbox" class="modalbox">'
+                . '<div class="modalbox_inhalt">'               
+                . '<div class="inbox">'
+                . '<label class="dump_label" id="checkboxlabel"><input id="checkbox" type="checkbox" name="dumpdelete" value="1">&nbsp;Dump nach Import löschen</label>'
+                . '<button class="close" onclick="close()">&times;</button>'
+                . $this->showDumpDropDown()
+                . '<input type="text" name="dbname" id="dbname" class="db_text" placeholder="Datenbankname" />'
+                . '<input type="submit" class="input_db" id="insert" name="insert" onclick="return checkDump()" value="OK" />'
+                . '<input type="submit" class="input_db" id="create" name="create" onclick="return checkDbname()" value="OK" />'               
+                . '</div>'
+                . '</div></div>'
+                . '<div id="overload"><div id="load"></div></div>'
+                // Header der HTML-Tabelle erstellen
+                . '<table class="db_table">'
                 . '<colgroup>'
                 . '<col class="col">'
                 . '<col class="col">'
@@ -93,8 +94,9 @@ class DBAdmin_GUI {
                 . '</colgroup>'
                 . '<tr>'
                 . '<th>Datenbankname</th>'
-                . '<th>Zuletzt geändert</th>'
                 . '<th>Importdatum</th>'
+                . '<th>Zuletzt geändert</th>'                
+                . '<th></th>'
                 . '</tr>';
         
         $change = [];
@@ -106,10 +108,11 @@ class DBAdmin_GUI {
             
             if ($date[0][0] === null) {
                 // Erstelldatum der Datenbank auslesen
-                $date = $model->selectDbCreateDate($databases[$d]['SCHEMA_NAME']);
+                $change[] = '--';
+            } else {
+                $change[] = date("d.m.Y", strtotime($date[0][0]));
             }
             
-            $change[] = date("d.m.Y", strtotime($date[0][0]));
             // Datum des letzten Imports ermitteln
             $date = $model->selectImportDate($databases[$d]['SCHEMA_NAME']);
             
@@ -131,12 +134,26 @@ class DBAdmin_GUI {
                 $class .= ' odd';
             }
             
-            $HTMLTable .= '<tr  id="td'.$no.'" class="'.$class.'" onclick="changeColor('.$no.')">'
+            $HTMLTable .= '<tr  id="td'.$no.'" class="'.$class.'">'
                         . '<td class="tablecells">'.$databases[$i]['SCHEMA_NAME'].'</td>'
-                        . '<td id="db_date">'.$change[$i].'</td>'
-                        . '<td>'.$import[$i].'</tr>';
+                        . '<td>'.$import[$i].'</td>'
+                        . '<td id="db_date">'.$change[$i].'</td>'                        
+                        . '<td><input type="image" class="img" id="del'.$no.'" src="png/trash.PNG" name="delete" onclick="return confirmDelete('.$no.')" />'
+                        . '<img class="img" id="dup'.$no.'" src="png/duplicate.PNG" onclick="showDuplicate('.$no.')" />'
+                        . '<img class="img" id="ren'.$no.'" src="png/edit.PNG" onclick="showRename('.$no.')" /></td></tr>';
         }      
-        $HTMLTable .= '</table>';
+        $HTMLTable .= '</table>'
+                   .  '<input type="hidden" id="hiddenfield" name="selectedDB" value="" />'
+                   . '<div id="modalbox2" class="modalbox">'
+                   . '<div class="modalbox_inhalt">'               
+                   . '<div class="inbox">'
+                   . '<button class="close" onclick="close()">&times;</button>'
+                   . '<input type="text" name="dbname2" id="dbname2" class="db_text" placeholder="Datenbankname" />'
+                   . '<input type="submit" class="input_db" id="duplicate" name="duplicate" onclick="return confirmDuplicate('.$no.')" value="OK" />'
+                   . '<input type="submit" class="input_db" id="rename" name="rename" onclick="return confirmRename('.$no.')" value="OK" />'               
+                   . '</div>'
+                   . '</div></div>'
+                   .  '</form>';
         return $HTMLTable;
     }
 

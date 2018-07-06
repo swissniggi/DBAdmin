@@ -37,6 +37,16 @@ class DBAdmin_Model {
     }
     
     
+    public function setImportDate($dbname) {
+        $insertImportDate = $this->rootPdo->prepare(
+                "INSERT INTO devimport.lastimport (dbname, importdate)"
+                . "VALUES (:dbname, DATE(NOW()));"
+                );
+        $insertImportDate->bindParam(':dbname', $dbname);
+        $insertImportDate->execute();
+    }
+    
+    
     /**
      * Erstellt eine Verbindung zum MySQL-Server
      * @param string $username
@@ -80,7 +90,7 @@ class DBAdmin_Model {
             $param = 'dev_'.$userShort.'%';
             $selectDBs->bindParam(':name', $param);
         } else {
-            $param = 'dev%';
+            $param = 'dev_%';
             $selectDBs->bindParam(':name', $param);
         }
         $selectDBs->execute();
@@ -114,10 +124,8 @@ class DBAdmin_Model {
      */
     public function selectImportDate($dbname) {
         $selectImport = $this->rootPdo->prepare(
-            "SELECT MAX(last_seen) FROM sys.x\$statement_analysis "
-            . "WHERE query LIKE 'INSERT%' "
-            . "AND query LIKE '%/*%*/%'"
-            . "AND db = :dbname;"
+            "SELECT MAX(importdate) FROM devimport.lastimport "
+            . "WHERE dbname = :dbname;"
             );
         $selectImport->bindParam(':dbname', $dbname);
         $selectImport->execute();
@@ -133,7 +141,7 @@ class DBAdmin_Model {
      */
     public function selectLastUpdateDate($dbname) {
         $selectUpdate = $this->rootPdo->prepare(
-            "SELECT IF(MAX(DATE(UPDATE_TIME)) IS NULL, MAX(DATE(CREATE_TIME)), MAX(DATE(UPDATE_TIME)))"
+            "SELECT MAX(DATE(UPDATE_TIME)) "
             ."FROM information_schema.TABLES WHERE TABLE_SCHEMA = :dbname;"
             );
         $selectUpdate->bindParam(':dbname', $dbname);
