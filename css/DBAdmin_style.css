@@ -96,6 +96,7 @@ body{
     width: 80%;
 }
 
+/* von www.w3schools.com/howto/howto_css_modals.asp */
 .modalbox{
     display: none;
     position: fixed;
@@ -112,6 +113,7 @@ body{
     background-color: rgba(0,0,0,0.6);
 }
 
+/* von www.w3schools.com/howto/howto_css_modals.asp */
 .modalbox_inhalt{
     margin-left: auto;
     margin-right: auto;
@@ -146,6 +148,7 @@ body{
     margin-left: auto;
     margin-right: auto;
     padding: 0px 40px 40px 40px;
+    
     background-color: steelblue;
 }
 
