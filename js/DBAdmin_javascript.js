@@ -38,8 +38,8 @@ function checkDump() {
         
         if (dbname !== '') {
             closeModalBox();
-            overload.style.display = 'block';
-            load.style.display = 'block';
+            overload.style.display = 'flex';
+            load.style.display = 'flex';
             return true;
         } else {
             alert("Kein Datenbankname eingegeben!");
@@ -98,8 +98,8 @@ function confirmDelete(Id) {
     var overload = document.getElementById('overload');
     
     setHiddenField(Id);
-    overload.style.display = 'block';
-    load.style.display = 'block';
+    overload.style.display = 'flex';
+    load.style.display = 'flex';
     if (confirm('Willst du die Ausgewählte Datenbank wirklich löschen?')) {
         return true;
     } else {
@@ -128,8 +128,8 @@ function confirmDuplicate() {
     } else if (!dbname) {
         return false;
     } else {
-        overload.style.display = 'block';
-        load.style.display = 'block';
+        overload.style.display = 'flex';
+        load.style.display = 'flex';
         closeModalBox();
         return true;
     }
@@ -163,8 +163,8 @@ function confirmRename() {
     } else if (!dbname) {
         return false;
     } else {
-        overload.style.display = 'block';
-        load.style.display = 'block';
+        overload.style.display = 'flex';
+        load.style.display = 'flex';
         closeModalBox();
         return confirm('Willst du die Datenbank wirklich umbenennen?');
     }

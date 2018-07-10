@@ -11,6 +11,10 @@ body{
     overflow: hidden;
 }
 
+/* -------------- */
+/* Login */
+/* -------------- */
+
 .form-div{
     width: 400px;
 
@@ -19,45 +23,6 @@ body{
     
     border: 2px black solid;
 }
-
-#overload{
-    height: 100%;
-    width: 100%;
-    top: 0;
-    left: 0;
-    
-    display: none;
-    position: absolute;
-    z-index: 1;
-}
-
-/* von www.w3schools.com/howto/howto_css_loader.asp */
-#load{
-    width: 90px;
-    height: 90px;
-    margin-top: 48%;
-    margin-left: auto;
-    margin-right: auto;
-    
-    display: none;
-    z-index: 2;
-    
-    border: 20px solid lightgrey;
-    border-top: 20px solid lightgreen;
-    border-radius: 50%;
-    
-    animation: spin 2s linear infinite;
-}
-
-/* von www.w3schools.com/howto/howto_css_loader.asp */
-@keyframes spin{
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-/* -------------- */
-/* Login */
-/* -------------- */
 
 .label{
     width: 160px;
@@ -86,14 +51,122 @@ body{
     cursor: pointer;
 }
 
+
 /* -------------- */
 /* Hauptansicht */
 /* -------------- */
+
+/* Tabelle */
+
+.col{
+    width: 30%;
+}
+
+.db_table{
+    width: 100%;
+    margin-bottom: 40px;
+    margin-top: 5px;
+    
+    border-collapse: collapse;
+    background-color: white;
+}
+
+.db_table th{
+    font-size: 20px;
+    line-height: 28px;
+    
+    color: darkslategray;
+    background-color: #a8c6fa;
+}
+
+.db_table tr td{
+    font-size: 18px;
+    line-height: 26px;
+    text-align: center;
+}
+
+.db_text{
+    width: 240px;
+    height: 40px;
+    margin-top: 10px;
+    
+    font-size: 18px;
+    display: inline-block;
+}
+
+.db_text::placeholder{
+    text-align: center;
+}
+
+.odd{
+    background-color: #cae4f7;
+}
 
 #dbform{
     margin-bottom: 0;
     max-width: 680px;
     width: 80%;
+}
+
+/* Modal-Box */
+
+.close{
+    float: right;
+    padding-bottom: 4px;
+    margin-right: -50px;
+    
+    font-size: 28px;
+    font-weight: bold;
+    
+    background-color: red;
+    color: #fff;
+    border: none;
+}
+
+.close:hover{
+    cursor: pointer;
+}
+
+.dump_label{
+    font-size: 18px;
+}
+
+.img{
+    width: 25px;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.img:hover{
+    cursor: pointer;
+}
+
+.input_db{
+    width: 60px;
+    height: 40px;
+    
+    background-color: lightgreen;
+    border: none;
+    
+    margin-left: 10px;
+    margin-top: 10px;
+    position: absolute;   
+    display: none;
+}
+
+.inbox{
+    width: 320px;
+    margin-left: auto;
+    margin-right: auto;
+    
+    top: 50%;
+    position: relative;
+    transform: translateY(-50%);
+    
+    padding: 0px 50px 50px 50px;
+    
+    background-color: steelblue;
+    border: 2px solid black;
 }
 
 /* von www.w3schools.com/howto/howto_css_modals.asp */
@@ -129,93 +202,13 @@ body{
     background-color: transparent;
 }
 
-.inbox{
-    width: 320px;
-    margin-left: auto;
-    margin-right: auto;
-    
-    top: 50%;
-    position: relative;
-    transform: translateY(-50%);
-    
-    padding: 0px 50px 50px 50px;
-    
-    background-color: steelblue;
-    border: 2px solid black;
-}
-
-.close{
-    float: right;
-    padding-bottom: 4px;
-    margin-right: -50px;
-    
-    font-size: 28px;
-    font-weight: bold;
-    
-    background-color: red;
-    color: #fff;
-    border: none;
-}
-
-.close:hover{
-    cursor: pointer;
-}
-
-.input_db{
-    width: 60px;
-    height: 40px;
-    
-    background-color: lightgreen;
-    border: none;
-    
-    margin-left: 10px;
-    margin-top: 10px;
-    position: absolute;   
-    display: none;
+#checkbox{
+    margin-bottom: 20px;
+    margin-top: 60px;
 }
 
 #checkboxlabel{
     display: none;
-}
-
-.db_table{   
-    margin-bottom: 40px;
-    margin-top: 5px;
-    
-    border-collapse: collapse;
-    background-color: white;
-}
-
-col{
-    width: 33%;
-}
-
-.db_table th{
-    font-size: 20px;
-    line-height: 28px;
-    
-    color: darkslategray;
-    background-color: #a8c6fa;
-}
-
-.odd{
-    background-color: #cae4f7;
-}
-
-.db_table tr td{
-    font-size: 18px;
-    line-height: 26px;
-    text-align: center;
-}
-
-.img{
-    width: 25px;
-    margin-left: 5px;
-    margin-right: 5px;
-}
-
-.img:hover{
-    cursor: pointer;
 }
 
 #import{
@@ -233,25 +226,9 @@ col{
     margin-left: 5px;
     margin-right: 5px;
 }
+
 #plus:hover{
     cursor: pointer;
-}
-
-.dump_label{
-    font-size: 18px;
-}
-
-.db_text{
-    width: 240px;
-    height: 40px;
-    margin-top: 10px;
-    
-    font-size: 18px;
-    display: inline-block;
-}
-
-.db_text::placeholder{
-    text-align: center;
 }
 
 #select{
@@ -267,10 +244,43 @@ col{
     display: none;
 }
 
-#checkbox{
-    margin-bottom: 20px;
-    margin-top: 60px;
+/* Loader */
+
+/* von www.w3schools.com/howto/howto_css_loader.asp */
+#load{
+    width: 80px;
+    height: 80px;
+    margin-left: auto;
+    margin-right: auto;   
+    
+    display: none;
+    z-index: 2;
+    
+    border: 20px solid lightgrey;
+    border-top: 20px solid lightskyblue;
+    border-radius: 50%;
+    
+    animation: spin 2s linear infinite;
 }
+
+/* von www.w3schools.com/howto/howto_css_loader.asp */
+@keyframes spin{
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+#overload{
+    height: 100%;
+    width: 100%;
+    top: 0;
+    left: 0;
+    
+    align-items: center;
+    display: none;
+    position: absolute;
+    z-index: 1;
+}
+
 
 /* -------------- */
 /* Logout */

@@ -41,7 +41,7 @@ class DBAdmin_Model {
      * Speichert das aktuelle Datum nach erfolgtem Import
      * @param string $dbname
      */
-    public function setImportDate($dbname) {
+    public function insertImportDate($dbname) {
         $insertImportDate = $this->rootPdo->prepare(
                 "INSERT INTO devimport.lastimport (dbname, importdate)"
                 . "VALUES (:dbname, DATE(NOW()));"

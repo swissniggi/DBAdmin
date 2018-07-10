@@ -87,11 +87,9 @@ class DBAdmin_GUI {
                 . '<div id="overload"><div id="load"></div></div>'
                 // Header der HTML-Tabelle erstellen
                 . '<table class="db_table">'
-                . '<colgroup>'
                 . '<col class="col">'
                 . '<col class="col">'
                 . '<col class="col">'
-                . '</colgroup>'
                 . '<tr>'
                 . '<th>Datenbankname</th>'
                 . '<th>Importdatum</th>'
