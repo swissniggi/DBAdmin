@@ -117,7 +117,10 @@ body{
 .modalbox_inhalt{
     margin-left: auto;
     margin-right: auto;
-    margin-top: 20%;
+    
+    top: 50%;
+    position: relative;
+    transform: translateY(-50%);
 
     border: none;
     width: 60%;
@@ -126,10 +129,25 @@ body{
     background-color: transparent;
 }
 
+.inbox{
+    width: 320px;
+    margin-left: auto;
+    margin-right: auto;
+    
+    top: 50%;
+    position: relative;
+    transform: translateY(-50%);
+    
+    padding: 0px 50px 50px 50px;
+    
+    background-color: steelblue;
+    border: 2px solid black;
+}
+
 .close{
     float: right;
     padding-bottom: 4px;
-    margin-right: -40px;
+    margin-right: -50px;
     
     font-size: 28px;
     font-weight: bold;
@@ -141,15 +159,6 @@ body{
 
 .close:hover{
     cursor: pointer;
-}
-
-.inbox{
-    width: 310px;
-    margin-left: auto;
-    margin-right: auto;
-    padding: 0px 40px 40px 40px;
-    
-    background-color: steelblue;
 }
 
 .input_db{

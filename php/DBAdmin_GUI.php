@@ -125,6 +125,7 @@ class DBAdmin_GUI {
         }
         $model->closeDbConnection($model->rootPdo);
         
+        $no = '';
         // pro Datenbankname eine Zeile in die Tabelle einfügen
         for ($i = 0; $i < count($databases); $i++) {
             $no = $i+1;
