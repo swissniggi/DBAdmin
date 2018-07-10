@@ -42,7 +42,7 @@ class DBAdmin_Controller {
                 // Dump importieren
                 $msg = $this->importDatabase($_POST['dbselect'], $newDb, isset($_POST['dumpdelete']));
                 if (!!$msg) {
-                    $this->model->setImportDate($_POST['dbname']);
+                    $this->model->insertImportDate($_POST['dbname']);
                 }
                 $this->gui->showMessage($msg);
 
