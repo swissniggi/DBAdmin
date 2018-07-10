@@ -182,8 +182,8 @@ function showDuplicate(Id) {
     var duplicate = document.getElementById('duplicate');
     var name = document.getElementById('dbname2');
     modalbox2.style.display = "block";
-    name.style = "margin-top: 40px";
-    duplicate.style = "margin-top: 40px; display: inline-block";
+    name.style = "margin-top: 50px";
+    duplicate.style = "margin-top: 50px; display: inline-block";
 }
 
 
@@ -212,8 +212,8 @@ function showNameField() {
     var create = document.getElementById('create');
     var name = document.getElementById('dbname');
     modalbox.style.display = "block";
-    name.style = "margin-top: 40px";
-    create.style = "margin-top: 40px; display: inline-block";
+    name.style = "margin-top: 50px";
+    create.style = "margin-top: 50px; display: inline-block";
 }
 
 
@@ -228,8 +228,8 @@ function showRename(Id) {
     var rename = document.getElementById('rename');
     var name = document.getElementById('dbname2');
     modalbox2.style.display = "block";
-    name.style = "margin-top: 40px";
-    rename.style = "margin-top: 40px; display: inline-block";
+    name.style = "margin-top: 50px";
+    rename.style = "margin-top: 50px; display: inline-block";
 }
 
 
