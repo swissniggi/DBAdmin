@@ -29,7 +29,7 @@ class DBAdmin_FileReader {
      * @param string|null $oldDbname
      * @param string|null $newDbname
      * @param boolean $delete
-     * @return integer
+     * @return string|integer
      */
     public function executeDump($oldDbname, $newDbname, $delete) {
         // Namen der Zieldatenbank definieren
