@@ -1,6 +1,6 @@
 # DBAdmin
-Der Order dumps/ wird ignoriert, weil er zu grosse Dateien enthält.
+Folder dumps/ is ignored: contains Files to big to commit
 
-Der Ordner nbproject/ wird ignoriert, weil er nur für NetBeans relevant ist.
+Folder nbproject/ is ignored: only relevant for NetBeans
 
-#erstellt am 03.07.2018
+#Project from trial IPA, June 2018
