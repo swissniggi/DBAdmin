@@ -73,8 +73,7 @@ class DBAdmin_GUI {
                 // Erstell- und Importbutton inkl. Modalbox
                 . '<img id="plus" src="png/plus.PNG" onclick="showNameField()"/>'
                 . '<img id="import" src="png/import.PNG" onclick="showDumps()"></img>'
-                . '<div id="modalbox" class="modalbox">'
-                . '<div class="modalbox_inhalt">'               
+                . '<div id="modalbox" class="modalbox">'               
                 . '<div class="inbox">'
                 . '<label class="dump_label nosee" id="checkboxlabel"><input id="checkbox" type="checkbox" name="dumpdelete" value="1">&nbsp;Dump nach Import löschen</label>'
                 . '<input type="submit" class="close" onclick="return closeModalBox()" value="&times" />'
@@ -82,7 +81,6 @@ class DBAdmin_GUI {
                 . '<input type="text" name="dbname" id="dbname" class="db_text nosee" placeholder="Datenbankname" />'
                 . '<input type="submit" class="input_db nosee" id="insert" name="insert" onclick="return checkDump()" value="OK" />'
                 . '<input type="submit" class="input_db nosee" id="create" name="create" onclick="return checkDbname(1)" value="OK" />'               
-                . '</div>'
                 . '</div></div>'
                 . '<div id="overload"><div id="load"></div></div>'
                 // Header der HTML-Tabelle erstellen
@@ -143,14 +141,12 @@ class DBAdmin_GUI {
         }      
         $HTMLTable .= '</table>'
                     . '<input type="hidden" id="hiddenfield" name="selectedDB" value="" />'
-                    . '<div id="modalbox2" class="modalbox">'
-                    . '<div class="modalbox_inhalt">'               
+                    . '<div id="modalbox2" class="modalbox">'             
                     . '<div class="inbox">'
                     . '<input type="submit" class="close" onclick="return closeModalBox()" value="&times" />'
                     . '<input type="text" name="dbname2" id="dbname2" class="db_text" placeholder="Datenbankname" />'
                     . '<input type="submit" class="input_db nosee" id="duplicate" name="duplicate" onclick="return confirmDuplicate('.$no.')" value="OK" />'
                     . '<input type="submit" class="input_db nosee" id="rename" name="rename" onclick="return confirmRename('.$no.')" value="OK" />'               
-                    . '</div>'
                     . '</div></div>'
                     . '</form>';
         return $HTMLTable;
