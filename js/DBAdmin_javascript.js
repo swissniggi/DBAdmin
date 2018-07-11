@@ -70,7 +70,6 @@ function checkFields() {
  * Ausgewählte Datenbank in Hiddenfiel schreiben
  * --> true = Datenbank ausgewählt
  * @param {int} cellId
- * @returns {Boolean}
  */
 function setHiddenField(cellId) {
     var hiddenField = document.getElementById('hiddenfield');

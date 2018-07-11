@@ -155,7 +155,7 @@ class DBAdmin_Model {
     
     /**
      * Liest alle MySQL-Benutzer aus
-     * @return type array
+     * @return array
      */
     public function selectUsers() {
         $selectUsers = $this->rootPdo->prepare(
