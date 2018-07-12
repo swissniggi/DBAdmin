@@ -81,14 +81,21 @@ class DBAdmin_Model {
     
     
     /**
-     * Liest alle Datenbanken aus, auf die der Benutzer zugriff hat
+     * Liest alle Daten für die HTML-Tabelle aus
      * @param string $userShort
      * @param boolean $root
      * @return array
      */
     public function selectDatabases($userShort, $root) {       
         $selectDBs = $this->rootPdo->prepare(
-            "SELECT SCHEMA_NAME FROM information_schema.SCHEMATA WHERE SCHEMA_NAME LIKE :name;"
+            "SELECT is_SCHE.SCHEMA_NAME AS dbname, "
+                . "COALESCE(MAX(dev_imp.importdate), '--') AS importdate, "
+                . "COALESCE(MAX(DATE(is_TAB.UPDATE_TIME)), '--') AS changedate "
+                . "FROM information_schema.SCHEMATA AS is_SCHE "
+                . "LEFT JOIN devimport.lastimport AS dev_imp ON is_SCHE.SCHEMA_NAME = dev_imp.dbname "
+                . "LEFT JOIN information_schema.TABLES AS is_TAB ON is_SCHE.SCHEMA_NAME = is_TAB.TABLE_SCHEMA "
+                . "WHERE SCHEMA_NAME LIKE :name "
+                . "GROUP BY is_SCHE.SCHEMA_NAME;"
             );
         if (!$root) {
             $param = 'dev_'.$userShort.'%';
@@ -99,40 +106,6 @@ class DBAdmin_Model {
         }
         $selectDBs->execute();
         $result = $selectDBs->fetchAll();
-        return $result;
-    }        
-    
-    
-    /**
-     * Gibt das Datum des Datenimports zurück
-     * @param string $dbname
-     * @return array
-     */
-    public function selectImportDate($dbname) {
-        $selectImport = $this->rootPdo->prepare(
-            "SELECT MAX(importdate) FROM devimport.lastimport "
-            . "WHERE dbname = :dbname;"
-            );
-        $selectImport->bindParam(':dbname', $dbname);
-        $selectImport->execute();
-        $result = $selectImport->fetchAll();
-        return $result;
-    }
-    
-    
-    /**
-     * Gibt das Datum der letzten Änderung zurück
-     * @param string $dbname
-     * @return array
-     */
-    public function selectLastUpdateDate($dbname) {
-        $selectUpdate = $this->rootPdo->prepare(
-            "SELECT MAX(DATE(UPDATE_TIME)) "
-            ."FROM information_schema.TABLES WHERE TABLE_SCHEMA = :dbname;"
-            );
-        $selectUpdate->bindParam(':dbname', $dbname);
-        $selectUpdate->execute();
-        $result = $selectUpdate->fetchAll();
         return $result;
     }     
     
