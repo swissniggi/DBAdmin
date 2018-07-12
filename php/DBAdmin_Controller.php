@@ -59,7 +59,7 @@ class DBAdmin_Controller {
                 $this->gui->showMessage($msg);
 
             // Logoutfuntkion aufrufen
-            } else if (isset($_POST['logout'])) {
+            } else if (isset($_POST['logout_x'])) {
                 $this->logoutUser();
 
             // GUI der Hauptansicht neu laden
