@@ -130,7 +130,6 @@ function confirmDuplicate() {
         closeModalBox();
         return true;
     }
-
 }
 
 
@@ -199,9 +198,13 @@ function showDuplicate(Id) {
     var modalbox2 = document.getElementById('modalbox2');
     var duplicate = document.getElementById('duplicate');
     var name = document.getElementById('dbname2');
+    
     modalbox2.style.display = "block";
-    name.style = "margin-top: 50px";
+    name.style = "margin-top: 50px";    
     duplicate.style = "margin-top: 50px; display: inline-block";
+    
+    name.focus();
+    name.selectionStart += name.value.length;
 }
 
 
@@ -214,10 +217,15 @@ function showDumps() {
     var insert = document.getElementById('insert');
     var select = document.getElementById('select');
     var checkbox = document.getElementById('checkboxlabel');
+    var name = document.getElementById('dbname');
+    
     insert.style.display = "inline-block";
     modalbox.style.display = "block";
     select.style.display = "block";
     checkbox.style.display = "inline-block";
+    
+    name.focus();
+    name.selectionStart += name.value.length;
 }
 
 
@@ -229,9 +237,13 @@ function showNameField() {
     var modalbox = document.getElementById('modalbox');
     var create = document.getElementById('create');
     var name = document.getElementById('dbname');
+    
     modalbox.style.display = "block";
     name.style = "margin-top: 50px";
     create.style = "margin-top: 50px; display: inline-block";
+    
+    name.focus();
+    name.selectionStart += name.value.length;
 }
 
 
@@ -245,7 +257,11 @@ function showRename(Id) {
     var modalbox2 = document.getElementById('modalbox2');
     var rename = document.getElementById('rename');
     var name = document.getElementById('dbname2');
+    
     modalbox2.style.display = "block";
     name.style = "margin-top: 50px";
     rename.style = "margin-top: 50px; display: inline-block";
+    
+    name.focus();
+    name.selectionStart += name.value.length;
 }

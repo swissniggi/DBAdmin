@@ -55,7 +55,7 @@ class DBAdmin_GUI {
      * Erstellt die HTML-Tabelle
      * @return string
      */
-    private function showHTMLTable() {
+    public function showHTMLTable() {
         $userShort = $_SESSION['userShort'];
         $root = $_SESSION['root'];
         require_once 'DBAdmin_Model.php';
@@ -65,10 +65,10 @@ class DBAdmin_GUI {
         $conf = DBAdmin_Controller::_setDbData();
         $model->rootPdo = $model->openDbConnection($conf["host"], $conf["user"], $conf["password"]);
         
-        // alle Datenbanknamen abfragen, für die der Benutzer Berechtigung hat
+        // alle Daten für die der HTML-Tabelle abfragen
         $databases = $model->selectDatabases($userShort, $root);
         
-        
+        $isLine = $root === false ? '_' : '';
         $HTMLTable = '<form id="dbform" method="post" action="">'
                 // Erstell- und Importbutton inkl. Modalbox
                 . '<img id="plus" src="png/plus.PNG" onclick="showNameField()"/>'
@@ -78,7 +78,7 @@ class DBAdmin_GUI {
                 . '<label class="dump_label nosee" id="checkboxlabel"><input id="checkbox" type="checkbox" name="dumpdelete" value="1">&nbsp;Dump nach Import löschen</label>'
                 . '<input type="submit" class="close" onclick="return closeModalBox()" value="&times" />'
                 . $this->showDumpDropDown()
-                . '<input type="text" name="dbname" id="dbname" class="db_text nosee" placeholder="Datenbankname" />'
+                . '<input type="text" name="dbname" id="dbname" class="db_text nosee" value="dev_'.$userShort.$isLine.'" />'
                 . '<input type="submit" class="input_db nosee" id="insert" name="insert" onclick="return checkDump()" value="OK" />'
                 . '<input type="submit" class="input_db nosee" id="create" name="create" onclick="return checkDbname(1)" value="OK" />'               
                 . '</div></div>'
@@ -93,36 +93,12 @@ class DBAdmin_GUI {
                 . '<th>Importdatum</th>'
                 . '<th>Zuletzt geändert</th>'                
                 . '<th></th>'
-                . '</tr>';
-        
-        $change = [];
-        $import = [];
-        
-        for ($d = 0; $d < count($databases); $d++) {
-            // Datum der letzten Änderung auslesen
-            $date = $model->selectLastUpdateDate($databases[$d]['SCHEMA_NAME']);
-            
-            if ($date[0][0] === null) {
-                // Erstelldatum der Datenbank auslesen
-                $change[] = '--';
-            } else {
-                $change[] = date("d.m.Y", strtotime($date[0][0]));
-            }
-            
-            // Datum des letzten Imports ermitteln
-            $date = $model->selectImportDate($databases[$d]['SCHEMA_NAME']);
-            
-            if ($date[0][0] === null) {
-                $import[] = '--';
-            } else {
-                $import[] = date("d.m.Y", strtotime($date[0][0]));
-            }
-            
-        }
+                . '</tr>';        
+                
         $model->closeDbConnection($model->rootPdo);
         
         $no = '';
-        // pro Datenbankname eine Zeile in die Tabelle einfügen
+        // pro Datensatz eine Zeile in die Tabelle einfügen
         for ($i = 0; $i < count($databases); $i++) {
             $no = $i+1;
             $class = 'tablerows';
@@ -132,9 +108,9 @@ class DBAdmin_GUI {
             }
             
             $HTMLTable .= '<tr  id="td'.$no.'" class="'.$class.'">'
-                        . '<td class="tablecells">'.$databases[$i]['SCHEMA_NAME'].'</td>'
-                        . '<td>'.$import[$i].'</td>'
-                        . '<td id="db_date">'.$change[$i].'</td>'                        
+                        . '<td class="tablecells">'.$databases[$i]['dbname'].'</td>'
+                        . '<td>'.$databases[$i]['importdate'].'</td>'
+                        . '<td id="db_date">'.$databases[$i]['changedate'].'</td>'                        
                         . '<td><input type="image" class="img" id="del'.$no.'" src="png/trash.PNG" name="delete" onclick="return confirmDelete('.$no.')" />'
                         . '<img class="img" id="dup'.$no.'" src="png/duplicate.PNG" onclick="showDuplicate('.$no.')" />'
                         . '<img class="img" id="ren'.$no.'" src="png/edit.PNG" onclick="showRename('.$no.')" /></td></tr>';
@@ -144,7 +120,7 @@ class DBAdmin_GUI {
                     . '<div id="modalbox2" class="modalbox">'             
                     . '<div class="inbox">'
                     . '<input type="submit" class="close" onclick="return closeModalBox()" value="&times" />'
-                    . '<input type="text" name="dbname2" id="dbname2" class="db_text" placeholder="Datenbankname" />'
+                    . '<input type="text" name="dbname2" id="dbname2" class="db_text" value="dev_'.$userShort.$isLine.'" />'
                     . '<input type="submit" class="input_db nosee" id="duplicate" name="duplicate" onclick="return confirmDuplicate('.$no.')" value="OK" />'
                     . '<input type="submit" class="input_db nosee" id="rename" name="rename" onclick="return confirmRename('.$no.')" value="OK" />'               
                     . '</div></div>'
@@ -159,12 +135,10 @@ class DBAdmin_GUI {
      */
     public function showMessage($msg) {
         switch ($msg) {
-            case 1045: 
-                echo '<script type="text/javascript">alert("Benutzer unbekannt oder Passwort falsch!")</script>'; 
-                break;
+            case 1045:
             case 2002:
             case 'HY000':
-                echo '<script type="text/javascript">alert("Datenbankverbindung fehlgeschlagen!\r\nDu wirst aus Sicherheitsgründen ausgeloggt.")</script>';
+                echo '<script type="text/javascript">alert("Datenbankfehler!\r\nDu wirst aus Sicherheitsgründen ausgeloggt.")</script>';
                 session_destroy();
                 break;
             case 'norights': 
