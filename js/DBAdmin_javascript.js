@@ -1,8 +1,8 @@
 
 /**
- * Prüft, ob ein Datenbankname eingegeben wurde.
- * @param (int) version
- * @returns {Boolean|Element.value}
+ * Stellt fest, ob ein Datenbankname eingegeben wurde
+ * @param {int} version
+ * @returns {Element.value|Boolean}
  */
 function checkDbname(version) {
     if (version === 1) {
@@ -67,24 +67,22 @@ function checkFields() {
 
 
 /**
- * Ausgewählte Datenbank in Hiddenfiel schreiben
- * --> true = Datenbank ausgewählt
- * @param {int} cellId
+ * Modal-Box schliessen und Styles zurücksetzen
+ * @returns {boolean}
  */
-function setHiddenField(cellId) {
-    var hiddenField = document.getElementById('hiddenfield');
+function closeModalBox() {
+    var modalbox = document.getElementById('modalbox');
+    var modalbox2 = document.getElementById('modalbox2');
+    var items = document.getElementsByClassName('nosee');
     
-    var id = 'td'+cellId;
-    var rows = document.getElementsByClassName('tablerows');
-    var cells = document.getElementsByClassName('tablecells');
+    modalbox.style.display = "none";
+    modalbox2.style.display = "none";
     
-    for (var i = 0; i < rows.length; i++) {
-        if (rows[i].id === id) {
-            hiddenField.value = cells[i].innerHTML;
-            break;
-        }
+    for (var i = 0; i < items.length; i++) {
+        items[i].removeAttribute('style');
     }
-}
+    return false;
+};
 
 
 /**
@@ -171,6 +169,27 @@ function confirmRename() {
 
 
 /**
+ * Ausgewählte Datenbank in Hiddenfiel schreiben
+ * --> true = Datenbank ausgewählt
+ * @param {int} cellId
+ */
+function setHiddenField(cellId) {
+    var hiddenField = document.getElementById('hiddenfield');
+    
+    var id = 'td'+cellId;
+    var rows = document.getElementsByClassName('tablerows');
+    var cells = document.getElementsByClassName('tablecells');
+    
+    for (var i = 0; i < rows.length; i++) {
+        if (rows[i].id === id) {
+            hiddenField.value = cells[i].innerHTML;
+            break;
+        }
+    }
+}
+
+
+/**
  * Pop-Up zur Eingabe des Datenbanknamens anzeigen
  * Version: duplizieren
  * @param {int} Id
@@ -230,22 +249,3 @@ function showRename(Id) {
     name.style = "margin-top: 50px";
     rename.style = "margin-top: 50px; display: inline-block";
 }
-
-
-/**
- * Modal-Box schliessen und Styles zurücksetzen
- * @returns {boolean}
- */
-function closeModalBox() {
-    var modalbox = document.getElementById('modalbox');
-    var modalbox2 = document.getElementById('modalbox2');
-    var items = document.getElementsByClassName('nosee');
-    
-    modalbox.style.display = "none";
-    modalbox2.style.display = "none";
-    
-    for (var i = 0; i < items.length; i++) {
-        items[i].removeAttribute('style');
-    }
-    return false;
-};
