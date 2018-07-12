@@ -55,7 +55,7 @@ class DBAdmin_GUI {
      * Erstellt die HTML-Tabelle
      * @return string
      */
-    public function showHTMLTable() {
+    private function showHTMLTable() {
         $userShort = $_SESSION['userShort'];
         $root = $_SESSION['root'];
         require_once 'DBAdmin_Model.php';
