@@ -78,7 +78,7 @@ class DBAdmin_FileReader {
         for ($i = 2; $i < count($files); $i++) {
             $type = mime_content_type($dumpDirectory.'\\'.$files[$i]);
             // nur SQL-Dateien beachten
-            if ($type === "text/plain" && strpos($files[$i], '.sql') !== false) {
+            if ($type === "text/plain" && mb_strpos($files[$i], '.sql') !== false) {
                 $dumpList[] = $files[$i];
             }
         }       
