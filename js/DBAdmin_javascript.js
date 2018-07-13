@@ -97,6 +97,7 @@ function confirmDelete(Id) {
     setHiddenField(Id);
     overload.style.display = 'flex';
     load.style.display = 'flex';
+    
     if (confirm('Willst du die Ausgewählte Datenbank wirklich löschen?')) {
         return true;
     } else {
@@ -168,7 +169,7 @@ function confirmRename() {
 
 
 /**
- * Ausgewählte Datenbank in Hiddenfiel schreiben
+ * Ausgewählte Datenbank in Hiddenfield schreiben
  * --> true = Datenbank ausgewählt
  * @param {int} cellId
  */
