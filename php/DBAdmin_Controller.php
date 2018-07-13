@@ -113,6 +113,7 @@ class DBAdmin_Controller {
      */
     private function createDatabase($dbname) {
         $check = $this->checkDbname($dbname);
+        
         if ($check !== true) {
             $this->gui->showMessage($check);
             exit();
@@ -286,8 +287,7 @@ class DBAdmin_Controller {
             $_SESSION['userShort'] = $userShort;
         } else {
             $_SESSION['userShort'] = '';
-        }
-              
+        }             
         $_SESSION['root'] = $root;
         $_SESSION['id'] = md5($password);
         $this->gui->renderGUI('main');

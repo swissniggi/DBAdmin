@@ -60,7 +60,6 @@ class DBAdmin_GUI {
         $root = $_SESSION['root'];
         require_once 'DBAdmin_Model.php';
         $model = new DBAdmin_Model();
-        // Benutzername und Passwort aus JSON-File holen
         // Datenbankverbindung herstellen
         $conf = DBAdmin_Controller::_setDbData();
         $model->rootPdo = $model->openDbConnection($conf["host"], $conf["user"], $conf["password"]);
