@@ -266,7 +266,7 @@ class DBAdmin_Controller {
      * Überprüft die Logindaten
      */
     private function loginUser() {
-        $username = strtolower($_POST['username']);
+        $username = mb_strtolower($_POST['username']);
         $password = $_POST['passwort'];
         require_once 'DBAdmin_Model.php';
         $this->model = new DBAdmin_Model();
@@ -282,7 +282,7 @@ class DBAdmin_Controller {
                 
         // bei Standard-benutzer: Kürzel in Session speichern
         if (!$root) {
-            $userShort = substr($username, 0, 2);
+            $userShort = mb_substr($username, 0, 2);
             $_SESSION['userShort'] = $userShort;
         } else {
             $_SESSION['userShort'] = '';
@@ -380,7 +380,7 @@ class DBAdmin_Controller {
         
         foreach ($file as $line) {
             $line = trim($line);
-            if (strpos($line, '=') !== false) {
+            if (mb_strpos($line, '=') !== false) {
                 $data = explode('=', $line);
                 //$key = $data[0];
                 $config[$data[0]] = $data[1];
