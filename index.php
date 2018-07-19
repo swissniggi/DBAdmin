@@ -1,8 +1,7 @@
 <?php
     require_once 'php/DBAdmin_Controller.php';
     session_start();                                                                    
-    $cont = new DBAdmin_Controller();
-    $cont->getRequest();
+    new DBAdmin_Controller();
 ?>
 
 <!DOCTYPE html>
