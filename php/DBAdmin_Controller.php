@@ -5,10 +5,16 @@ class DBAdmin_Controller {
     public $model = null;
     public $gui = null;
     
+    
+    public function __construct() {
+        $this->getRequest();
+    }
+    
+    
     /**
      * Intepretiert die übergebenen Werte
      */
-    public function getRequest() {
+    private function getRequest() {
         try {
             // Instanz von Klasse DBAdmin_GUI erstellen
             if ($this->gui === null) {
