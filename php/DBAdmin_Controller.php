@@ -341,6 +341,8 @@ class DBAdmin_Controller {
                 $config[$data[0]] = $data[1];
             }
         }
+        // Anführungszeichen entfernen
+        $config['password'] = str_replace('"', '', $config['password']);
         return $config;
     }
 }
