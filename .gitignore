@@ -1,5 +1,6 @@
 # IDE Ordner
 nbproject/
+dumps/
 .idea/
 
 # sicherstellen das diese hier comitted werden
