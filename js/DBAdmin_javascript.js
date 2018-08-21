@@ -109,6 +109,23 @@ function confirmDelete(Id) {
 
 
 /**
+ * Initialisiert den Export-Vorgang
+ * @param {int} Id
+ * @returns {Boolean}
+ */
+function confirmExport(Id) {
+    var load = document.getElementById('load');
+    var overload = document.getElementById('overload');
+    
+    setHiddenField(Id);
+    overload.style.display = 'flex';
+    load.style.display = 'flex';
+    
+    return true;
+}
+
+
+/**
  * Stellt sicher, dass eine Datenbank zum Duplizieren
  * und ein neuer Datenbankname ausgewählt wird
  * @returns {Boolean}
@@ -233,15 +250,16 @@ function showDumps() {
 /**
  * Pop-Up zur Eingabe des Datenbanknamens anzeigen
  * Version: erstellen
+ * @param {int} no
  */
-function showNameField() {
-    var modalbox = document.getElementById('modalbox');
-    var create = document.getElementById('create');
+function showNameField(no) {
+    var modalbox = document.getElementById('modalbox');    
     var name = document.getElementById('dbname');
+    var button = document.getElementById('create');
     
     modalbox.style.display = "block";
-    name.style = "margin-top: 50px";
-    create.style = "margin-top: 50px; display: inline-block";
+    name.style = "margin-top: 50px";    
+    button.style = "margin-top: 50px; display: inline-block";
     
     name.focus();
     name.selectionStart += name.value.length;

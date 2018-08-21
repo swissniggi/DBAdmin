@@ -19,6 +19,7 @@ body{
 .form-div{
     width: 400px;
     padding-top: 20px;
+    padding-bottom: 20px;
     padding-right: 20px;
     
     border: 2px black solid;
@@ -68,6 +69,8 @@ body{
     margin-bottom: 40px;
     margin-top: 5px;
     
+    white-space: nowrap;
+    
     border-collapse: collapse;
     background-color: white;
 }
@@ -82,7 +85,6 @@ body{
 
 .db_table tr td{
     font-size: 18px;
-    line-height: 26px;
     text-align: center;
 }
 
@@ -105,7 +107,6 @@ body{
 
 #dbform{
     margin-bottom: 0;
-    max-width: 680px;
     width: 80%;
 }
 
@@ -136,6 +137,7 @@ body{
     width: 25px;
     margin-left: 5px;
     margin-right: 5px;
+    margin-top: 5px;
 }
 
 .img:hover{
@@ -195,6 +197,16 @@ body{
 
 #checkboxlabel{
     display: none;
+}
+
+#export{
+    width: 25px;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+#export:hover{
+    cursor: pointer;
 }
 
 #import{
@@ -272,6 +284,12 @@ body{
 /* Logout */
 /* -------------- */
 
+#user{
+    width: 250px;
+    right: 0;
+    text-align: right;
+}
+
 .form_header{
     top: 0;
     right: 20px;
@@ -283,6 +301,7 @@ body{
 .input_logout{
     width: 50px;    
     border: none;
+    margin-left: 200px;
 }
 
 .input_logout:hover{

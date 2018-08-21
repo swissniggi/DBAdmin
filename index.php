@@ -1,9 +1,3 @@
-<?php
-    require_once 'php/DBAdmin_Controller.php';
-    session_start();                                                                    
-    new DBAdmin_Controller();
-?>
-
 <!DOCTYPE html>
 
 <html>
@@ -13,6 +7,11 @@
         <script type="text/javascript" src="js/DBAdmin_javascript.js"></script>
         <title>DB Admin</title>
     </head>        
-    <body>        
+    <body>   
+        <?php
+            require_once 'php/DBAdmin_Controller.php';
+            session_start();                                                                    
+            new DBAdmin_Controller();
+        ?>
     </body>
 </html>

@@ -8,6 +8,7 @@ class DBAdmin_GUI {
      */
     public function renderGUI($view) {
         switch ($view) {
+            
             // GUI der Loginansicht erstellen
             case 'login': 
                 echo '<div class="form-div">';
@@ -18,11 +19,14 @@ class DBAdmin_GUI {
                 echo '</form>';
                 echo '</div>';
                 break;
+            
             // GUI der Hauptansicht erstellen
-            case 'main':  
+            case 'main':                  
                 echo '<form class="form_header" method="post" action="">';
-                echo '<input type="image" class="input_logout" id="logout" name="logout" src="png/logout.PNG" onclick="return confirmLogout()">';
-                echo '</form>';                          
+                echo '<div id="user"><p>Angemeldet als <b>'.$_SESSION['username'].'</b></p></div>';
+                echo '<input type="image" class="input_logout" id="logout" name="logout" title="Ausloggen" src="png/logout.PNG" onclick="return confirmLogout()">';
+                echo '</form>';
+                
                 // HTML-Tabelle generieren
                 echo $this->showHTMLTable();
                 break;
@@ -56,32 +60,49 @@ class DBAdmin_GUI {
      * @return string
      */
     private function showHTMLTable() {
-        $userShort = $_SESSION['userShort'];
         $root = $_SESSION['root'];
         require_once 'DBAdmin_Model.php';
         $model = new DBAdmin_Model();
+        
+        // Benutzerdaten aus conf-File auslesen
+        $userdata = [];
+        $conffile = fopen(realpath('config/user.conf'), 'r');
+        
+        while (!feof($conffile)) {
+            $line = fgets($conffile);
+            if (mb_strpos($line, '=') !== false) {
+                $value = explode('=', $line);
+                $userdata[] = trim($value[1]);
+            }
+        }
+        fclose($conffile);
+        
+        // Anführungszeichen vor und nach dem Passwort entfernen
+        $userdata[2] = str_replace('"','',$userdata[2]);
+        
         // Datenbankverbindung herstellen
-        $conf = DBAdmin_Controller::_setDbData();
-        $model->rootPdo = $model->openDbConnection($conf["host"], $conf["user"], $conf["password"]);
+        $model->rootPdo = $model->openDbConnection($userdata[0], $userdata[1], $userdata[2]);
         
         // alle Daten für die der HTML-Tabelle abfragen
-        $databases = $model->selectDatabases($userShort, $root);
+        $databases = $model->selectDatabases();
         
-        $isLine = $root === false ? '_' : '';
+        $value = $root === false ? $_SESSION['username'] : '';
         $HTMLTable = '<form id="dbform" method="post" action="">'
-                // Erstell- und Importbutton inkl. Modalbox
-                . '<img id="plus" src="png/plus.PNG" onclick="showNameField()"/>'
-                . '<img id="import" src="png/import.PNG" onclick="showDumps()"></img>'
+                
+                // Erstell-, Import- und Exportbutton inkl. Modalbox
+                . '<img id="plus" src="png/plus.PNG" title="Neue Datenbank" onclick="showNameField(1)" />'
+                . '<img id="import" src="png/import.PNG" title="Dump importieren" onclick="showDumps()" />'
                 . '<div id="modalbox" class="modalbox">'               
                 . '<div class="inbox">'
                 . '<label class="dump_label nosee" id="checkboxlabel"><input id="checkbox" type="checkbox" name="dumpdelete" value="1">&nbsp;Dump nach Import löschen</label>'
                 . '<input type="submit" class="close" onclick="return closeModalBox()" value="&times" />'
                 . $this->showDumpDropDown()
-                . '<input type="text" name="dbname" id="dbname" class="db_text nosee" value="dev_'.$userShort.$isLine.'" />'
+                . '<input type="text" name="dbname" id="dbname" class="db_text nosee" value="'.$value.'" />'
                 . '<input type="submit" class="input_db nosee" id="insert" name="insert" onclick="return checkDump()" value="OK" />'
-                . '<input type="submit" class="input_db nosee" id="create" name="create" onclick="return checkDbname(1)" value="OK" />'               
+                . '<input type="submit" class="input_db nosee" id="create" name="create" onclick="return checkDbname(1)" value="OK" />'
                 . '</div></div>'
                 . '<div id="overload"><div id="load"></div></div>'
+                
                 // Header der HTML-Tabelle erstellen
                 . '<table class="db_table">'
                 . '<col class="col">'
@@ -110,16 +131,17 @@ class DBAdmin_GUI {
                         . '<td class="tablecells">'.$databases[$i]['dbname'].'</td>'
                         . '<td>'.$databases[$i]['importdate'].'</td>'
                         . '<td id="db_date">'.$databases[$i]['changedate'].'</td>'                        
-                        . '<td><input type="image" class="img" id="del'.$no.'" src="png/trash.PNG" name="delete" onclick="return confirmDelete('.$no.')" />'
-                        . '<img class="img" id="dup'.$no.'" src="png/duplicate.PNG" onclick="showDuplicate('.$no.')" />'
-                        . '<img class="img" id="ren'.$no.'" src="png/edit.PNG" onclick="showRename('.$no.')" /></td></tr>';
+                        . '<td><input type="image" class="img" id="del'.$no.'" src="png/trash.PNG" name="delete" title="Löschen" onclick="return confirmDelete('.$no.')" />'
+                        . '<input type="image" class="img" id=exp'.$no.'" src="png/export.PNG" name="export" title="Dump erstellen" onclick="return confirmExport('.$no.')" />'
+                        . '<img class="img" id="dup'.$no.'" src="png/duplicate.PNG" title="Duplizieren" onclick="showDuplicate('.$no.')" />'
+                        . '<img class="img" id="ren'.$no.'" src="png/edit.PNG" title="Umbenennen" onclick="showRename('.$no.')" /></td></tr>';
         }      
         $HTMLTable .= '</table>'
                     . '<input type="hidden" id="hiddenfield" name="selectedDB" value="" />'
                     . '<div id="modalbox2" class="modalbox">'             
                     . '<div class="inbox">'
                     . '<input type="submit" class="close" onclick="return closeModalBox()" value="&times" />'
-                    . '<input type="text" name="dbname2" id="dbname2" class="db_text" value="dev_'.$userShort.$isLine.'" />'
+                    . '<input type="text" name="dbname2" id="dbname2" class="db_text" value="'.$value.'" />'
                     . '<input type="submit" class="input_db nosee" id="duplicate" name="duplicate" onclick="return confirmDuplicate('.$no.')" value="OK" />'
                     . '<input type="submit" class="input_db nosee" id="rename" name="rename" onclick="return confirmRename('.$no.')" value="OK" />'               
                     . '</div></div>'
@@ -133,30 +155,9 @@ class DBAdmin_GUI {
      * @param string $msg
      */
     public function showMessage($msg) {
-        switch ($msg) {
-            case 1045:
-            case 2002:
-            case 'HY000':
-                echo '<script type="text/javascript">alert("Datenbankfehler!\r\nDu wirst aus Sicherheitsgründen ausgeloggt.")</script>';
-                session_destroy();
-                break;
-            case 'norights': 
-                echo '<script type="text/javascript">alert("Du hast keine Berechtigung für diesen Vorgang!")</script>'; 
-                break;
-            case 'wrongname':
-                echo '<script type="text/javascript">alert("Der gewählte Datenbankname entspricht nicht den Konventionen!")</script>';
-                break;
+        switch ($msg) {            
             case 'deleteok': 
                 echo '<script type="text/javascript">alert("Datenbank erfolgreich gelöscht.")</script>'; 
-                break;
-            case 'exists': 
-                echo '<script type="text/javascript">alert("Eine Datenbank mit diesem Namen existiert bereits!")</script>'; 
-                break;
-            case 'usernotexists':
-                echo '<script type="text/javascript">alert("Ein Benutzer mit dem angegebenen Kürzel existiert nicht.")</script>';
-                break;
-            case 'nodump':
-                echo '<script type="text/javascript">alert("Die ausgewählte SQL-Datei scheint kein Dump zu sein!\r\nOperation abgebrochen!")</script>';
                 break;
             case 'createok': 
                 echo '<script type="text/javascript">alert("Datenbank erfolgreich erstellt.")</script>'; 
@@ -176,8 +177,11 @@ class DBAdmin_GUI {
             case 'logout': 
                 echo '<script type="text/javascript">alert("Du hast dich erfolgreich ausgeloggt.")</script>'; 
                 break;
-            case false: 
-                echo '<script type="text/javascript">alert("Fehler beim Ausführen der Operation.")</script>';
+            default:
+                echo '<script type="text/javascript">alert("Fehler! '.trim($msg).'")</script>';
+                if (strpos($msg, '[2002]') !== false) {
+                    session_destroy();
+                }
         }        
         header('refresh:0.5;url=index.php');
     }       

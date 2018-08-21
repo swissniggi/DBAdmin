@@ -1,3 +1,8 @@
-# Ordner
-dumps/
+# IDE Ordner
 nbproject/
+.idea/
+
+# sicherstellen das diese hier comitted werden
+!notempty
+!.htaccess
+

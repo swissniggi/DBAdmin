@@ -32,7 +32,9 @@ class DBAdmin_Model {
      * @return boolean
      */
     public function deleteDatabase($dbname) {
-        $deleteDB = $this->rootPdo->prepare("DROP DATABASE ".$dbname.";");
+        $deleteDB = $this->rootPdo->prepare(
+                "DROP DATABASE ".$dbname.";"
+                );
         return $deleteDB->execute();
     }
     
@@ -40,19 +42,21 @@ class DBAdmin_Model {
     /**
      * Speichert das aktuelle Datum nach erfolgtem Import
      * @param string $dbname
+     * @return boolean
      */
     public function insertImportDate($dbname) {
         $insertImportDate = $this->rootPdo->prepare(
-                "INSERT INTO devimport.lastimport (dbname, importdate)"
+                "INSERT INTO dbadmin.lastimport (dbname, importdate)"
                 . "VALUES (:dbname, DATE(NOW()));"
                 );
         $insertImportDate->bindParam(':dbname', $dbname);
-        $insertImportDate->execute();
+        return $insertImportDate->execute();
     }
     
     
     /**
      * Erstellt eine Verbindung zum MySQL-Server
+     * @param string $host
      * @param string $username
      * @param string $password
      * @return boolean|PDO
@@ -82,28 +86,18 @@ class DBAdmin_Model {
     
     /**
      * Liest alle Daten für die HTML-Tabelle aus
-     * @param string $userShort
-     * @param boolean $root
      * @return array
      */
-    public function selectDatabases($userShort, $root) {       
+    public function selectDatabases() {       
         $selectDBs = $this->rootPdo->prepare(
             "SELECT is_SCHE.SCHEMA_NAME AS dbname, "
-                . "COALESCE(MAX(dev_imp.importdate), '--') AS importdate, "
+                . "COALESCE(MAX(dba.importdate), '--') AS importdate, "
                 . "COALESCE(MAX(DATE(is_TAB.UPDATE_TIME)), '--') AS changedate "
                 . "FROM information_schema.SCHEMATA AS is_SCHE "
-                . "LEFT JOIN devimport.lastimport AS dev_imp ON is_SCHE.SCHEMA_NAME = dev_imp.dbname "
+                . "LEFT JOIN dbadmin.lastimport AS dba ON is_SCHE.SCHEMA_NAME = dba.dbname "
                 . "LEFT JOIN information_schema.TABLES AS is_TAB ON is_SCHE.SCHEMA_NAME = is_TAB.TABLE_SCHEMA "
-                . "WHERE SCHEMA_NAME LIKE :name "
                 . "GROUP BY is_SCHE.SCHEMA_NAME;"
-            );
-        if (!$root) {
-            $param = 'dev_'.$userShort.'%';
-            $selectDBs->bindParam(':name', $param);
-        } else {
-            $param = 'dev\_%';
-            $selectDBs->bindParam(':name', $param);
-        }
+            );        
         $selectDBs->execute();
         $result = $selectDBs->fetchAll();
         return $result;
@@ -115,11 +109,10 @@ class DBAdmin_Model {
      * @param string $username
      * @return array
      */
-    public function selectUserRights($username) {
+    public function selectUserRights($host, $username) {
         $selectUserRights = $this->rootPdo->prepare(
-                "SELECT * FROM mysql.user WHERE user = :username;"
+                "SHOW GRANTS FOR '".$username."'@'".$host."';"
                 );
-        $selectUserRights->bindParam(':username', $username);
         $selectUserRights->execute();
         $result = $selectUserRights->fetchAll();
         return $result;

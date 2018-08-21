@@ -5,22 +5,30 @@ class DBAdmin_FileReader {
     /**
      * Exportiert einen Dump via Kommandozeilenbefehl
      * @param string $dbname
-     * @return integer
+     * @param boolean $exportOnly
      */
-    public function createDump($dbname) {
+    public function createDump($dbname, $exportOnly) {
         // Namen der Zieldatenbank definieren
         $db_parts = explode('.', $dbname);
         $db = $db_parts[0];
+        
         // Pfad des Config-Files angeben
         // es enthält den MySQL-Benutzernamen und das Passwort, sowie den Hostnamen
-        $conf = realpath('config/mysql.conf');
+        $mysqlconf = realpath('config/user.conf');
+        
         // Dumppfad definieren
-        $dbpath = realpath('dumps/').'\\'.$_SESSION['id'].'.sql';
+        $dumps = json_decode(file_get_contents('config/dbadmin.json'))->dumps;
+        $filename = $exportOnly ? $db : $_SESSION['id'];
+        $dbpath = realpath($dumps).'/'.$filename.'.sql';
         
         // Dump exportieren
-        $command = 'mysqldump --defaults-file="'.$conf.'" --events --routines --triggers '.$db.' > "'.$dbpath.'"';    
+        $command = 'mysqldump --defaults-file="'.$mysqlconf.'" --events --routines --triggers '
+                   .escapeshellarg($db).' > "'.escapeshellarg($dbpath).'" 2>&1';    
         exec($command, $out, $return);
-        return $return;
+        
+        if ($return !== 0) {
+            throw new Exception($out[0]);
+        }
     }
         
     
@@ -29,7 +37,6 @@ class DBAdmin_FileReader {
      * @param string|null $oldDbname
      * @param string|null $newDbname
      * @param boolean $delete
-     * @return string|integer
      */
     public function executeDump($oldDbname, $newDbname, $delete) {
         // Namen der Zieldatenbank definieren
@@ -39,30 +46,25 @@ class DBAdmin_FileReader {
         
         // Pfad des Config-Files angeben
         // es enthält den MySQL-Benutzernamen und das Passwort, sowie den Hostnamen
-        $conf = realpath('config/mysql.conf');
+        $mysqlconf = realpath('config/user.conf');
         
         // Dumpnamen definieren
         $dumpPath = $oldDbname === null ? $_SESSION['id'].'.sql' : $oldDbname;
-        $dbpath = realpath('dumps/').'\\'.$dumpPath;
         
-        // Prüfen ob die gewählte Datei tatsächlich ein Dump ist
-        $file = new SplFileObject($dbpath);
-        $file->seek(0);
-        $content = $file->current();
-        
-        if (strpos($content, 'MySQL dump') === false) {
-            return 'nodump';
-        }
-        $file = null;
+        $dumps = json_decode(file_get_contents('config/dbadmin.json'))->dumps;
+        $dbpath = realpath($dumps.'/'.$dumpPath);        
         
         // Dump importieren
-        $command = 'mysql --defaults-file="'.$conf.'" '.$db.' < "'.$dbpath.'"';    
+        $command = 'mysql --defaults-file="'.$mysqlconf.'" '.escapeshellarg($db).' < "'.escapeshellarg($dbpath).'" 2>&1';    
         exec($command, $out, $return);
         
         if ($delete && $return === 0) {            
             unlink($dbpath);
         }
-        return $return;
+        
+        if ($return !== 0) {
+            throw new Exception($out[0]);
+        }        
     }
     
     
@@ -71,14 +73,25 @@ class DBAdmin_FileReader {
      * @return array
      */
     public function getDumpList() {
-        $dumpDirectory = realpath('dumps');
-        $files = scandir($dumpDirectory);
+        $dumps = file_get_contents('config/dbadmin.json');
+        
+        if (!$dumps) {
+            throw new Exception('dbadmin.conf nicht gefunden!');
+        }
+        
+        $dumps = json_decode($dumps)->dumps;
+        
+        if (!is_dir($dumps)) {
+            throw new Exception('Der angegebene Dumpsordner existiert nicht!');
+        }
+        
+        $files = scandir($dumps);
+        
         $dumpList = [];
         
         for ($i = 2; $i < count($files); $i++) {
-            $type = mime_content_type($dumpDirectory.'\\'.$files[$i]);
             // nur SQL-Dateien beachten
-            if ($type === "text/plain" && mb_strpos($files[$i], '.sql') !== false) {
+            if (mb_strpos($files[$i], '.sql') !== false) {
                 $dumpList[] = $files[$i];
             }
         }       

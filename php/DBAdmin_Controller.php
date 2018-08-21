@@ -4,8 +4,7 @@ class DBAdmin_Controller {
     
     public $model = null;
     public $gui = null;
-    
-    
+       
     public function __construct() {
         $this->getRequest();
     }
@@ -29,46 +28,52 @@ class DBAdmin_Controller {
             // Operation 'Datenbank löschen' wurde gestartet
             } else if (isset($_POST['delete_x'])) {
                 $this->openRootDbConnection();
-                $msg = $this->deleteDatabase($_POST['selectedDB']);
-                $this->gui->showMessage($msg);
+                $this->deleteDatabase($_POST['selectedDB']);
+                $this->gui->showMessage('deleteok');
 
             // Operation 'Datenbank erstellen' wurde gestartet
             } else if (isset($_POST['create'])) {
                 $this->openRootDbConnection();
-                $msg = $this->createDatabase($_POST['dbname']);
-                $this->gui->showMessage($msg);
+                $this->createDatabase($_POST['dbname']);
+                $this->model->closeDbConnection($this->model->rootPdo);
+                $this->gui->showMessage('createok');
 
             // Operation 'Datenbank importieren' wurde gestartet
             } else if (isset($_POST['insert'])) {
                 $newDb = null;
+                
                 // DB erstellen falls nicht vorhanden
                 $newDb = $_POST['dbname'].'.sql';
                 $this->openRootDbConnection();
-                $this->createDatabase($_POST['dbname']);         
+                $this->createDatabase($_POST['dbname']);
+                
                 // Dump importieren
-                $msg = $this->importDatabase($_POST['dbselect'], $newDb, isset($_POST['dumpdelete']));
-                if (!!$msg) {
-                    $this->model->insertImportDate($_POST['dbname']);
-                }
-                $this->gui->showMessage($msg);
-
+                $this->importDatabase($_POST['dbselect'], $newDb, isset($_POST['dumpdelete']));
+                $this->model->closeDbConnection($this->model->rootPdo);
+                $this->gui->showMessage('importok');
+            
+            // Operation 'Dump erstellen' ausführen
+            } else if (isset($_POST['export_x'])) {
+                $this->exportDatabase($_POST['selectedDB'], true);
+                $this->gui->showMessage('exportok');
+                
             // Operation 'Datenbank umbenennen' wurde gestartet
             } else if (isset($_POST['rename'])) {
                 $this->openRootDbConnection();
-                $msg = $this->renameDatabase($_POST['dbname2'], $_POST['selectedDB']);
-                $this->gui->showMessage($msg);
+                $this->renameDatabase($_POST['dbname2'], $_POST['selectedDB']);
+                $this->gui->showMessage('renameok');
 
             // Operation 'Datenbank duplizieren' wurde gestartet
             } else if (isset($_POST['duplicate'])) {
                 $this->openRootDbConnection();
-                $msg = $this->duplicateDatabase($_POST['dbname2'], $_POST['selectedDB']);
-                $this->gui->showMessage($msg);
+                $this->duplicateDatabase($_POST['dbname2'], $_POST['selectedDB']);
+                $this->gui->showMessage('duplicateok');
 
             // Logoutfuntkion aufrufen
             } else if (isset($_POST['logout_x'])) {
                 $this->logoutUser();
 
-            // GUI der Hauptansicht neu laden
+            // GUI der Hauptansicht (neu) laden
             } else if (isset($_SESSION['id'])) {
                 $this->gui->renderGUI('main');
 
@@ -76,8 +81,10 @@ class DBAdmin_Controller {
             } else {
                 $this->gui->renderGUI('login');
             }
+            
+        // Exception abfangen
         } catch (Exception $ex) {
-            $this->gui->showMessage($ex->getCode());
+            $this->gui->showMessage($ex->getMessage());
         }
     }
     
@@ -89,25 +96,16 @@ class DBAdmin_Controller {
      */
     private function checkDbname($dbname) {            
         $match = preg_match('/^dev_[a-z]{2}_[a-z]{2,3}_[a-z]{1,50}$/', $dbname);
-        $dbSubstrings= explode('_', $dbname);
+        $dbSubstrings = explode('_', $dbname);
         
-        $users = $this->model->selectUsers();
-        
-        if ($match === 1) {
-            if (!$_SESSION['root'] && $dbSubstrings[1] !== $_SESSION['userShort']) {
-                return 'norights';
-            } else if ($_SESSION['root']) {
-                for ($i = 0; $i < count($users); $i++) {
-                    if (strpos($users[$i][0], $dbSubstrings[1]) === 0) {
-                        return true;
-                    }
-                }
-                return 'usernotexists';
-            } else {
-                return true;
+        if (!$_SESSION['root']) {
+            if ($dbSubstrings[0].$dbSubstrings[1] !== $_SESSION['username']) {
+                return 'Recht zum erstellen einer Datenbank mit diesem Namen fehlt!';
+            } else if ($match === 1) {
+                return 'Der Datenbankname muss folgendes Format haben:\n"Benutzername_Applikation_Organisation"\nBeispiel: "dev_xy_wz_kkk"';
             }
         } else {
-            return 'wrongname';
+            return true;
         }
     }
     
@@ -115,53 +113,41 @@ class DBAdmin_Controller {
     /**
      * Erstellt eine neue Datenbank
      * @param string $dbname
-     * @return boolean|string
+     * @return boolean
      */
     private function createDatabase($dbname) {
         $check = $this->checkDbname($dbname);
         
-        if ($check !== true) {
-            $this->gui->showMessage($check);
-            exit();
+        if (!$check) {
+            throw new Exception($check);            
         }
         
         // Prüfen ob gleichnamige Datenbank existiert
         if (count($this->model->selectDatabase($dbname)) !== 0) {
-            return 'exists';
+            return false;
         }
         
         // Datenbank erstellen
-        $return = $this->model->createDatabase($dbname);
-        $this->model->closeDbConnection($this->model->rootPdo);
+        $result = $this->model->createDatabase($dbname);
         
-        if ($return) {
-            return 'createok';
-        } else {
-            return false;
-        } 
+        if (!$result) {
+            throw new Exception('Erstellen der Datenbank fehlgeschlagen!');
+        }           
+        return true;
     }
         
     
     /**
      * Löscht die gewählte Datenbank
      * @param string $dbname
-     * @return boolean|string
      */
     private function deleteDatabase($dbname) {
-        $check = $this->checkDbname($dbname);
-        if ($check !== true) {
-            $this->gui->showMessage($check);
-            exit();
+        $result = $this->model->deleteDatabase($dbname);
+        
+        if (!$result) {
+            throw new Exception('Löschen der Datenbank fehlgeschlagen!');
         }
-        
         $this->model->closeDbConnection($this->model->rootPdo);
-        $return = $this->model->deleteDatabase($dbname);
-        
-        if ($return) {
-            return 'deleteok';
-        } else {
-            return false;      
-        }       
     }
         
     
@@ -169,7 +155,6 @@ class DBAdmin_Controller {
      * Dupliziert eine Datenbank
      * @param string $newDbname
      * @param string $oldDbname
-     * @return boolean|string
      */
     private function duplicateDatabase($newDbname, $oldDbname) {
         $newDbFile = $newDbname.'.sql';
@@ -177,54 +162,35 @@ class DBAdmin_Controller {
         
         // Datenbankname prüfen
         $check = $this->checkDbname($newDbname);
-        if ($check !== true) {
-            $this->gui->showMessage($check);
-            exit();
-        }
         
-        // Datenbank exportieren
-        $msg = $this->exportDatabase($oldDbFile);        
+        if (!$check) {
+            throw new Exception($check);
+        }
         
         // neue Datenbank erstellen
-        if ($msg !== false) {
-            $msg = $this->model->createDatabase($newDbname);
-        } else {
-            return false;
-        }    
+        if (!$this->createDatabase($newDbname)) {
+            throw new Exception('Gleichnamige Datenbank existiert schon!');
+        } 
         
+        // Datenbank exportieren
+        $this->exportDatabase($oldDbFile, false);                       
+                                  
         // Datenbank importieren
-        if ($msg !== false) {
-            $msg = $this->importDatabase(null, $newDbFile, true);
-        } else {
-            return false;
-        }                
+        $this->importDatabase(null, $newDbFile, true);
         
-        if (!$msg) {            
-            $this->model->closeDbConnection($this->model->rootPdo);
-            return false;
-        } else {
-            $this->model->setImportDate($newDbname);
-            $this->model->closeDbConnection($this->model->rootPdo);
-            return 'duplicateok';
-        }
+        $this->model->closeDbConnection($this->model->rootPdo);
     }
         
     
     /**
      * Exportiert eine Datenbank
      * @param string $dbname
-     * @return boolean|string
+     * $param boolean $exportOnly
      */
-    private function exportDatabase($dbname) {
+    private function exportDatabase($dbname, $exportOnly) {
         require_once 'DBAdmin_FileReader.php';
         $reader = new DBAdmin_FileReader();
-        $return = $reader->createDump($dbname);
-        
-        if ($return === 0) {
-            return 'exportok';
-        } else {
-            return false;
-        }
+        $reader->createDump($dbname, $exportOnly);
     }
         
     
@@ -234,16 +200,14 @@ class DBAdmin_Controller {
      * @return boolean
      */
     private function getUserRights($username) {
-        $result = $this->model->selectUserRights($username);
-        
-        // die Berechtigungen sind im Array unter Index 2 - 30 zu finden
-        // Y = hat Berechtigung, N = hat Berechtigung nicht
-        for ($i = 2; $i <= 30; $i++) {
-            if ($result[0][$i] !== 'Y') {
-                return false;
-            }
+        $conf = self::_setDbData();
+        $result = $this->model->selectUserRights($conf['host'], $username);
+
+        if (strpos($result[0][0], 'ALL PRIVILEGES ON *.*') === false) {
+            return false;
+        } else {
+            return true;
         }
-        return true;
     }    
     
     
@@ -252,20 +216,15 @@ class DBAdmin_Controller {
      * @param string|null $oldDbname
      * @param string|null $newDbname
      * @param boolean $delete
-     * @return boolean|string
      */
     private function importDatabase($oldDbname, $newDbname, $delete) {    
         require_once 'DBAdmin_FileReader.php';
         $reader = new DBAdmin_FileReader();
-        $return = $reader->executeDump($oldDbname, $newDbname, $delete);
+        $reader->executeDump($oldDbname, $newDbname, $delete);
         
-        if ($return === 0) {
-            return 'importok';
-        } else if (is_string($return)) {
-            return $return;
-        } else {
-            return false;
-        }       
+        if (!$this->model->insertImportDate($newDbname)) {
+            throw new Exception('Speichern des Import-Datums fehlgeschlagen!');
+        }
     }
         
     
@@ -283,19 +242,21 @@ class DBAdmin_Controller {
 
         // mit root zur Datenbank verbinden
         $this->openRootDbConnection();
+        
         // eruieren ob der eingeloggte User root-Rechte hat
         $root = $this->getUserRights($username);
         $this->model->closeDbConnection($this->model->rootPdo);
-                
-        // bei Standard-benutzer: Kürzel in Session speichern
-        if (!$root) {
-            $userShort = mb_substr($username, 0, 2);
-            $_SESSION['userShort'] = $userShort;
-        } else {
-            $_SESSION['userShort'] = '';
-        }             
+                             
         $_SESSION['root'] = $root;
+        $_SESSION['username'] = $username; 
         $_SESSION['id'] = md5($password);
+        
+        // conf-File für Benutzer erstellen
+        $conffile = fopen('config/user.conf', 'w');
+        $txt = "[client]\r\nhost=".$config["host"]."\r\nuser=".$username."\r\npassword=\"".$password."\"";
+        fwrite($conffile, $txt);
+        fclose($conffile);
+        
         $this->gui->renderGUI('main');
     }
         
@@ -304,6 +265,7 @@ class DBAdmin_Controller {
      * Logt den angemeldeten Benutzer aus
      */
     private function logoutUser() {
+        unlink('config/user.conf');
         session_destroy();
         $this->gui->showMessage('logout');
     }
@@ -315,6 +277,7 @@ class DBAdmin_Controller {
     private function openRootDbConnection() {        
         require_once 'DBAdmin_Model.php';
         $this->model = new DBAdmin_Model();
+        
         // MySQL-Verbindung herstellen
         $config = self::_setDbData();
         $this->model->rootPdo = $this->model->openDbConnection($config["host"], $config["user"], $config["password"]);
@@ -325,49 +288,31 @@ class DBAdmin_Controller {
      * Benennt eine Datenbank um
      * @param string $newDbname
      * @param string $oldDbname
-     * @return boolean|string
      */
     private function renameDatabase($newDbname, $oldDbname) {
         $newDbFile = $newDbname.'.sql';
         $oldDbFile = $oldDbname.'.sql';
         
         $check = $this->checkDbname($newDbname);
-        if ($check !== true) {
-            $this->gui->showMessage($check);
-            exit();
-        }
         
-        // Datenbank exportieren
-        $msg = $this->exportDatabase($oldDbFile);
-        
-        // Datenbank löschen
-        if ($msg !== false) {
-            $msg = $this->model->deleteDatabase($oldDbname);
-        } else {
-            return false;
+        if (!$check) {
+            throw new Exception($check);
         }
         
         // neue Datenbank erstellen
-        if ($msg !== false) {
-            $msg = $this->model->createDatabase($newDbname);
-        } else {
-            return false;
-        }    
+        if (!$this->createDatabase($newDbname)) {
+            throw new Exception('Gleichnamige Datenbank existiert schon!');
+        } 
         
+        // Datenbank exportieren
+        $this->exportDatabase($oldDbFile, false);
+        
+        // Datenbank löschen
+        $this->model->deleteDatabase($oldDbname);        
+            
         // Datenbank importieren
-        if ($msg !== false) {
-            $msg = $this->importDatabase(null, $newDbFile, true);
-        } else {
-            return false;
-        }
-        
+        $this->importDatabase(null, $newDbFile, true);       
         $this->model->closeDbConnection($this->model->rootPdo);
-        
-        if (!$msg) {
-            return false;
-        } else {
-            return 'renameok';
-        }
     }
 
     
@@ -379,16 +324,20 @@ class DBAdmin_Controller {
      * Liest die Anmeldedaten für MySQL aus dem Config-File
      * @return array
      */
-    public static function _setDbData() {
+    public static function _setDbData() {        
         // Benutzername und Passwort aus Config-File holen
         $file = file('config/mysql.conf');
+        
+        if (!is_array($file)) {
+            throw new Exception('MySQL-Config-File nicht gefunden!');
+        }
+        
         $config = [];
         
         foreach ($file as $line) {
             $line = trim($line);
             if (mb_strpos($line, '=') !== false) {
                 $data = explode('=', $line);
-                //$key = $data[0];
                 $config[$data[0]] = $data[1];
             }
         }
