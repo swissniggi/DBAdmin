@@ -1,8 +1,2 @@
 # IDE Ordner
 dumps/
-.idea/
-
-# sicherstellen das diese hier comitted werden
-!notempty
-!.htaccess
-
