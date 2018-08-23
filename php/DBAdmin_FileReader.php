@@ -50,11 +50,11 @@ class DBAdmin_FileReader {
         $mysqlconf = realpath('config/user.conf');
         
         // Dumpnamen definieren
-        $dumpPath = $oldDbname === null ? $_SESSION['id'].'.sql' : $oldDbname;
+        $filename = $oldDbname === null ? $_SESSION['id'].'.sql' : $oldDbname;
         
         $dumps = json_decode(file_get_contents('config/dbadmin.json'))->dumps;
         $user = $_SESSION['username'];
-        $dbpath = realpath($dumps.'/'.$user.'/'.$dumpPath);        
+        $dbpath = realpath($dumps.'/'.$user.'/'.$filename);        
         
         // Dump importieren
         $command = 'mysql --defaults-file="'.$mysqlconf.'" '.escapeshellarg($db).' < "'.escapeshellarg($dbpath).'" 2>&1';    
