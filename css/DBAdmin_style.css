@@ -94,19 +94,22 @@ body{
     margin-top: 10px;
     
     font-size: 18px;
-    display: none;
+    display: inline-block;
 }
 
 .db_text::placeholder{
     text-align: center;
 }
 
+.form_img{
+    display: inline-block;
+}
+
 .odd{
     background-color: #cae4f7;
 }
 
-#dbform{
-    margin-bottom: 0;
+#table_div{
     width: 80%;
 }
 
@@ -152,10 +155,14 @@ body{
     
     background-color: lightgreen;
     border: none;
-    
+       
     margin-left: 10px;
     position: absolute;   
-    display: none;
+    display: inline-block;
+}
+
+.input_db:hover{
+    cursor: pointer;
 }
 
 /* von www.w3schools.com/howto/howto_css_modals.asp */
@@ -197,12 +204,13 @@ body{
 }
 
 #checkboxlabel{
-    display: none;
+    display: inline-block;
 }
 
 #plus{
     width: 25px;
-    margin-left: 15px;
+    align-self: start;
+    margin-left: 11%;
 }
 
 #plus:hover{
@@ -219,7 +227,7 @@ body{
     background-color: white;
     border: 1px solid #e6e6f2;
     
-    display: none;
+    display: inline-block;
 }
 
 .titlebar{

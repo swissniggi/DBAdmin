@@ -53,13 +53,13 @@ class DBAdmin_Controller {
             // Operation 'Datenbank umbenennen' wurde gestartet
             } else if (isset($_POST['rename'])) {
                 $this->openRootDbConnection();
-                $this->renameDatabase($_POST['dbname2'], $_POST['selectedDB']);
+                $this->renameDatabase($_POST['dbname'], $_POST['selectedDB']);
                 $this->gui->showMessage('renameok');
 
             // Operation 'Datenbank duplizieren' wurde gestartet
             } else if (isset($_POST['duplicate'])) {
                 $this->openRootDbConnection();
-                $this->duplicateDatabase($_POST['dbname2'], $_POST['selectedDB']);
+                $this->duplicateDatabase($_POST['dbname'], $_POST['selectedDB']);
                 $this->gui->showMessage('duplicateok');
 
             // Logoutfuntkion aufrufen
@@ -117,7 +117,7 @@ class DBAdmin_Controller {
         
         // Prüfen ob gleichnamige Datenbank existiert
         if (count($this->model->selectDatabase($dbname)) !== 0) {
-            throw new Exception('Gleichnamige Datenbank existiert schon');
+            throw new Exception('Gleichnamige Datenbank existiert schon!');
         }
         
         // Datenbank erstellen
@@ -224,6 +224,7 @@ class DBAdmin_Controller {
     private function loginUser() {
         $username = mb_strtolower($_POST['username']);
         $password = $_POST['passwort'];
+        
         require_once 'DBAdmin_Model.php';
         $this->model = new DBAdmin_Model();
         $host = json_decode(file_get_contents('config/dbadmin.json'))->host;

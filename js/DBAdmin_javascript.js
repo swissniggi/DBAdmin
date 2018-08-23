@@ -1,19 +1,11 @@
-/** Sicherstellen, dass beim (neu)laden der Seite
- * die ModalBox auf default gesetzt wird
- */ 
-window.onload = closeModalBox();
 
 /**
  * Stellt fest, ob ein Datenbankname eingegeben wurde
- * @param {int} version
+ * @param {String} name
  * @returns {Element.value|Boolean}
  */
-function checkDbname(version) {
-    if (version === 1) {
-        var dbname = document.getElementById('dbname').value;
-    } else {
-        var dbname = document.getElementById('dbname2').value;
-    }
+function checkDbname(name) {
+    var dbname = document.getElementById('dbname_' + name).value;
     
     if (dbname === '') {
         alert('Kein Datenbankname gewählt.');
@@ -66,17 +58,18 @@ function checkFields() {
 
 /**
  * Modal-Box schliessen und Styles zurücksetzen
+ * @param {String} name
  * @returns {boolean}
  */
-function closeModalBox() {
-    var modalbox = document.getElementById('modalbox');
-    var modalbox2 = document.getElementById('modalbox2');
+function closeModalBox(name) {
+    var modalbox = document.getElementById('modalbox_' + name);
     var items = document.getElementsByClassName('nosee');
-    var form = document.getElementById('dbform');
+    var forms = document.getElementsByClassName('dbform');
     
     modalbox.style.display = "none";
-    modalbox2.style.display = "none";
-    form.reset();
+    for (var form in forms) {
+        form.reset();
+    }
     
     for (var i = 0; i < items.length; i++) {
         items[i].removeAttribute('style');
@@ -95,9 +88,10 @@ function confirmDeleteOrExport(Id, name) {
     var load = document.getElementById('load');
     var overload = document.getElementById('overload');
     
-    setHiddenField(Id);
+    setHiddenField(Id, name);
     overload.style.display = 'flex';
     load.style.display = 'flex';
+    name = name === 'delete' ? 'löschen' : 'exportieren';
     
     if (confirm('Datenbank wirklich ' + name + '?')) {
         return true;
@@ -116,11 +110,11 @@ function confirmDeleteOrExport(Id, name) {
  * @returns {Boolean}
  */
 function confirmDuplicateOrRename(name) {
-    var hiddenfield = document.getElementById('hiddenfield').value;
+    var hiddenfield = document.getElementById('hiddenfield_' + name).value;
     var load = document.getElementById('load');
     var overload = document.getElementById('overload');
     
-    var dbname = checkDbname(2);
+    var dbname = checkDbname(name);
     
     if (dbname === hiddenfield) {
             alert('Der neue Datenbankname muss sich vom aktuellen Namen unterscheiden!');
@@ -131,7 +125,8 @@ function confirmDuplicateOrRename(name) {
         overload.style.display = 'flex';
         load.style.display = 'flex';
         closeModalBox();
-        return confit ('Datenbank wirklich ' + name + '?');
+        name = name === 'duplicate' ? 'duplizieren' : 'umbenennen';
+        return confirm('Datenbank wirklich ' + name + '?');
     }
 }
 
@@ -148,12 +143,16 @@ function confirmLogout() {
 /**
  * Ausgewählte Datenbank in Hiddenfield schreiben
  * --> true = Datenbank ausgewählt
- * @param {int} cellId
+ * @param {int} Id
+ * @param {String} name
  */
-function setHiddenField(cellId) {
-    var hiddenField = document.getElementById('hiddenfield');
+function setHiddenField(Id, name) {
+    if (name === 'delete' || name === 'export') {
+        name = name + '_' + Id;
+    }
+    var hiddenField = document.getElementById('hiddenfield_' + name);
     
-    var id = 'td'+cellId;
+    var id = 'td'+Id;
     var rows = document.getElementsByClassName('tablerows');
     var cells = document.getElementsByClassName('tablecells');
     
@@ -172,53 +171,32 @@ function setHiddenField(cellId) {
  * @param {String} name
  */
 function showModalBox(Id, name) {
-    setHiddenField(Id);
-    var modalbox = document.getElementById('modalbox2');
+    if (Id !== 0) {
+        setHiddenField(Id, name);
+    }
+    
+    var modalbox = document.getElementById('modalbox_' + name);
     modalbox.style.display = "block";
     var button = document.getElementById(name);
     
     if (name === 'insert') {
-        var select = document.getElementById('select');
-        var checkbox = document.getElementById('checkboxlabel');
-        select.style.display = "inline-block";
-        checkbox.style.display = "inline-block";
-        button.style.display = "inline-block";
+        button.style = "display: inline-block";
     } else {
-        var dbname = document.getElementById('dbname2');
-        dbname.style = "display: inline-block; margin-top: 50px";
+        var dbname = document.getElementById('dbname_' + name);
+        dbname.style = "margin-top: 50px";
         dbname.focus();
         dbname.selectionStart += dbname.value.length;
-        button.style = "margin-top: 50px; display: inline-block";
-    }    
+        button.style = "margin-top: 50px";
+    }
     
     var text = '';
     switch(name) {
+        case 'create': text = 'Neue Datenbank erstellen'; break;
         case 'insert': text = 'Dump importieren'; break;
         case 'duplicate': text = 'Datenbank duplizieren'; break;
         case 'rename': text = 'Datenbank umbenennen'; break;
     }
     
-    var bartext = document.getElementById('titlebar2');
+    var bartext = document.getElementById('titlebar_' + name);
     bartext.innerHTML = text;
-}
-
-
-/**
- * Pop-Up zur Eingabe des Datenbanknamens anzeigen
- * Version: erstellen
- */
-function showNameField() {
-    var modalbox = document.getElementById('modalbox');    
-    var name = document.getElementById('dbname');
-    var button = document.getElementById('create');
-    var bartext = document.getElementById('titlebar');
-    
-    modalbox.style.display = "block";
-    name.style = "display: inline-block; margin-top: 50px";    
-    button.style = "margin-top: 50px; display: inline-block";
-    
-    bartext.innerHTML = 'Neue Datenbank erstellen';
-    
-    name.focus();
-    name.selectionStart += name.value.length;
 }

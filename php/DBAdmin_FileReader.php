@@ -18,8 +18,9 @@ class DBAdmin_FileReader {
         
         // Dumppfad definieren
         $dumps = json_decode(file_get_contents('config/dbadmin.json'))->dumps;
+        $user = $_SESSION['username'];
         $filename = $exportOnly ? $db : $_SESSION['id'];
-        $dbpath = realpath($dumps).'/'.$filename.'.sql';
+        $dbpath = realpath($dumps).'/'.$user.'/'.$filename.'.sql';
         
         // Dump exportieren
         $command = 'mysqldump --defaults-file="'.$mysqlconf.'" --events --routines --triggers '
@@ -52,7 +53,8 @@ class DBAdmin_FileReader {
         $dumpPath = $oldDbname === null ? $_SESSION['id'].'.sql' : $oldDbname;
         
         $dumps = json_decode(file_get_contents('config/dbadmin.json'))->dumps;
-        $dbpath = realpath($dumps.'/'.$dumpPath);        
+        $user = $_SESSION['username'];
+        $dbpath = realpath($dumps.'/'.$user.'/'.$dumpPath);        
         
         // Dump importieren
         $command = 'mysql --defaults-file="'.$mysqlconf.'" '.escapeshellarg($db).' < "'.escapeshellarg($dbpath).'" 2>&1';    
@@ -73,16 +75,16 @@ class DBAdmin_FileReader {
      * @return array
      */
     public function getDumpList() {
-        $dumps = file_get_contents('config/dbadmin.json');
+        $dumps = json_decode(file_get_contents('config/dbadmin.json'));
         
         if (!$dumps) {
             throw new Exception('dbadmin.json nicht gefunden!');
         }
         
-        $dumps = json_decode($dumps)->dumps;
+        $dumps = $dumps->dumps.'/'.$_SESSION['username'];
         
         if (!is_dir($dumps)) {
-            throw new Exception('Der angegebene Dumpsordner existiert nicht!');
+            mkdir($dumps);
         }
         
         $files = scandir($dumps);
