@@ -89,28 +89,28 @@ class DBAdmin_GUI {
         $value = $root === false ? $_SESSION['username'] : '';
         $HTMLTable = '<form id="dbform" method="post" action="">'
                 
-                // Erstell-, Import- und Exportbutton inkl. Modalbox
-                . '<img id="plus" src="png/plus.PNG" title="Neue Datenbank" onclick="showNameField(1)" />'
-                . '<div id="modalbox" class="modalbox">'               
-                . '<div class="inbox">'
-                . '<div id="titlebar" class="titlebar"></div>'                
-                . '<input type="submit" class="close" onclick="return closeModalBox()" value="&times" />'                
-                . '<input type="text" name="dbname" id="dbname" class="db_text nosee" value="'.$value.'" />'                
-                . '<input type="submit" class="input_db" id="create" name="create" onclick="return checkDbname(1)" value="OK" />'
-                . '</div></div>'
-                . '<div id="overload"><div id="load"></div></div>'
+                    // Erstell-, Import- und Exportbutton inkl. Modalbox
+                    . '<img id="plus" src="png/plus.PNG" title="Neue Datenbank" onclick="showNameField(1)" />'
+                    . '<div id="modalbox" class="modalbox">'               
+                    . '<div class="inbox">'
+                    . '<div id="titlebar" class="titlebar"></div>'                
+                    . '<input type="submit" class="close" onclick="return closeModalBox()" value="&times" />'                
+                    . '<input type="text" name="dbname" id="dbname" class="db_text nosee" value="'.$value.'" />'                
+                    . '<input type="submit" class="input_db" id="create" name="create" onclick="return checkDbname(1)" value="OK" />'
+                    . '</div></div>'
+                    . '<div id="overload"><div id="load"></div></div>'
                 
-                // Header der HTML-Tabelle erstellen
-                . '<table class="db_table">'
-                . '<col class="col">'
-                . '<col class="col">'
-                . '<col class="col">'
-                . '<tr>'
-                . '<th>Datenbankname</th>'
-                . '<th>Importdatum</th>'
-                . '<th>Zuletzt geändert</th>'                
-                . '<th></th>'
-                . '</tr>';        
+                    // Header der HTML-Tabelle erstellen
+                    . '<table class="db_table">'
+                    . '<col class="col">'
+                    . '<col class="col">'
+                    . '<col class="col">'
+                    . '<tr>'
+                    . '<th>Datenbankname</th>'
+                    . '<th>Importdatum</th>'
+                    . '<th>Zuletzt geändert</th>'                
+                    . '<th></th>'
+                    . '</tr>';        
                 
         $model->closeDbConnection($model->rootPdo);
         

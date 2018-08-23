@@ -33,8 +33,8 @@ class DBAdmin_Model {
      */
     public function deleteDatabase($dbname) {
         $deleteDB = $this->rootPdo->prepare(
-                "DROP DATABASE ".$dbname.";"
-                );
+            "DROP DATABASE ".$dbname.";"
+            );
         return $deleteDB->execute();
     }
     
@@ -46,9 +46,9 @@ class DBAdmin_Model {
      */
     public function insertImportDate($dbname) {
         $insertImportDate = $this->rootPdo->prepare(
-                "INSERT INTO dbadmin.lastimport (dbname, importdate)"
-                . "VALUES (:dbname, DATE(NOW()));"
-                );
+            "INSERT INTO dbadmin.lastimport (dbname, importdate)"
+            . "VALUES (:dbname, DATE(NOW()));"
+            );
         $insertImportDate->bindParam(':dbname', $dbname);
         return $insertImportDate->execute();
     }
@@ -91,12 +91,12 @@ class DBAdmin_Model {
     public function selectDatabases() {       
         $selectDBs = $this->rootPdo->prepare(
             "SELECT is_SCHE.SCHEMA_NAME AS dbname, "
-                . "COALESCE(MAX(dba.importdate), '--') AS importdate, "
-                . "COALESCE(MAX(DATE(is_TAB.UPDATE_TIME)), '--') AS changedate "
-                . "FROM information_schema.SCHEMATA AS is_SCHE "
-                . "LEFT JOIN dbadmin.lastimport AS dba ON is_SCHE.SCHEMA_NAME = dba.dbname "
-                . "LEFT JOIN information_schema.TABLES AS is_TAB ON is_SCHE.SCHEMA_NAME = is_TAB.TABLE_SCHEMA "
-                . "GROUP BY is_SCHE.SCHEMA_NAME;"
+            . "COALESCE(MAX(dba.importdate), '--') AS importdate, "
+            . "COALESCE(MAX(DATE(is_TAB.UPDATE_TIME)), '--') AS changedate "
+            . "FROM information_schema.SCHEMATA AS is_SCHE "
+            . "LEFT JOIN dbadmin.lastimport AS dba ON is_SCHE.SCHEMA_NAME = dba.dbname "
+            . "LEFT JOIN information_schema.TABLES AS is_TAB ON is_SCHE.SCHEMA_NAME = is_TAB.TABLE_SCHEMA "
+            . "GROUP BY is_SCHE.SCHEMA_NAME;"
             );        
         $selectDBs->execute();
         $result = $selectDBs->fetchAll();
@@ -111,8 +111,8 @@ class DBAdmin_Model {
      */
     public function selectUserRights($host, $username) {
         $selectUserRights = $this->rootPdo->prepare(
-                "SHOW GRANTS FOR '".$username."'@'".$host."';"
-                );
+            "SHOW GRANTS FOR '".$username."'@'".$host."';"
+            );
         $selectUserRights->execute();
         $result = $selectUserRights->fetchAll();
         return $result;
@@ -125,8 +125,8 @@ class DBAdmin_Model {
      */
     public function selectUsers() {
         $selectUsers = $this->rootPdo->prepare(
-                "SELECT User FROM mysql.user;"
-                );
+            "SELECT User FROM mysql.user;"
+            );
         $selectUsers->execute();
         $result = $selectUsers->fetchAll();
         return $result;
