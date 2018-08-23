@@ -43,7 +43,7 @@ class DBAdmin_GUI {
         $fileReader = new DBAdmin_FileReader();
         $dumpList = $fileReader->getDumpList();
         
-        $dropDown = '<select id="select" class="nosee" name="dbselect" size="1" form="dbform">';
+        $dropDown = '<select id="select" class="nosee" name="dump" size="1" form="dbform">';
         $dropDown .= '<option value="">-- Dump auswählen --</option>';
         
         // pro Dumpname eine Option erstellen
@@ -91,15 +91,12 @@ class DBAdmin_GUI {
                 
                 // Erstell-, Import- und Exportbutton inkl. Modalbox
                 . '<img id="plus" src="png/plus.PNG" title="Neue Datenbank" onclick="showNameField(1)" />'
-                . '<img id="import" src="png/import.PNG" title="Dump importieren" onclick="showDumps()" />'
                 . '<div id="modalbox" class="modalbox">'               
                 . '<div class="inbox">'
-                . '<label class="dump_label nosee" id="checkboxlabel"><input id="checkbox" type="checkbox" name="dumpdelete" value="1">&nbsp;Dump nach Import löschen</label>'
-                . '<input type="submit" class="close" onclick="return closeModalBox()" value="&times" />'
-                . $this->showDumpDropDown()
-                . '<input type="text" name="dbname" id="dbname" class="db_text nosee" value="'.$value.'" />'
-                . '<input type="submit" class="input_db nosee" id="insert" name="insert" onclick="return checkDump()" value="OK" />'
-                . '<input type="submit" class="input_db nosee" id="create" name="create" onclick="return checkDbname(1)" value="OK" />'
+                . '<div id="titlebar" class="titlebar"></div>'                
+                . '<input type="submit" class="close" onclick="return closeModalBox()" value="&times" />'                
+                . '<input type="text" name="dbname" id="dbname" class="db_text nosee" value="'.$value.'" />'                
+                . '<input type="submit" class="input_db" id="create" name="create" onclick="return checkDbname(1)" value="OK" />'
                 . '</div></div>'
                 . '<div id="overload"><div id="load"></div></div>'
                 
@@ -131,19 +128,24 @@ class DBAdmin_GUI {
                         . '<td class="tablecells">'.$databases[$i]['dbname'].'</td>'
                         . '<td>'.$databases[$i]['importdate'].'</td>'
                         . '<td id="db_date">'.$databases[$i]['changedate'].'</td>'                        
-                        . '<td><input type="image" class="img" id="del'.$no.'" src="png/trash.PNG" name="delete" title="Löschen" onclick="return confirmDelete('.$no.')" />'
-                        . '<input type="image" class="img" id=exp'.$no.'" src="png/export.PNG" name="export" title="Dump erstellen" onclick="return confirmExport('.$no.')" />'
-                        . '<img class="img" id="dup'.$no.'" src="png/duplicate.PNG" title="Duplizieren" onclick="showDuplicate('.$no.')" />'
-                        . '<img class="img" id="ren'.$no.'" src="png/edit.PNG" title="Umbenennen" onclick="showRename('.$no.')" /></td></tr>';
+                        . '<td><input type="image" class="img" id="del'.$no.'" src="png/trash.PNG" name="delete" title="Löschen" onclick="return confirmDeleteOrExport('.$no.', \'löschen\')" />'
+                        . '<img class="img" id="imp'.$no.'" src="png/import.PNG" name="import" title="Dump importieren" onclick="showModalBox('.$no.', \'insert\')" />'
+                        . '<input type="image" class="img" id=exp'.$no.'" src="png/export.PNG" name="export" title="Dump erstellen" onclick="return confirmDeleteOrExport('.$no.', \'exportieren\')" />'
+                        . '<img class="img" id="dup'.$no.'" src="png/duplicate.PNG" title="Duplizieren" onclick="showModalBox('.$no.', \'duplicate\')" />'
+                        . '<img class="img" id="ren'.$no.'" src="png/edit.PNG" title="Umbenennen" onclick="showModalBox('.$no.', \'rename\')" /></td></tr>';
         }      
         $HTMLTable .= '</table>'
                     . '<input type="hidden" id="hiddenfield" name="selectedDB" value="" />'
                     . '<div id="modalbox2" class="modalbox">'             
                     . '<div class="inbox">'
+                    . '<div id="titlebar2" class="titlebar"></div>'
+                    . '<label class="dump_label nosee" id="checkboxlabel"><input id="checkbox" type="checkbox" name="dumpdelete" value="1">&nbsp;Dump nach Import löschen</label>'
                     . '<input type="submit" class="close" onclick="return closeModalBox()" value="&times" />'
-                    . '<input type="text" name="dbname2" id="dbname2" class="db_text" value="'.$value.'" />'
-                    . '<input type="submit" class="input_db nosee" id="duplicate" name="duplicate" onclick="return confirmDuplicate('.$no.')" value="OK" />'
-                    . '<input type="submit" class="input_db nosee" id="rename" name="rename" onclick="return confirmRename('.$no.')" value="OK" />'               
+                    . $this->showDumpDropDown()
+                    . '<input type="text" name="dbname2 nosee" id="dbname2" class="db_text nosee" value="'.$value.'" />'
+                    . '<input type="submit" class="input_db nosee" id="insert" name="insert" onclick="return checkDump()" value="OK" />'
+                    . '<input type="submit" class="input_db nosee" id="duplicate" name="duplicate" onclick="return confirmDuplicateOrRename(\'duplizieren\')" value="OK" />'
+                    . '<input type="submit" class="input_db nosee" id="rename" name="rename" onclick="return confirmDuplicateOrRename(\'umbenennen\')" value="OK" />'               
                     . '</div></div>'
                     . '</form>';
         return $HTMLTable;

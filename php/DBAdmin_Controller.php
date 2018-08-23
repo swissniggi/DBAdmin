@@ -40,15 +40,8 @@ class DBAdmin_Controller {
 
             // Operation 'Datenbank importieren' wurde gestartet
             } else if (isset($_POST['insert'])) {
-                $newDb = null;
-                
-                // DB erstellen falls nicht vorhanden
-                $newDb = $_POST['dbname'].'.sql';
                 $this->openRootDbConnection();
-                $this->createDatabase($_POST['dbname']);
-                
-                // Dump importieren
-                $this->importDatabase($_POST['dbselect'], $newDb, isset($_POST['dumpdelete']));
+                $this->importDatabase($_POST['dump'], $_POST['selectedDB'], isset($_POST['dumpdelete']));
                 $this->model->closeDbConnection($this->model->rootPdo);
                 $this->gui->showMessage('importok');
             
@@ -124,7 +117,7 @@ class DBAdmin_Controller {
         
         // Prüfen ob gleichnamige Datenbank existiert
         if (count($this->model->selectDatabase($dbname)) !== 0) {
-            return false;
+            throw new Exception('Gleichnamige Datenbank existiert schon');
         }
         
         // Datenbank erstellen
@@ -132,8 +125,7 @@ class DBAdmin_Controller {
         
         if (!$result) {
             throw new Exception('Erstellen der Datenbank fehlgeschlagen!');
-        }           
-        return true;
+        }
     }
         
     
@@ -168,9 +160,7 @@ class DBAdmin_Controller {
         }
         
         // neue Datenbank erstellen
-        if (!$this->createDatabase($newDbname)) {
-            throw new Exception('Gleichnamige Datenbank existiert schon!');
-        } 
+        $this->createDatabase($newDbname); 
         
         // Datenbank exportieren
         $this->exportDatabase($oldDbFile, false);                       
@@ -200,8 +190,8 @@ class DBAdmin_Controller {
      * @return boolean
      */
     private function getUserRights($username) {
-        $conf = self::_setDbData();
-        $result = $this->model->selectUserRights($conf['host'], $username);
+        $host = json_decode(file_get_contents('config/dbadmin.json'))->host;
+        $result = $this->model->selectUserRights($host, $username);
 
         if (strpos($result[0][0], 'ALL PRIVILEGES ON *.*') === false) {
             return false;
@@ -236,8 +226,8 @@ class DBAdmin_Controller {
         $password = $_POST['passwort'];
         require_once 'DBAdmin_Model.php';
         $this->model = new DBAdmin_Model();
-        $config = self::_setDbData();
-        $con = $this->model->openDbConnection($config["host"], $username, $password);               
+        $host = json_decode(file_get_contents('config/dbadmin.json'))->host;
+        $con = $this->model->openDbConnection($host, $username, $password);               
         $this->model->closeDbConnection($con);
 
         // mit root zur Datenbank verbinden
@@ -253,7 +243,7 @@ class DBAdmin_Controller {
         
         // conf-File für Benutzer erstellen
         $conffile = fopen('config/user.conf', 'w');
-        $txt = "[client]\r\nhost=".$config["host"]."\r\nuser=".$username."\r\npassword=\"".$password."\"";
+        $txt = "[client]\r\nhost=".$host."\r\nuser=".$username."\r\npassword=\"".$password."\"";
         fwrite($conffile, $txt);
         fclose($conffile);
         
@@ -279,8 +269,8 @@ class DBAdmin_Controller {
         $this->model = new DBAdmin_Model();
         
         // MySQL-Verbindung herstellen
-        $config = self::_setDbData();
-        $this->model->rootPdo = $this->model->openDbConnection($config["host"], $config["user"], $config["password"]);
+        $config = json_decode(file_get_contents('config/dbadmin.json'));
+        $this->model->rootPdo = $this->model->openDbConnection($config->host, $config->user, $config->password);
     }
     
     
@@ -300,9 +290,7 @@ class DBAdmin_Controller {
         }
         
         // neue Datenbank erstellen
-        if (!$this->createDatabase($newDbname)) {
-            throw new Exception('Gleichnamige Datenbank existiert schon!');
-        } 
+        $this->createDatabase($newDbname);
         
         // Datenbank exportieren
         $this->exportDatabase($oldDbFile, false);
@@ -313,36 +301,5 @@ class DBAdmin_Controller {
         // Datenbank importieren
         $this->importDatabase(null, $newDbFile, true);       
         $this->model->closeDbConnection($this->model->rootPdo);
-    }
-
-    
-    // --------------------- //
-     ## Statische Funktionen##
-    // --------------------- //             
-    
-    /**
-     * Liest die Anmeldedaten für MySQL aus dem Config-File
-     * @return array
-     */
-    public static function _setDbData() {        
-        // Benutzername und Passwort aus Config-File holen
-        $file = file('config/mysql.conf');
-        
-        if (!is_array($file)) {
-            throw new Exception('MySQL-Config-File nicht gefunden!');
-        }
-        
-        $config = [];
-        
-        foreach ($file as $line) {
-            $line = trim($line);
-            if (mb_strpos($line, '=') !== false) {
-                $data = explode('=', $line);
-                $config[$data[0]] = $data[1];
-            }
-        }
-        // Anführungszeichen entfernen
-        $config['password'] = str_replace('"', '', $config['password']);
-        return $config;
     }
 }

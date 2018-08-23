@@ -76,7 +76,7 @@ class DBAdmin_FileReader {
         $dumps = file_get_contents('config/dbadmin.json');
         
         if (!$dumps) {
-            throw new Exception('dbadmin.conf nicht gefunden!');
+            throw new Exception('dbadmin.json nicht gefunden!');
         }
         
         $dumps = json_decode($dumps)->dumps;

@@ -94,7 +94,7 @@ body{
     margin-top: 10px;
     
     font-size: 18px;
-    display: inline-block;
+    display: none;
 }
 
 .db_text::placeholder{
@@ -113,9 +113,11 @@ body{
 /* Modal-Box */
 
 .close{
+    height: 38px;
     float: right;
     padding-bottom: 4px;
     margin-right: -50px;
+    margin-top: -38px;
     
     font-size: 28px;
     font-weight: bold;
@@ -137,7 +139,7 @@ body{
     width: 25px;
     margin-left: 5px;
     margin-right: 5px;
-    margin-top: 5px;
+    margin-top: 1px;
 }
 
 .img:hover{
@@ -146,13 +148,12 @@ body{
 
 .input_db{
     width: 60px;
-    height: 40px;
+    height: 43px;
     
     background-color: lightgreen;
     border: none;
     
     margin-left: 10px;
-    margin-top: 10px;
     position: absolute;   
     display: none;
 }
@@ -192,37 +193,16 @@ body{
 
 #checkbox{
     margin-bottom: 20px;
-    margin-top: 60px;
+    margin-top: 50px;
 }
 
 #checkboxlabel{
     display: none;
 }
 
-#export{
-    width: 25px;
-    margin-left: 5px;
-    margin-right: 5px;
-}
-
-#export:hover{
-    cursor: pointer;
-}
-
-#import{
-    height: 25px;
-    margin-left: 5px;
-    margin-right: 5px;
-}
-
-#import:hover{
-    cursor: pointer;
-}
-
 #plus{
     width: 25px;
-    margin-left: 5px;
-    margin-right: 5px;
+    margin-left: 15px;
 }
 
 #plus:hover{
@@ -231,7 +211,7 @@ body{
 
 #select{
     width: 240px;
-    height: 40px;
+    height: 43px;
     
     font-size: 18px;
     text-align: center;
@@ -240,6 +220,21 @@ body{
     border: 1px solid #e6e6f2;
     
     display: none;
+}
+
+.titlebar{
+    width: 390px;
+    height: 31px;
+    
+    margin-left: -50px;
+    padding-top: 7px;
+    
+    background-color: darkslateblue;
+    
+    color: white;
+    text-align: center;
+    font-size: larger;
+    font-weight: bold;
 }
 
 /* Loader */
