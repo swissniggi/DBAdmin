@@ -140,6 +140,17 @@ function confirmLogout() {
 }
 
 
+
+function executeEvent(name) {
+    switch(name) {
+        case 'create': checkDbname(name); break;
+        case 'insert': checkDump(); break;
+        case 'duplicate': 
+        case 'rename': confirmDuplicateOrRename(name); break;
+    }
+}
+
+
 /**
  * Ausgewählte Datenbank in Hiddenfield schreiben
  * --> true = Datenbank ausgewählt
@@ -176,17 +187,14 @@ function showModalBox(Id, name) {
     }
     
     var modalbox = document.getElementById('modalbox_' + name);
-    modalbox.style.display = "block";
-    var button = document.getElementById(name);
+    modalbox.style.display = "block";   
     
-    if (name === 'insert') {
-        button.style = "display: inline-block";
-    } else {
+    if (name !== 'insert') {  
         var dbname = document.getElementById('dbname_' + name);
-        dbname.style = "margin-top: 50px";
+        var button = document.getElementById(name);
         dbname.focus();
         dbname.selectionStart += dbname.value.length;
-        button.style = "margin-top: 50px";
+        button.style = "margin-top: 51px";
     }
     
     var text = '';

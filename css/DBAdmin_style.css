@@ -91,7 +91,7 @@ body{
 .db_text{
     width: 240px;
     height: 40px;
-    margin-top: 10px;
+    margin-top: 50px;
     
     font-size: 18px;
     display: inline-block;
@@ -151,7 +151,7 @@ body{
 
 .input_db{
     width: 60px;
-    height: 43px;
+    height: 44px;
     
     background-color: lightgreen;
     border: none;

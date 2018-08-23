@@ -35,73 +35,31 @@ class DBAdmin_GUI {
     
     
     /**
-     * Erstellen der 4 Modalboxen
+     * Erstellen der Modalbox
      * @return string
      */
-    private function setModalBoxCreate() {
+    private function setModalBox($name) {
         $root = $_SESSION['root'];
         $value = $root === false ? $_SESSION['username'] : '';
         
-        $modalBox = '<form class="dbform" method="post" action="">'
-                . '<div id="modalbox_create" class="modalbox">'               
+        $modalBox = '<form id="'.$name.'_form" class="dbform" method="post" action="">'
+                . '<div id="modalbox_'.$name.'" class="modalbox">'               
                 . '<div class="inbox">'
-                . '<div id="titlebar_create" class="titlebar"></div>'                
-                . '<input type="button" class="close" onclick="return closeModalBox(\'create\')" value="&times" />'                
-                . '<input type="text" name="dbname" id="dbname_create" class="db_text nosee" value="'.$value.'" />'               
-                . '<input type="submit" class="input_db" id="create" name="create" onclick="return checkDbname(\'create\')" value="OK" />'
+                . '<div id="titlebar_'.$name.'" class="titlebar"></div>';
+        if ($name === 'insert') {
+            $modalBox .= '<label class="dump_label nosee" id="checkboxlabel"><input id="checkbox" type="checkbox" name="dumpdelete" value="1">&nbsp;Dump nach Import löschen</label>'
+                    . '<input type="button" class="close" onclick="return closeModalBox(\'insert\')" value="&times" />'
+                    . $this->showDumpDropDown()
+                    . '<input type="hidden" id="hiddenfield_insert" name="selectedDB" value="" />';
+        } else {
+            $modalBox .= '<input type="button" class="close" onclick="return closeModalBox(\''.$name.'\')" value="&times" />'
+                    . '<input type="hidden" id="hiddenfield_'.$name.'" name="selectedDB" value="" />'
+                    . '<input type="text" name="dbname" id="dbname_'.$name.'" class="db_text nosee" value="'.$value.'" />';
+        }
+        $modalBox .= '<input type="submit" class="input_db nosee" id="'.$name.'" name="create" onclick="return executeEvent(\''.$name.'\')" value="OK" />'
                 . '</div></div></form>';
         return $modalBox;
-    }
-    
-    
-    private function setModalBoxInsert() {
-        // Form benötigt Id damit Wert von Select übergeben wird
-        $modalBox = '<form id="insert_form" class="dbform" method="post" action="">'
-                . '<div id="modalbox_insert" class="modalbox">'               
-                . '<div class="inbox">'
-                . '<div id="titlebar_insert" class="titlebar"></div>'
-                . '<label class="dump_label nosee" id="checkboxlabel"><input id="checkbox" type="checkbox" name="dumpdelete" value="1">&nbsp;Dump nach Import löschen</label>'
-                . '<input type="button" class="close" onclick="return closeModalBox(\'insert\')" value="&times" />'
-                . $this->showDumpDropDown()
-                . '<input type="hidden" id="hiddenfield_insert" name="selectedDB" value="" />'
-                . '<input type="submit" class="input_db nosee" id="insert" name="insert" onclick="return checkDump()" value="OK" />'
-                . '</div></div></form>';
-        return $modalBox;
-    }
-    
-    
-    private function setModalBoxDuplicate() {
-        $root = $_SESSION['root'];
-        $value = $root === false ? $_SESSION['username'] : '';
-        
-        $modalBox = '<form class="dbform" method="post" action="">'
-                . '<div id="modalbox_duplicate" class="modalbox">'               
-                . '<div class="inbox">'
-                . '<div id="titlebar_duplicate" class="titlebar"></div>'                
-                . '<input type="button" class="close" onclick="return closeModalBox(\'duplicate\')" value="&times" />'
-                . '<input type="text" name="dbname" id="dbname_duplicate" class="db_text nosee" value="'.$value.'" />'
-                . '<input type="hidden" id="hiddenfield_duplicate" name="selectedDB" value="" />'
-                . '<input type="submit" class="input_db nosee" id="duplicate" name="duplicate" onclick="return confirmDuplicateOrRename(\'duplicate\')" value="OK" />'
-                . '</div></div></form>';
-        return $modalBox;
-    }
-    
-    
-    private function setModalBoxRename() {
-        $root = $_SESSION['root'];
-        $value = $root === false ? $_SESSION['username'] : '';
-        
-        $modalBox = '<form class="dbform" method="post" action="">'
-                . '<div id="modalbox_rename" class="modalbox">'               
-                . '<div class="inbox">'
-                . '<div id="titlebar_rename" class="titlebar"></div>'                
-                . '<input type="button" class="close" onclick="return closeModalBox(\'rename\')" value="&times" />'
-                . '<input type="text" name="dbname" id="dbname_rename" class="db_text nosee" value="'.$value.'" />'
-                . '<input type="hidden" id="hiddenfield_rename" name="selectedDB" value="" />'
-                . '<input type="submit" class="input_db nosee" id="rename" name="rename" onclick="return confirmDuplicateOrRename(\'rename\')" value="OK" />'
-                . '</div></div></form>';
-        return $modalBox;
-    }
+    } 
         
     
     /**
@@ -157,7 +115,7 @@ class DBAdmin_GUI {
         $databases = $model->selectDatabases();
         
         $HTMLTable = '<img id="plus" src="png/plus.PNG" title="Neue Datenbank" onclick="showModalBox(0, \'create\')" />'
-                . $this->setModalBoxCreate()
+                . $this->setModalBox('create')
                 . '<div id="overload"><div id="load"></div></div>'
 
                 // Header der HTML-Tabelle erstellen
@@ -202,9 +160,9 @@ class DBAdmin_GUI {
                     . '<img class="img" id="ren'.$no.'" src="png/edit.PNG" title="Umbenennen" onclick="showModalBox('.$no.', \'rename\')" /></td></tr>';
         }      
         $HTMLTable .= '</td></table></div>'                    
-                    . $this->setModalBoxInsert()
-                    . $this->setModalBoxDuplicate()
-                    . $this->setModalBoxRename();
+                    . $this->setModalBox('insert')
+                    . $this->setModalBox('duplicate')
+                    . $this->setModalBox('rename');
         return $HTMLTable;
     }
 
