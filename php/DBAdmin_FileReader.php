@@ -8,10 +8,6 @@ class DBAdmin_FileReader {
      * @param boolean $exportOnly
      */
     public function createDump($dbname, $exportOnly) {
-        // Namen der Zieldatenbank definieren
-        $db_parts = explode('.', $dbname);
-        $db = $db_parts[0];
-        
         // Pfad des Config-Files angeben
         // es enthält den MySQL-Benutzernamen und das Passwort, sowie den Hostnamen
         $mysqlconf = realpath('config/user.conf');
@@ -19,12 +15,12 @@ class DBAdmin_FileReader {
         // Dumppfad definieren
         $dumps = json_decode(file_get_contents('config/dbadmin.json'))->dumps;
         $user = $_SESSION['username'];
-        $filename = $exportOnly ? $db : $_SESSION['id'];
+        $filename = $exportOnly ? $dbname : $_SESSION['id'];
         $dbpath = realpath($dumps).'/'.$user.'/'.$filename.'.sql';
         
         // Dump exportieren
         $command = 'mysqldump --defaults-file="'.$mysqlconf.'" --events --routines --triggers '
-                   .escapeshellarg($db).' > "'.escapeshellarg($dbpath).'" 2>&1';    
+                   .escapeshellarg($dbname).' > "'.escapeshellarg($dbpath).'" 2>&1';    
         exec($command, $out, $return);
         
         if ($return !== 0) {
@@ -41,9 +37,7 @@ class DBAdmin_FileReader {
      */
     public function executeDump($oldDbname, $newDbname, $delete) {
         // Namen der Zieldatenbank definieren
-        $dbname = $newDbname === null ? $oldDbname : $newDbname;
-        $db_parts = explode('.', $dbname);
-        $db = $db_parts[0];
+        $db = $newDbname === null ? $oldDbname : $newDbname;
         
         // Pfad des Config-Files angeben
         // es enthält den MySQL-Benutzernamen und das Passwort, sowie den Hostnamen

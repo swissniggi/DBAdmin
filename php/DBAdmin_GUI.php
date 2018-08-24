@@ -24,7 +24,7 @@ class DBAdmin_GUI {
             case 'main':                  
                 echo '<form class="form_header" method="post" action="">';
                 echo '<div id="user"><p>Angemeldet als <b>'.$_SESSION['username'].'</b></p></div>';
-                echo '<input type="image" class="input_logout" id="logout" name="logout" title="Ausloggen" src="png/logout.PNG" onclick="return confirmLogout()">';
+                echo '<input type="image" alt="Logout" class="input_logout" id="logout" name="logout" title="Ausloggen" src="png/logout.PNG" onclick="return confirmLogout()">';
                 echo '</form>';
                 
                 // HTML-Tabelle generieren
@@ -36,6 +36,7 @@ class DBAdmin_GUI {
     
     /**
      * Erstellen der Modalbox
+     * @param string $name
      * @return string
      */
     private function setModalBox($name) {
@@ -46,17 +47,19 @@ class DBAdmin_GUI {
                 . '<div id="modalbox_'.$name.'" class="modalbox">'               
                 . '<div class="inbox">'
                 . '<div id="titlebar_'.$name.'" class="titlebar"></div>';
+        
         if ($name === 'insert') {
             $modalBox .= '<label class="dump_label nosee" id="checkboxlabel"><input id="checkbox" type="checkbox" name="dumpdelete" value="1">&nbsp;Dump nach Import löschen</label>'
-                    . '<input type="button" class="close" onclick="return closeModalBox(\'insert\')" value="&times" />'
+                    . '<input type="button" class="close" onclick="return closeModalBox(\'insert\')" value="&times;" />'
                     . $this->showDumpDropDown()
                     . '<input type="hidden" id="hiddenfield_insert" name="selectedDB" value="" />';
         } else {
-            $modalBox .= '<input type="button" class="close" onclick="return closeModalBox(\''.$name.'\')" value="&times" />'
+            $modalBox .= '<input type="button" class="close" onclick="return closeModalBox(\''.$name.'\', event)" value="&times;" />'
                     . '<input type="hidden" id="hiddenfield_'.$name.'" name="selectedDB" value="" />'
                     . '<input type="text" name="dbname" id="dbname_'.$name.'" class="db_text nosee" value="'.$value.'" />';
         }
-        $modalBox .= '<input type="submit" class="input_db nosee" id="'.$name.'" name="create" onclick="return executeEvent(\''.$name.'\')" value="OK" />'
+        
+        $modalBox .= '<input type="submit" class="input_db nosee" id="'.$name.'" name="'.$name.'" onclick="return executeEvent(\''.$name.'\')" value="OK" />'
                 . '</div></div></form>';
         return $modalBox;
     } 
@@ -114,8 +117,7 @@ class DBAdmin_GUI {
         // alle Daten für die der HTML-Tabelle abfragen
         $databases = $model->selectDatabases();
         
-        $HTMLTable = '<img id="plus" src="png/plus.PNG" title="Neue Datenbank" onclick="showModalBox(0, \'create\')" />'
-                . $this->setModalBox('create')
+        $HTMLTable = '<img id="plus" alt="Plus" src="png/plus.PNG" title="Neue Datenbank" onclick="showModalBox(0, \'create\')" />'
                 . '<div id="overload"><div id="load"></div></div>'
 
                 // Header der HTML-Tabelle erstellen
@@ -123,6 +125,7 @@ class DBAdmin_GUI {
                 . '<col class="col">'
                 . '<col class="col">'
                 . '<col class="col">'
+                . '<col>'
                 . '<tr>'
                 . '<th>Datenbankname</th>'
                 . '<th>Importdatum</th>'
@@ -145,21 +148,23 @@ class DBAdmin_GUI {
             $HTMLTable .= '<tr  id="td'.$no.'" class="'.$class.'">'
                     . '<td class="tablecells">'.$databases[$i]['dbname'].'</td>'
                     . '<td>'.$databases[$i]['importdate'].'</td>'
-                    . '<td id="db_date">'.$databases[$i]['changedate'].'</td>'                        
+                    . '<td>'.$databases[$i]['changedate'].'</td>'                        
                     . '<td>'
                     . '<form class="form_img" method="post" action="">'
                     . '<input type="hidden" id="hiddenfield_delete_'.$no.'" name="selectedDB" value="" />'                        
-                    . '<input type="image" class="img" id="del'.$no.'" src="png/trash.PNG" name="delete" title="Löschen" onclick="return confirmDeleteOrExport('.$no.', \'delete\')" />'
+                    . '<input type="image" class="img" alt="Delete" id="del'.$no.'" src="png/trash.PNG" name="delete" title="Löschen" onclick="return confirmDeleteOrExport('.$no.', \'delete\')" />'
                     . '</form>'                        
-                    . '<img class="img" id="imp'.$no.'" src="png/import.PNG" name="import" title="Dump importieren" onclick="showModalBox('.$no.', \'insert\')" />'
+                    . '<img class="img" alt="Import" id="imp'.$no.'" src="png/import.PNG" title="Dump importieren" onclick="showModalBox('.$no.', \'insert\')" />'
                     . '<form class="form_img" method="post" action="">'
                     . '<input type="hidden" id="hiddenfield_export_'.$no.'" name="selectedDB" value="" />'
-                    . '<input type="image" class="img" id=exp'.$no.'" src="png/export.PNG" name="export" title="Dump erstellen" onclick="return confirmDeleteOrExport('.$no.', \'export\')" />'
+                    . '<input type="image" class="img" alt="Export" id="exp'.$no.'" src="png/export.PNG" name="export" title="Dump erstellen" onclick="return confirmDeleteOrExport('.$no.', \'export\')" />'
                     . '</form>'
-                    . '<img class="img" id="dup'.$no.'" src="png/duplicate.PNG" title="Duplizieren" onclick="showModalBox('.$no.', \'duplicate\')" />'
-                    . '<img class="img" id="ren'.$no.'" src="png/edit.PNG" title="Umbenennen" onclick="showModalBox('.$no.', \'rename\')" /></td></tr>';
-        }      
-        $HTMLTable .= '</td></table></div>'                    
+                    . '<img class="img" alt="Duplicate" id="dup'.$no.'" src="png/duplicate.PNG" title="Duplizieren" onclick="showModalBox('.$no.', \'duplicate\')" />'
+                    . '<img class="img" alt="Rename" id="ren'.$no.'" src="png/edit.PNG" title="Umbenennen" onclick="showModalBox('.$no.', \'rename\')" /></td></tr>';
+        }
+        // ModalBoxen
+        $HTMLTable .= '</table></div>'
+                    . $this->setModalBox('create')
                     . $this->setModalBox('insert')
                     . $this->setModalBox('duplicate')
                     . $this->setModalBox('rename');
@@ -196,7 +201,7 @@ class DBAdmin_GUI {
                 break;
             default:
                 echo '<script type="text/javascript">alert("Fehler! '.trim($msg).'")</script>';
-                if (strpos($msg, '[2002]') !== false) {
+                if (strpos($msg, '[2002]') !== false || strpos($msg, '[42S02]') !== false) {
                     session_destroy();
                 }
         }        

@@ -27,14 +27,16 @@ function checkDump() {
     if (option === '') {        
         alert('Kein Dump ausgewählt!');
         return false;
-    } else {
+    } else if (confirm('Dump wirklich importieren?')) {
         var load = document.getElementById('load');
         var overload = document.getElementById('overload');
 
-        closeModalBox();
+        closeModalBox('insert');
         overload.style.display = 'flex';
         load.style.display = 'flex';
         return true;
+    } else {
+        return false;
     }
 }
 
@@ -44,10 +46,10 @@ function checkDump() {
  * @returns {Boolean}
  */
 function checkFields() {
-    $username = document.getElementById('username');
-    $password = document.getElementById('passwort');
+    var username = document.getElementById('username');
+    var password = document.getElementById('passwort');
     
-    if ($username.value === '' || $password.value === '') {
+    if (username.value === '' || password.value === '') {
         alert('Bitte fülle alle Felder aus!');
         return false;
     } else {
@@ -59,22 +61,29 @@ function checkFields() {
 /**
  * Modal-Box schliessen und Styles zurücksetzen
  * @param {String} name
+ * @param {Event} event
  * @returns {boolean}
  */
-function closeModalBox(name) {
+function closeModalBox(name, event) {
     var modalbox = document.getElementById('modalbox_' + name);
     var items = document.getElementsByClassName('nosee');
-    var forms = document.getElementsByClassName('dbform');
     
     modalbox.style.display = "none";
-    for (var form in forms) {
-        form.reset();
-    }
     
     for (var i = 0; i < items.length; i++) {
         items[i].removeAttribute('style');
+        
     }
-    return false;
+    
+    // folgenden Code nur ausführen, wenn auf 'X' geclickt wurde
+    if (typeof event !== 'undefined') {
+        for (i = 0; i < items.length; i++) {
+            if (items[i].type === 'text') {
+                items[i].value = '';
+            }
+        }
+        return false;
+    }
 }
 
 
@@ -115,18 +124,18 @@ function confirmDuplicateOrRename(name) {
     var overload = document.getElementById('overload');
     
     var dbname = checkDbname(name);
+    var insert = name === 'duplicate' ? 'duplizieren' : 'umbenennen';
     
     if (dbname === hiddenfield) {
-            alert('Der neue Datenbankname muss sich vom aktuellen Namen unterscheiden!');
-            return false;
-    } else if (!dbname) {
+        alert('Der neue Datenbankname muss sich vom aktuellen Namen unterscheiden!');
         return false;
-    } else {
+    } else if (dbname && confirm('Datenbank wirklich ' + insert + '?')) {
+        closeModalBox(name);
         overload.style.display = 'flex';
-        load.style.display = 'flex';
-        closeModalBox();
-        name = name === 'duplicate' ? 'duplizieren' : 'umbenennen';
-        return confirm('Datenbank wirklich ' + name + '?');
+        load.style.display = 'flex';       
+        return true;
+    } else {
+        return false;
     }
 }
 
@@ -140,13 +149,17 @@ function confirmLogout() {
 }
 
 
-
+/**
+ * Button-Event ausführen
+ * @param {string} name
+ * @returns {Boolean|Element.value}
+ */
 function executeEvent(name) {
     switch(name) {
-        case 'create': checkDbname(name); break;
-        case 'insert': checkDump(); break;
+        case 'create': return checkDbname(name); break;
+        case 'insert': return checkDump(); break;
         case 'duplicate': 
-        case 'rename': confirmDuplicateOrRename(name); break;
+        case 'rename': return confirmDuplicateOrRename(name); break;
     }
 }
 
@@ -194,7 +207,7 @@ function showModalBox(Id, name) {
         var button = document.getElementById(name);
         dbname.focus();
         dbname.selectionStart += dbname.value.length;
-        button.style = "margin-top: 51px";
+        button.style = "margin-top: 50px";
     }
     
     var text = '';

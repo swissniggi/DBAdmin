@@ -88,7 +88,12 @@ class DBAdmin_Model {
      * Liest alle Daten für die HTML-Tabelle aus
      * @return array
      */
-    public function selectDatabases() {       
+    public function selectDatabases() {
+        $exclude = '';
+        if (!$_SESSION['root']) {
+           $exclude = "WHERE is_SCHE.SCHEMA_NAME <> 'dbadmin' ";
+        }
+        
         $selectDBs = $this->rootPdo->prepare(
             "SELECT is_SCHE.SCHEMA_NAME AS dbname, "
             . "COALESCE(MAX(dba.importdate), '--') AS importdate, "
@@ -96,8 +101,9 @@ class DBAdmin_Model {
             . "FROM information_schema.SCHEMATA AS is_SCHE "
             . "LEFT JOIN dbadmin.lastimport AS dba ON is_SCHE.SCHEMA_NAME = dba.dbname "
             . "LEFT JOIN information_schema.TABLES AS is_TAB ON is_SCHE.SCHEMA_NAME = is_TAB.TABLE_SCHEMA "
+            . $exclude
             . "GROUP BY is_SCHE.SCHEMA_NAME;"
-            );        
+            );  
         $selectDBs->execute();
         $result = $selectDBs->fetchAll();
         return $result;

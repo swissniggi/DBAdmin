@@ -149,9 +149,6 @@ class DBAdmin_Controller {
      * @param string $oldDbname
      */
     private function duplicateDatabase($newDbname, $oldDbname) {
-        $newDbFile = $newDbname.'.sql';
-        $oldDbFile = $oldDbname.'.sql';
-        
         // Datenbankname prüfen
         $check = $this->checkDbname($newDbname);
         
@@ -163,10 +160,10 @@ class DBAdmin_Controller {
         $this->createDatabase($newDbname); 
         
         // Datenbank exportieren
-        $this->exportDatabase($oldDbFile, false);                       
+        $this->exportDatabase($oldDbname, false);                       
                                   
         // Datenbank importieren
-        $this->importDatabase(null, $newDbFile, true);
+        $this->importDatabase(null, $newDbname, true);
         
         $this->model->closeDbConnection($this->model->rootPdo);
     }
@@ -281,9 +278,6 @@ class DBAdmin_Controller {
      * @param string $oldDbname
      */
     private function renameDatabase($newDbname, $oldDbname) {
-        $newDbFile = $newDbname.'.sql';
-        $oldDbFile = $oldDbname.'.sql';
-        
         $check = $this->checkDbname($newDbname);
         
         if (!$check) {
@@ -294,13 +288,13 @@ class DBAdmin_Controller {
         $this->createDatabase($newDbname);
         
         // Datenbank exportieren
-        $this->exportDatabase($oldDbFile, false);
+        $this->exportDatabase($oldDbname, false);
         
         // Datenbank löschen
         $this->model->deleteDatabase($oldDbname);        
             
         // Datenbank importieren
-        $this->importDatabase(null, $newDbFile, true);       
+        $this->importDatabase(null, $newDbname, true);       
         $this->model->closeDbConnection($this->model->rootPdo);
     }
 }
