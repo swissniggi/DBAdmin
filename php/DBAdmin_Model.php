@@ -88,13 +88,13 @@ class DBAdmin_Model {
      * Liest alle Daten für die HTML-Tabelle aus
      * @return array
      */
-    public function selectDatabases() {
+    public function selectDatabases($pdo) {
         $exclude = '';
         if (!$_SESSION['root']) {
            $exclude = "WHERE is_SCHE.SCHEMA_NAME <> 'dbadmin' ";
         }
         
-        $selectDBs = $this->rootPdo->prepare(
+        $selectDBs = $pdo->prepare(
             "SELECT is_SCHE.SCHEMA_NAME AS dbname, "
             . "COALESCE(MAX(dba.importdate), '--') AS importdate, "
             . "COALESCE(MAX(DATE(is_TAB.UPDATE_TIME)), '--') AS changedate "
@@ -112,6 +112,7 @@ class DBAdmin_Model {
     
     /**
      * Liest die Benutzerrechte aus der Datenbank
+     * @param string $host
      * @param string $username
      * @return array
      */
