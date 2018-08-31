@@ -38,6 +38,9 @@ kit.App = class kit_App {
                     footerCaption: '&copy; by Nicolas Burgunder',
                     iconCls: 'icoWizard16',
                     cls: 'kijs-flexrow',
+                    style:{
+                        flex: 1
+                    },
                     elements:[
                         {
                             xtype: 'kijs.gui.DataView',
@@ -49,7 +52,8 @@ kit.App = class kit_App {
                             facadeFnLoad: 'dbadmin.loadDbs',                        
                             innerStyle: {
                                 padding: '10px',
-                                overflowY: 'auto'
+                                overflowY: 'auto',
+                                flex: 'initial'
                             }
                         }
                     ],
@@ -58,15 +62,20 @@ kit.App = class kit_App {
                             xtype: 'kijs.gui.Button',
                             name: 'btnCreate',
                             html: '<img src="img/create.PNG" style="width: 25px" alt="DB erstellen"></img>',
+                            toolTip: 'neue Datenbank erstellen',
                             on:{
                                 click: function(){
                                     _this.showActionWindow('create');
                                 }
                             }
-                        },{
+                        }
+                    ],
+                    headerBarElements:[
+                        {
                             xtype: 'kijs.gui.Button',
                             name: 'btnLogout',
-                            html: '<img src="img/logout.PNG" style="width: 25px" alt"Ausloggen"></img>',
+                            html: '<img src="img/logout.PNG" style="width: 30px" alt"Ausloggen"></img>',
+                            toolTip: 'Ausloggen',
                             on:{
                                 click: function(){
                                     sessionStorage.removeItem('ID');
@@ -91,6 +100,7 @@ kit.App = class kit_App {
                             xtype: 'kijs.gui.Button',
                             name: 'btnDelete',
                             html: '<img src="img/trash.PNG" style="width: 25px" alt="DB löschen"></img>',
+                            toolTip: 'Datenbank löschen',
                             style:{
                                 border: 'none'
                             },
@@ -111,6 +121,7 @@ kit.App = class kit_App {
                             xtype: 'kijs.gui.Button',
                             name: 'btnImport',
                             html: '<img src="img/import.PNG" style="width: 25px" alt="Dump importieren"></img>',
+                            toolTip: 'Dump importieren',
                             style:{
                                 border: 'none'
                             },
@@ -127,6 +138,7 @@ kit.App = class kit_App {
                             xtype: 'kijs.gui.Button',
                             name: 'btnExport',
                             html: '<img src="img/export.PNG" style="width: 25px" alt="Dump exportieren"></img>',
+                            toolTip: 'Datenbank exportieren',
                             style:{
                                 border: 'none'
                             },
@@ -151,6 +163,7 @@ kit.App = class kit_App {
                             xtype: 'kijs.gui.Button',
                             name: 'btnDuplicate',
                             html: '<img src="img/duplicate.PNG" style="width: 25px" alt="DB duplizieren"></img>',
+                            toolTip: 'Datenbank duplizieren',
                             style:{
                                 border: 'none'
                             },
@@ -167,6 +180,7 @@ kit.App = class kit_App {
                             xtype: 'kijs.gui.Button',
                             name: 'btnRename',
                             html: '<img src="img/edit.PNG" style="width: 25px" alt="DB umbenennen"></img>',
+                            toolTip: 'Datenbank umbenennen',
                             style:{
                                 border: 'none'
                             },
@@ -185,6 +199,7 @@ kit.App = class kit_App {
             ]
         });
         this.viewport.render();
+        
         if (!sessionStorage.getItem('ID')) {
             this.showLoginWindow();
         } else {
@@ -344,6 +359,10 @@ kit.App = class kit_App {
                     autoLoad: true,
                     facadeFnLoad: 'dbadmin.loadDumps'
                 },{
+                    xtype: 'kijs.gui.field.Checkbox',
+                    name: 'delete',
+                    caption: 'Dump nach import löschen'
+                },{
                     xtype: 'kijs.gui.Button',
                     name: 'btnImport',
                     width: 100,
@@ -351,22 +370,20 @@ kit.App = class kit_App {
                     caption: 'Importieren',
                     on:{
                         click: function(){
-                            kijs.gui.MsgBox.confirm('Bestätigen', 'Soll der Dump nach dem Import gelöscht werden?', function(e){
-                                _this._rpc.do('dbadmin.import', {
-                                    'database' : _this.viewport.elements[0].elements[0].getSelected().dataRow['Datenbank'],
-                                    'dump' : this.parent.down('dumps').value,
-                                    'delete' : e.btn === 'yes' ? true : false
-                                }, 
-                                function(response) {
-                                    if (response.data.success === 'true') {
-                                        kijs.gui.CornerTipContainer.show('Info', 'Dump erfolgreich importiert', 'info');
-                                        this.viewport.elements[0].elements[0].load();
-                                        selectWindow.destruct();
-                                    } else {
-                                        kijs.gui.MsgBox.error('Fehler', response.errorMsg);       
-                                    }
-                                }, _this, false, this.parent, 'dom', false);
-                            }, this);
+                            _this._rpc.do('dbadmin.import', {
+                                'database' : _this.viewport.elements[0].elements[0].getSelected().dataRow['Datenbank'],
+                                'dump' : this.parent.down('dumps').value,
+                                'delete' : this.parent.down('delete').value
+                            }, 
+                            function(response) {
+                                if (response.data.success === 'true') {
+                                    kijs.gui.CornerTipContainer.show('Info', 'Dump erfolgreich importiert', 'info');
+                                    this.viewport.elements[0].elements[0].load();
+                                    selectWindow.destruct();
+                                } else {
+                                    kijs.gui.MsgBox.error('Fehler', response.errorMsg);       
+                                }
+                            }, _this, false, this.parent, 'dom', false);
                         }
                     }
                 }
