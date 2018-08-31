@@ -28,6 +28,7 @@
                         if ($importdate !== '--') {
                             $importdate = date('d.m.Y', strtotime($importdate));
                         }
+                        
                         $changedate = $database['changedate'];
                         if ($changedate !== '--') {
                             $changedate = date('d.m.Y', strtotime($changedate));
@@ -53,7 +54,8 @@
                     
                     foreach ($return as $dump) {
                         $rows[] = array(
-                            'Dumpname' => $dump
+                            'value' => $dump,
+                            'caption' => $dump
                         );
                     }                    
                     $response->rows = $rows;
@@ -74,6 +76,7 @@
                 
             case 'dbadmin.create':
                 $return = $con->createDatabase($request->data->newDbname);
+                
                 if ($return instanceof Exception || $return instanceof Error) {
                     $response->errorMsg = $return->getMessage(); 
                 } else {
@@ -85,6 +88,7 @@
                 
             case 'dbadmin.import':
                 $return = $con->importDatabase($request->data);
+                
                 if ($return instanceof Exception || $return instanceof Error) {
                     $response->errorMsg = $return->getMessage(); 
                 } else {
@@ -96,6 +100,7 @@
                 
             case 'dbadmin.export':
                 $return = $con->exportDatabase($request->data->Datenbank, true);
+                
                 if ($return instanceof Exception || $return instanceof Error) {
                     $response->errorMsg = $return->getMessage(); 
                 } else {
@@ -107,6 +112,7 @@
                 
             case 'dbadmin.duplicate':
                 $return = $con->duplicateDatabase($request->data->newDbname, $request->data->oldDbname);
+                
                 if ($return instanceof Exception || $return instanceof Error) {
                     $response->errorMsg = $return->getMessage(); 
                 } else {
@@ -118,6 +124,7 @@
                 
             case 'dbadmin.rename':
                 $return = $con->renameDatabase($request->data->newDbname, $request->data->oldDbname);
+                
                 if ($return instanceof Exception || $return instanceof Error) {
                     $response->errorMsg = $return->getMessage(); 
                 } else {
@@ -129,6 +136,7 @@
                 
             case 'dbadmin.delete':
                 $return = $con->deleteDatabase($request->data->Datenbank);
+                
                 if ($return instanceof Exception || $return instanceof Error) {
                     $response->errorMsg = $return->getMessage(); 
                 } else {
@@ -140,6 +148,7 @@
                 
             case 'dbadmin.logout':
                 $return = $con->logoutUser();
+                
                 if ($return instanceof Exception || $return instanceof Error) {
                     $response->errorMsg = $return->getMessage(); 
                 } else {

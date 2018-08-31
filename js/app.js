@@ -321,7 +321,7 @@ kit.App = class kit_App {
     
     
     showSelectWindow() {
-        let _this = this;        
+        let _this = this;       
         
         // Window erstellen
         let selectWindow = new dbadmin_Window({
@@ -338,18 +338,11 @@ kit.App = class kit_App {
             },
             elements:[
                 {
-                    xtype: 'kijs.gui.DataView',
-                    name: 'dumps',
-                    selectType: 'single',
-                    rpc: this._rpc, 
-                    waitMaskTargetDomProperty: 'innerDom',
+                    xtype: 'kijs.gui.field.Combo',
+                    name: 'dumps',                   
+                    rpc: this._rpc,
                     autoLoad: true,
-                    height: 400,                    
-                    facadeFnLoad: 'dbadmin.loadDumps',
-                    innerStyle: {
-                        padding: '10px',
-                        overflowY: 'scroll'
-                    }
+                    facadeFnLoad: 'dbadmin.loadDumps'
                 },{
                     xtype: 'kijs.gui.Button',
                     name: 'btnImport',
@@ -361,7 +354,7 @@ kit.App = class kit_App {
                             kijs.gui.MsgBox.confirm('Bestätigen', 'Soll der Dump nach dem Import gelöscht werden?', function(e){
                                 _this._rpc.do('dbadmin.import', {
                                     'database' : _this.viewport.elements[0].elements[0].getSelected().dataRow['Datenbank'],
-                                    'dump' : this.parent.down('dumps').getSelected().dataRow['Dumpname'],
+                                    'dump' : this.parent.down('dumps').value,
                                     'delete' : e.btn === 'yes' ? true : false
                                 }, 
                                 function(response) {
