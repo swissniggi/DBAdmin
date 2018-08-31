@@ -41,14 +41,12 @@ kit.App = class kit_App {
                     elements:[
                         {
                             xtype: 'kijs.gui.DataView',
+                            name: 'databases',
                             selectType: 'single',
                             rpc: this._rpc, 
                             waitMaskTargetDomProperty: 'innerDom',
                             autoLoad: true,
-                            facadeFnLoad: 'dbadmin.loadDbs',
-                            style: {
-                                flex: 1
-                            },
+                            facadeFnLoad: 'dbadmin.loadDbs',                        
                             innerStyle: {
                                 padding: '10px',
                                 overflowY: 'auto'
@@ -62,7 +60,7 @@ kit.App = class kit_App {
                             html: '<img src="img/create.PNG" style="width: 25px" alt="DB erstellen"></img>',
                             on:{
                                 click: function(){
-                                    _this.showCreateWindow();
+                                    _this.showActionWindow('create');
                                 }
                             }
                         },{
@@ -81,7 +79,7 @@ kit.App = class kit_App {
                                             this.viewport.elements[0].elements[0].load(null);
                                             
                                         } else {
-                                            kijs.gui.MsgBox.error('Fehler', response.data);       
+                                            kijs.gui.MsgBox.error('Fehler', response.errorMsg);       
                                         }
                                     }, _this, false, this.parent, 'dom', false);
                                 }
@@ -95,6 +93,19 @@ kit.App = class kit_App {
                             html: '<img src="img/trash.PNG" style="width: 25px" alt="DB löschen"></img>',
                             style:{
                                 border: 'none'
+                            },
+                            on:{
+                                click: function(){
+                                    _this._rpc.do('dbadmin.delete', this.parent.parent.down('databases').getSelected().dataRow, 
+                                    function(response) {
+                                        if (response.data.success === 'true') {
+                                            kijs.gui.CornerTipContainer.show('Info', 'Datenbank erfolgreich gelöscht', 'info');
+                                            this.viewport.elements[0].elements[0].load();             
+                                        } else {
+                                            kijs.gui.MsgBox.error('Fehler', response.errorMsg);       
+                                        }
+                                    }, _this, false, this.parent, 'dom', false);
+                                }
                             }
                         },{
                             xtype: 'kijs.gui.Button',
@@ -102,6 +113,15 @@ kit.App = class kit_App {
                             html: '<img src="img/import.PNG" style="width: 25px" alt="Dump importieren"></img>',
                             style:{
                                 border: 'none'
+                            },
+                            on:{
+                                click: function(){
+                                    if (this.parent.parent.down('databases').getSelected() === null) {
+                                        kijs.gui.MsgBox.alert('Achtung','Keine Datenbank ausgewählt!');
+                                    } else {
+                                        _this.showSelectWindow();
+                                    }
+                                }
                             }
                         },{
                             xtype: 'kijs.gui.Button',
@@ -109,6 +129,23 @@ kit.App = class kit_App {
                             html: '<img src="img/export.PNG" style="width: 25px" alt="Dump exportieren"></img>',
                             style:{
                                 border: 'none'
+                            },
+                            on:{
+                                click: function(){
+                                    if (this.parent.parent.down('databases').getSelected() === null) {
+                                        kijs.gui.MsgBox.alert('Achtung','Keine Datenbank ausgewählt!');
+                                    } else {
+                                        _this._rpc.do('dbadmin.export', this.parent.parent.down('databases').getSelected().dataRow, 
+                                        function(response) {
+                                            if (response.data.success === 'true') {
+                                                kijs.gui.CornerTipContainer.show('Info', 'Datenbank erfolgreich exportiert', 'info');
+                                                this.viewport.elements[0].elements[0].load();             
+                                            } else {
+                                                kijs.gui.MsgBox.error('Fehler', response.errorMsg);       
+                                            }
+                                        }, _this, false, this.parent, 'dom', false);
+                                    }
+                                }
                             }
                         },{
                             xtype: 'kijs.gui.Button',
@@ -116,6 +153,15 @@ kit.App = class kit_App {
                             html: '<img src="img/duplicate.PNG" style="width: 25px" alt="DB duplizieren"></img>',
                             style:{
                                 border: 'none'
+                            },
+                            on:{
+                                click: function(){
+                                    if (this.parent.parent.down('databases').getSelected() === null) {
+                                        kijs.gui.MsgBox.alert('Achtung','Keine Datenbank ausgewählt!');
+                                    } else {
+                                        _this.showActionWindow('duplicate');
+                                    }
+                                }
                             }
                         },{
                             xtype: 'kijs.gui.Button',
@@ -123,6 +169,15 @@ kit.App = class kit_App {
                             html: '<img src="img/edit.PNG" style="width: 25px" alt="DB umbenennen"></img>',
                             style:{
                                 border: 'none'
+                            },
+                            on:{
+                                click: function(){
+                                    if (this.parent.parent.down('databases').getSelected() === null) {
+                                        kijs.gui.MsgBox.alert('Achtung','Keine Datenbank ausgewählt!');
+                                    } else {
+                                        _this.showActionWindow('rename');
+                                    }
+                                }
                             }
                         }                     
                     ]
@@ -138,11 +193,18 @@ kit.App = class kit_App {
     }
     
     
-    showCreateWindow() {
+    showActionWindow(action) {
         let _this = this;
+        let caption = '';
+        
+        switch(action) {
+            case 'create': caption = 'neue Datenbank erstellen'; break;
+            case 'duplicate': caption = 'Datenbank duplizieren'; break;
+            case 'rename': caption = 'Datenbank umbenennen'; break;
+        }
         // Create-Window erstellen
-        let createWindow = new dbadmin.Window({
-            caption: 'neue Datenbank erstellen',
+        let createWindow = new dbadmin_Window({
+            caption: caption,
             closable: true,
             modal: true,
             width: 400,
@@ -150,16 +212,16 @@ kit.App = class kit_App {
                 width: 380,
                 height: 25,
                 style:{
-                    margin: '10px'
+                    margin: '10px 5px 10px 5px'
                 }
             },
             elements:[
                 {
                     xtype: 'kijs.gui.field.Text',
-                    labelWidth: 140,
+                    labelWidth: 160,
                     required: true,
                     name: 'dbname',
-                    label: 'Datenbankname'
+                    label: 'neuer Datenbankname'
                 },{
                     xtype: 'kijs.gui.Button',
                     name: 'btnLogin',
@@ -168,21 +230,25 @@ kit.App = class kit_App {
                     caption: 'OK',
                     on:{
                         click: function(){
-                            let dbname = this.parent.down('dbname');
+                            let newDbname = this.parent.down('dbname');
+                            let oldDbname = action === 'create' ? null : _this.viewport.elements[0].elements[0].getSelected().dataRow['Datenbank'];
 
-                            if (dbname.validate()) {
-                                _this._rpc.do('dbadmin.create', {dbname : dbname.value}, 
+                            if (newDbname.validate()) {
+                                _this._rpc.do('dbadmin.'+action, {
+                                    newDbname : newDbname.value,
+                                    oldDbname : oldDbname
+                                }, 
                                 function(response) {
                                     if (response.data.success === 'true') {
                                         createWindow.destruct();
-                                        kijs.gui.MsgBox.info('Info', 'Datenbank erfolgreich erstellt!');
+                                        kijs.gui.CornerTipContainer.show('Info', '"' + caption + '" war erfolgreich', 'info');
                                         this.viewport.elements[0].elements[0].load();
                                     } else {
-                                        kijs.gui.MsgBox.error('Fehler', response.data);       
+                                        kijs.gui.MsgBox.error('Fehler', response.errorMsg);       
                                     }
                                 }, _this, false, this.parent, 'dom', false);
                             } else {
-                                kijs.gui.MsgBox.warning('Warnung!', 'Bitte Datenbankname angeben!');
+                                kijs.gui.MsgBox.alert('Achtung', 'Bitte Datenbankname angeben!');
                             } 
                         }
                     }
@@ -196,7 +262,7 @@ kit.App = class kit_App {
     showLoginWindow() {
         let _this = this;
         // Window erstellen
-        let loginWindow = new dbadmin.Window({
+        let loginWindow = new dbadmin_Window({
             caption: 'Login',
             modal: true,
             width: 300,
@@ -239,11 +305,11 @@ kit.App = class kit_App {
                                         this.setSessionId();
                                         this.viewport.elements[0].elements[0].load();
                                     } else {
-                                        kijs.gui.MsgBox.error('Fehler', response.data);       
+                                        kijs.gui.MsgBox.error('Fehler', response.errorMsg);       
                                     }
                                 }, _this, false, this.parent, 'dom', false);
                             } else {
-                                kijs.gui.MsgBox.warning('Warnung!', 'Bitte alle Felder ausfüllen!');
+                                kijs.gui.MsgBox.alert('Achtung', 'Bitte alle Felder ausfüllen!');
                             }
                         }
                     }
@@ -251,6 +317,69 @@ kit.App = class kit_App {
             ]
         });
         loginWindow.show();
+    }
+    
+    
+    showSelectWindow() {
+        let _this = this;        
+        
+        // Window erstellen
+        let selectWindow = new dbadmin_Window({
+            caption: 'Dumps',
+            modal: true,
+            width: 300,
+            closable: true,
+            defaults:{
+                width: 280,
+                height: 25,
+                style:{
+                    margin: '10px'
+                }
+            },
+            elements:[
+                {
+                    xtype: 'kijs.gui.DataView',
+                    name: 'dumps',
+                    selectType: 'single',
+                    rpc: this._rpc, 
+                    waitMaskTargetDomProperty: 'innerDom',
+                    autoLoad: true,
+                    height: 400,                    
+                    facadeFnLoad: 'dbadmin.loadDumps',
+                    innerStyle: {
+                        padding: '10px',
+                        overflowY: 'scroll'
+                    }
+                },{
+                    xtype: 'kijs.gui.Button',
+                    name: 'btnImport',
+                    width: 100,
+                    height: 30,
+                    caption: 'Importieren',
+                    on:{
+                        click: function(){
+                            kijs.gui.MsgBox.confirm('Bestätigen', 'Soll der Dump nach dem Import gelöscht werden?', function(e){
+                                _this._rpc.do('dbadmin.import', {
+                                    'database' : _this.viewport.elements[0].elements[0].getSelected().dataRow['Datenbank'],
+                                    'dump' : this.parent.down('dumps').getSelected().dataRow['Dumpname'],
+                                    'delete' : e.btn === 'yes' ? true : false
+                                }, 
+                                function(response) {
+                                    if (response.data.success === 'true') {
+                                        kijs.gui.CornerTipContainer.show('Info', 'Dump erfolgreich importiert', 'info');
+                                        this.viewport.elements[0].elements[0].load();
+                                        selectWindow.destruct();
+                                    } else {
+                                        kijs.gui.MsgBox.error('Fehler', response.errorMsg);       
+                                    }
+                                }, _this, false, this.parent, 'dom', false);
+                            }, this);
+                        }
+                    }
+                }
+            ]
+        });
+        selectWindow.show();
     }
     
     

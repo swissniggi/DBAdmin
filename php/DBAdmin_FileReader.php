@@ -10,13 +10,13 @@ class DBAdmin_FileReader {
     public function createDump($dbname, $exportOnly) {
         // Pfad des Config-Files angeben
         // es enthält den MySQL-Benutzernamen und das Passwort, sowie den Hostnamen
-        $mysqlconf = realpath('config/user_'.$_SESSION['username'].'.conf');
+        $mysqlconf = realpath('../config/user_'.$_SESSION['username'].'.conf');
         
         if (!is_file($mysqlconf)) {
             throw new Exception('Die Conf-Datei des Users existiert nicht!');
         }
         // Dumppfad definieren
-        $dumps = json_decode(file_get_contents('config/config.json'))->dumps;
+        $dumps = json_decode(file_get_contents('../config/config.json'))->dumps;
         $user = $_SESSION['username'];
         $filename = $exportOnly ? $dbname : $_SESSION['id'];
         $dbpath = realpath($dumps).'/'.$user.'/'.$filename.'.sql';
@@ -34,30 +34,27 @@ class DBAdmin_FileReader {
     
     /**
      * Importiert einen Dump via Kommandozeilenbefehl
-     * @param string $oldDbname
-     * @param string $newDbname
+     * @param string $dump
+     * @param string $dbname
      * @param boolean $delete
      */
-    public function executeDump($oldDbname, $newDbname, $delete) {
-        // Namen der Zieldatenbank definieren
-        $db = $newDbname === null ? $oldDbname : $newDbname;
-        
+    public function executeDump($dump, $dbname, $delete) {
         // Pfad des Config-Files angeben
         // es enthält den MySQL-Benutzernamen und das Passwort, sowie den Hostnamen
-        $mysqlconf = realpath('config/user_'.$_SESSION['username'].'.conf');
+        $mysqlconf = realpath('../config/user_'.$_SESSION['username'].'.conf');
         
         if (!is_file($mysqlconf)) {
             throw new Exception('Die Conf-Datei des Users existiert nicht!');
         }
         // Dumpnamen definieren
-        $filename = $oldDbname === null ? $_SESSION['id'].'.sql' : $oldDbname;
+        $filename = $dump === null ? $_SESSION['id'].'.sql' : $dump;
         
-        $dumps = json_decode(file_get_contents('config/config.json'))->dumps;
+        $dumps = json_decode(file_get_contents('../config/config.json'))->dumps;
         $user = $_SESSION['username'];
         $dbpath = realpath($dumps.'/'.$user.'/'.$filename);        
         
         // Dump importieren
-        $command = 'mysql --defaults-file="'.escapeshellarg($mysqlconf).'" '.escapeshellarg($db).' < "'.escapeshellarg($dbpath).'" 2>&1';  
+        $command = 'mysql --defaults-file="'.escapeshellarg($mysqlconf).'" '.escapeshellarg($dbname).' < "'.escapeshellarg($dbpath).'" 2>&1';  
         exec($command, $out, $return);
         
         if ($delete && $return === 0) {            
@@ -75,7 +72,7 @@ class DBAdmin_FileReader {
      * @return array
      */
     public function getDumpList() {
-        $dumps = json_decode(file_get_contents('config/config.json'));
+        $dumps = json_decode(file_get_contents('../config/config.json'));
         
         if (!$dumps) {
             throw new Exception('config.json nicht gefunden!');
