@@ -1,6 +1,6 @@
 # DBAdmin
 
-!!The Ajax-Version requires the kijs-Framework // mail me for more info !!
+!! The Ajax-Version requires the kijs-Framework // mail me for more info !!
 
 Folder dumps/ is ignored: contains Files to big to commit
 
