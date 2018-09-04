@@ -10,16 +10,19 @@ class DBAdmin_FileReader {
     public function createDump($dbname, $exportOnly) {
         // Pfad des Config-Files angeben
         // es enthält den MySQL-Benutzernamen und das Passwort, sowie den Hostnamen
-        $mysqlconf = realpath('config/user.conf');
+        $mysqlconf = realpath('../config/user_'.$_SESSION['username'].'.conf');
         
+        if (!is_file($mysqlconf)) {
+            throw new Exception('Die Conf-Datei des Users existiert nicht!');
+        }
         // Dumppfad definieren
-        $dumps = json_decode(file_get_contents('config/dbadmin.json'))->dumps;
+        $dumps = json_decode(file_get_contents('../config/config.json'))->dumps;
         $user = $_SESSION['username'];
         $filename = $exportOnly ? $dbname : $_SESSION['id'];
         $dbpath = realpath($dumps).'/'.$user.'/'.$filename.'.sql';
         
         // Dump exportieren
-        $command = 'mysqldump --defaults-file="'.$mysqlconf.'" --events --routines --triggers '
+        $command = 'mysqldump --defaults-file="'.escapeshellarg($mysqlconf).'" --events --routines --triggers '
                    .escapeshellarg($dbname).' > "'.escapeshellarg($dbpath).'" 2>&1';    
         exec($command, $out, $return);
         
@@ -31,27 +34,27 @@ class DBAdmin_FileReader {
     
     /**
      * Importiert einen Dump via Kommandozeilenbefehl
-     * @param string|null $oldDbname
-     * @param string|null $newDbname
+     * @param string $dump
+     * @param string $dbname
      * @param boolean $delete
      */
-    public function executeDump($oldDbname, $newDbname, $delete) {
-        // Namen der Zieldatenbank definieren
-        $db = $newDbname === null ? $oldDbname : $newDbname;
-        
+    public function executeDump($dump, $dbname, $delete) {
         // Pfad des Config-Files angeben
         // es enthält den MySQL-Benutzernamen und das Passwort, sowie den Hostnamen
-        $mysqlconf = realpath('config/user.conf');
+        $mysqlconf = realpath('../config/user_'.$_SESSION['username'].'.conf');
         
+        if (!is_file($mysqlconf)) {
+            throw new Exception('Die Conf-Datei des Users existiert nicht!');
+        }
         // Dumpnamen definieren
-        $filename = $oldDbname === null ? $_SESSION['id'].'.sql' : $oldDbname;
+        $filename = $dump === null ? $_SESSION['id'].'.sql' : $dump;
         
-        $dumps = json_decode(file_get_contents('config/dbadmin.json'))->dumps;
+        $dumps = json_decode(file_get_contents('../config/config.json'))->dumps;
         $user = $_SESSION['username'];
         $dbpath = realpath($dumps.'/'.$user.'/'.$filename);        
         
         // Dump importieren
-        $command = 'mysql --defaults-file="'.$mysqlconf.'" '.escapeshellarg($db).' < "'.escapeshellarg($dbpath).'" 2>&1';    
+        $command = 'mysql --defaults-file="'.escapeshellarg($mysqlconf).'" '.escapeshellarg($dbname).' < "'.escapeshellarg($dbpath).'" 2>&1';  
         exec($command, $out, $return);
         
         if ($delete && $return === 0) {            
@@ -69,19 +72,28 @@ class DBAdmin_FileReader {
      * @return array
      */
     public function getDumpList() {
-        $dumps = json_decode(file_get_contents('config/dbadmin.json'));
+        $dumps = json_decode(file_get_contents('../config/config.json'));
         
         if (!$dumps) {
-            throw new Exception('dbadmin.json nicht gefunden!');
+            throw new Exception('config.json nicht gefunden!');
         }
         
+        if (!isset($dumps->dumps)) {
+            throw new Exception('Datei config.json ist fehlerhaft!');
+        }
         $dumps = $dumps->dumps.'/'.$_SESSION['username'];
         
         if (!is_dir($dumps)) {
-            mkdir($dumps);
+            if (mkdir($dumps) === false) {
+                throw new Exception('Dumps-Ordner für Benutzer konnte nicht erstellt werden!');
+            }
         }
         
         $files = scandir($dumps);
+        
+        if ($files === false) {
+            throw new Exception('Ordner '.$files.' konnte nicht durchsucht werden!');
+        }
         
         $dumpList = [];
         
