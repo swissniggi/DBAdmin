@@ -9,19 +9,19 @@ kit.App = class kit_App {
     // CONSTRUCTOR
     // --------------------------------------------------------------
     constructor(config={}) {
-        
+
         this._actionWindow = null;
         this._databaseView = null;
         this._loginWindow = null;
         this._selectWindow = null,
-        this._viewport = null;       
-        
+        this._viewport = null;
+
         // RPC-Instanz
         var rpcConfig = {};
         if (config.ajaxUrl) {
             rpcConfig.url = config.ajaxUrl;
-        }
-        this._rpc = new kijs.gui.Rpc(rpcConfig);       
+
+        this._rpc = new kijs.gui.Rpc(rpcConfig);
     }
 
 
@@ -32,39 +32,39 @@ kit.App = class kit_App {
      * App ausführen
      * @returns {undefined}
      */
-    run() {        
+    run() {
         this._databaseView = new dbadmin.DatabaseView({
             rpc: this._rpc
         });
 
         let buttons = ({
             btnCreate : true,
-            btnDelete : true, 
-            btnImport : true, 
-            btnExport : true, 
-            btnDuplicate : true, 
+            btnDelete : true,
+            btnImport : true,
+            btnExport : true,
+            btnDuplicate : true,
             btnRename : true
         });
         let mainPanel = new dbadmin.MainPanel();
         let panel = mainPanel.create(this, buttons, this._databaseView);
-        
+
         // ViewPort erstellen
         this._viewport = new kijs.gui.ViewPort({
-            cls: 'kijs-flexcolumn',          
+            cls: 'kijs-flexcolumn',
             elements: [
                 panel
             ]
         });
         this._viewport.render();
-        
+
         if (!localStorage.getItem('ID')) {
             this.showLoginWindow();
         } else {
             this._viewport.down('dvDatabases').load();
         }
     }
-    
-    
+
+
     /**
      * Action-Fenster erstellen
      * @param {string} action
@@ -73,7 +73,7 @@ kit.App = class kit_App {
     showActionWindow(action) {
         let caption = '';
         let iconChar = '';
-        
+
         switch(action) {
             case 'create': caption = 'neue Datenbank erstellen'; iconChar = '&#xf067'; break;
             case 'duplicate': caption = 'Datenbank duplizieren'; iconChar = '&#xf0c5'; break;
@@ -89,12 +89,12 @@ kit.App = class kit_App {
             on:{
                 afterSave: this._onActionWindowAfterSave,
                 context: this
-            }     
+            }
         });
         this._actionWindow.show();
     }
-    
-    
+
+
     /**
      * Login-Fenster erstellen
      * @returns {undefined}
@@ -111,8 +111,8 @@ kit.App = class kit_App {
         });
         this._loginWindow.show();
     }
-    
-    
+
+
     /**
      * Select-Fenster erstellen
      * @returns {undefined}
@@ -121,7 +121,7 @@ kit.App = class kit_App {
         console.log(this._viewport.down('dvDatabases').getSelected());
         // Window erstellen
         this._selectWindow = new dbadmin.SelectWindow({
-            caption: 'Dumps',            
+            caption: 'Dumps',
             rpcFormPanel: this._rpc,
             rpcComboField: this._rpc,
             facadeFnSave: 'dbadmin.import',
@@ -134,8 +134,8 @@ kit.App = class kit_App {
         });
         this._selectWindow.show();
     }
-    
-    
+
+
     /**
      * Session-ID erstellen
      * @returns {undefined}
@@ -149,8 +149,8 @@ kit.App = class kit_App {
         let Id = s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
         localStorage.setItem('ID', Id); 
     }
-    
-    
+
+
     // LISTENERS
     _onActionWindowAfterSave(e) {
         let txt = '';
@@ -164,13 +164,13 @@ kit.App = class kit_App {
         this._actionWindow.destruct();
         kijs.gui.CornerTipContainer.show('Info', 'Datenbank erfolgreich '+txt, 'info');
     }
-       
+
     _onLoginWindowAfterSave(e) {
         this._viewport.down('dvDatabases').load();
         this._setSessionId();       
         this._loginWindow.destruct();
     }
-    
+
     _onSelectWindowAfterSave(e) {
         this._viewport.down('dvDatabases').load();
         this._selectWindow.destruct();

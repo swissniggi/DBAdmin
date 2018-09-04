@@ -9,42 +9,42 @@ dbadmin.LoginWindow = class dbadmin_LoginWindow extends kijs.gui.Window {
     // --------------------------------------------------------------
     constructor(config={}) {
         super();
-        
+
         this._formPanel = null;
-        
+
         // Config generieren
         config = Object.assign({}, this._createConfig(), config);
-        
+
          // Mapping für die Zuweisung der Config-Eigenschaften
         Object.assign(this._configMap, {
             facadeFnSave: { target: 'facadeFnSave', context: this._formPanel },
             rpc: { target: 'rpc', context: this._formPanel }
         });
-        
+
         // Event-Weiterleitungen von this._formPanel
         //this._eventForwardsAdd('afterSave', this._formPanel);
-        
+
         this._formPanel.on('afterSave', function(e) {
             this.raiseEvent('afterSave', e);
         }, this );
-        
+
         // Config anwenden
         if (kijs.isObject(config)) {
             this.applyConfig(config, true);
         }
     }
-    
-    
+
+
     // --------------------------------------------------------------
     // GETTERS / SETTERS
     // --------------------------------------------------------------
     get facadeFnSave() { return this._formPanel.facadeFnSave; }
     set facadeFnSave(val) { this._formPanel.facadeFnSave = val; }
-    
+
     get rpc() { return this._formPanel.rpc; }
     set rpc(val) { this._formPanel.rpc = val; }
-    
-    
+
+
     // --------------------------------------------------------------
     // MEMBERS
     // --------------------------------------------------------------
@@ -52,7 +52,7 @@ dbadmin.LoginWindow = class dbadmin_LoginWindow extends kijs.gui.Window {
     // Config definieren
     _createConfig() {
         this._formPanel = this._createFormPanel();
-        
+
         const config = {
             caption: 'Login',
             iconChar: '&#xf023',
@@ -68,7 +68,7 @@ dbadmin.LoginWindow = class dbadmin_LoginWindow extends kijs.gui.Window {
         
         return config;
     }
-    
+
     // FormPanel definieren
     _createFormPanel() {
         return new kijs.gui.FormPanel({
@@ -85,7 +85,7 @@ dbadmin.LoginWindow = class dbadmin_LoginWindow extends kijs.gui.Window {
                 {
                     xtype: 'kijs.gui.field.Text',
                     labelWidth: 80,
-                    required: true,                    
+                    required: true,
                     name: 'username',
                     label: 'Benutzer'
                 },{
@@ -116,13 +116,13 @@ dbadmin.LoginWindow = class dbadmin_LoginWindow extends kijs.gui.Window {
             ]
         });
     }
-    
+
     // LISTENERS
     _onBtnLoginClick(e) {
         this._formPanel.save();
     }
-    
-    
+
+
     // --------------------------------------------------------------
     // DESTRUCTOR
     // --------------------------------------------------------------

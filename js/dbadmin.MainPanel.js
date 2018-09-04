@@ -1,16 +1,14 @@
-/* global kijs */
 
+// // --------------------------------------------------------------
+// dbadmin.MainPanel
 // --------------------------------------------------------------
-// kijs.gui.Rpc
-// --------------------------------------------------------------
-// Erweiterung von kijs.Rpc, der die Meldungsfenster anzeigt
+// Klasse zum erstellen eines MainPanels
+
 dbadmin.MainPanel = class dbadmin_MainPanel {
-
-
     // --------------------------------------------------------------
     // MEMBERS
     // --------------------------------------------------------------
-   
+
     /**
      * Erstellt ein MainPanel
      * @param {Object} context          Kontext für Funktionen
@@ -22,7 +20,7 @@ dbadmin.MainPanel = class dbadmin_MainPanel {
     create(context, buttons, dataView = null) {
         // gewünschte Buttons erstellen
         let buttonsArray = [];
-                
+
         if (buttons['btnCreate']) {
             // Create-Button definieren
             let buttonCreate = new kijs.gui.Button({
@@ -36,10 +34,10 @@ dbadmin.MainPanel = class dbadmin_MainPanel {
                     context: context
                 }
             });
-            
+
             buttonsArray.push(buttonCreate);
         }
-                
+
         if (buttons['btnDelete']) {
             // Delete-Button definieren
             let buttonDelete = new kijs.gui.Button({
@@ -58,9 +56,9 @@ dbadmin.MainPanel = class dbadmin_MainPanel {
                             function(response) {
                                 if (response.data.success === 'true') {
                                     kijs.gui.CornerTipContainer.show('Info', 'Datenbank erfolgreich gelöscht.', 'info');
-                                    this._viewport.down('dvDatabases').load();             
+                                    this._viewport.down('dvDatabases').load();
                                 } else {
-                                    kijs.gui.MsgBox.error('Fehler', response.errorMsg);       
+                                    kijs.gui.MsgBox.error('Fehler', response.errorMsg);
                                 }
                             }, this, false, this._viewport, 'dom', false);
                         }
@@ -68,10 +66,10 @@ dbadmin.MainPanel = class dbadmin_MainPanel {
                     context: context
                 }
             });
-            
+
             buttonsArray.push(buttonDelete);
         }
-                
+
         if (buttons['btnImport']) {
             // Import-Button definieren
             let buttonImport = new kijs.gui.Button({
@@ -92,10 +90,10 @@ dbadmin.MainPanel = class dbadmin_MainPanel {
                     context: context
                 }
             });
-            
+
             buttonsArray.push(buttonImport);
         }
-                
+
         if (buttons['btnExport']) {
             // Export-Button definieren
             let buttonExport = new kijs.gui.Button({
@@ -114,9 +112,9 @@ dbadmin.MainPanel = class dbadmin_MainPanel {
                             function(response) {
                                 if (response.data.success === 'true') {
                                     kijs.gui.CornerTipContainer.show('Info', 'Datenbank erfolgreich exportiert.', 'info');
-                                    this._viewport.down('dvDatabases').load();             
+                                    this._viewport.down('dvDatabases').load();
                                 } else {
-                                    kijs.gui.MsgBox.error('Fehler', response.errorMsg);       
+                                    kijs.gui.MsgBox.error('Fehler', response.errorMsg);
                                 }
                             }, this, false, this._viewport, 'dom', false);
                         }
@@ -124,17 +122,17 @@ dbadmin.MainPanel = class dbadmin_MainPanel {
                     context: context
                 }
             });
-            
+
             buttonsArray.push(buttonExport);
         }
-               
+
         if (buttons['btnDuplicate']) {
             // Duplicate-Button definieren
             let buttonDuplicate = new kijs.gui.Button({
                 name: 'btnDuplicate',
                 iconChar: '&#xf0c5',
                 toolTip: 'selektierte Datenbank dumplizieren',
-                style:{                                
+                style:{
                     border: 'none'
                 },
                 on:{
@@ -148,10 +146,10 @@ dbadmin.MainPanel = class dbadmin_MainPanel {
                     context: context
                 }
             });
-            
+
             buttonsArray.push(buttonDuplicate);
         }
-               
+
         if (buttons['btnRename']) {
             // Rename-Button definieren
             let buttonRename = new kijs.gui.Button({
@@ -175,7 +173,7 @@ dbadmin.MainPanel = class dbadmin_MainPanel {
             
             buttonsArray.push(buttonRename);
         }
-        
+
         // Panel definieren
         let mainPanel = new kijs.gui.Panel({
             name: 'mainPanel',
@@ -188,7 +186,7 @@ dbadmin.MainPanel = class dbadmin_MainPanel {
             },
             elements:[
                 dataView
-            ],                    
+            ],
             headerBarElements:[
                 {
                     // Logout-Button definieren
@@ -211,9 +209,9 @@ dbadmin.MainPanel = class dbadmin_MainPanel {
                 }
             ]
         });
-        
+
         mainPanel.header.add(buttonsArray);
-        
+
         return mainPanel;
     }
 };

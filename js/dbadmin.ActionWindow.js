@@ -9,54 +9,54 @@ dbadmin.ActionWindow = class dbadmin_ActionWindow extends kijs.gui.Window {
     // --------------------------------------------------------------
     constructor(config={}) {
         super();
-        
+
         this._formPanel = null; 
         this._textField = null;
-        
+
         // Config generieren
         config = Object.assign({}, this._createConfig(), config);
-        
+
          // Mapping für die Zuweisung der Config-Eigenschaften
         Object.assign(this._configMap, {
             facadeFnSave: { target: 'facadeFnSave', context: this._formPanel },
             value: { target: 'value', context: this._textField },
             rpc: { target: 'rpc', context: this._formPanel }
         });
-        
-        // Event-Weiterleitungen von this._formPanel        
+
+        // Event-Weiterleitungen von this._formPanel
         this._formPanel.on('afterSave', function(e) {
             this.raiseEvent('afterSave', e);
         }, this );
-        
+
         // Config anwenden
         if (kijs.isObject(config)) {
             this.applyConfig(config, true);
         }
     }
-    
-    
+
+
     // --------------------------------------------------------------
     // GETTERS / SETTERS
     // --------------------------------------------------------------
     get facadeFnSave() { return this._formPanel.facadeFnSave; }
-    set facadeFnSave(val) { this._formPanel.facadeFnSave = val; }  
-    
+    set facadeFnSave(val) { this._formPanel.facadeFnSave = val; }
+
     get value() { return this._textField.value; }
     set value(val) { this._textField.value = val; }
-    
+
     get rpc() { return this._formPanel.rpc; }
-    set rpc(val) { this._formPanel.rpc = val; }      
-    
+    set rpc(val) { this._formPanel.rpc = val; }
+
     // --------------------------------------------------------------
     // MEMBERS
     // --------------------------------------------------------------
     // PROTECTED
-    
+
     // Config definieren
     _createConfig() {
         this._textField = this._createField();
-        this._formPanel = this._createFormPanel();        
-        
+        this._formPanel = this._createFormPanel();
+
         const config = {
             width: 400,
             closable: true,
@@ -77,7 +77,7 @@ dbadmin.ActionWindow = class dbadmin_ActionWindow extends kijs.gui.Window {
         
         return config;
     }
-    
+
     // FormPanel definieren
     _createFormPanel() {
         return new kijs.gui.FormPanel({
@@ -94,7 +94,7 @@ dbadmin.ActionWindow = class dbadmin_ActionWindow extends kijs.gui.Window {
                 {
                     xtype: 'kijs.gui.field.Text',
                     labelWidth: 160,
-                    required: true,                    
+                    required: true,
                     name: 'newDbname',
                     label: 'neuer Datenbankname'
                 },
@@ -131,13 +131,13 @@ dbadmin.ActionWindow = class dbadmin_ActionWindow extends kijs.gui.Window {
             }
         });
     }
-    
+
     // LISTENERS
     _onBtnActionClick(e) {
         this._formPanel.save();
     }
-    
-    
+
+
     // --------------------------------------------------------------
     // DESTRUCTOR
     // --------------------------------------------------------------
@@ -152,7 +152,7 @@ dbadmin.ActionWindow = class dbadmin_ActionWindow extends kijs.gui.Window {
         // Variablen (Objekte/Arrays) leeren
         this._textField = null;
         this._formPanel = null;
-        
+
         // Basisklasse auch entladen
         super.destruct(true);
     }

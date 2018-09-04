@@ -9,21 +9,21 @@ dbadmin.DatabaseView = class dbadmin_DatabaseView extends kijs.gui.DataView {
     // --------------------------------------------------------------
     constructor(config={}) {
         super();
-        
+
         // Config generieren
-        config = Object.assign({}, this._createConfig(), config);                
-        
+        config = Object.assign({}, this._createConfig(), config);
+
         // Config anwenden
         if (kijs.isObject(config)) {
             this.applyConfig(config, true);
         }
-    }   
-    
+    }
+
     // --------------------------------------------------------------
     // MEMBERS
     // --------------------------------------------------------------
     // PUBLIC
-    
+
     // overwrite
     createElement(dataRow, index) {
         let html = '';
@@ -44,11 +44,11 @@ dbadmin.DatabaseView = class dbadmin_DatabaseView extends kijs.gui.DataView {
             html: html
         });
     }
-    
+
     // PROTECTED
-    
+
     // Config definieren
-    _createConfig() {       
+    _createConfig() {
         const config = {
             name: 'dvDatabases',
             selectType: 'single',
@@ -61,11 +61,11 @@ dbadmin.DatabaseView = class dbadmin_DatabaseView extends kijs.gui.DataView {
                 flex: 'initial'
             }
         };
-        
+
         return config;
     }
-    
-    
+
+
     // --------------------------------------------------------------
     // DESTRUCTOR
     // --------------------------------------------------------------
@@ -74,14 +74,12 @@ dbadmin.DatabaseView = class dbadmin_DatabaseView extends kijs.gui.DataView {
         if (!preventDestructEvent) {
             this.raiseEvent('destruct');
         }
-        
+
         // Elemente/DOM-Objekte entladen
 
         // Variablen (Objekte/Arrays) leeren
-        
+
         // Basisklasse auch entladen
         super.destruct(true);
     }
 };
-
-

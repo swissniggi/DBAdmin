@@ -9,14 +9,14 @@ dbadmin.SelectWindow = class dbadmin_SelectWindow extends kijs.gui.Window {
     // --------------------------------------------------------------
     constructor(config={}) {
         super();
-        
+
         this._comboField = null;
         this._formPanel = null; 
         this._textField = null;
-        
+
         // Config generieren
         config = Object.assign({}, this._createConfig(), config);
-        
+
          // Mapping für die Zuweisung der Config-Eigenschaften
         Object.assign(this._configMap, {
             facadeFnLoad: { target: 'facadeFnLoad', context: this._comboField },
@@ -25,48 +25,48 @@ dbadmin.SelectWindow = class dbadmin_SelectWindow extends kijs.gui.Window {
             rpcComboField: { target: 'rpc', context: this._comboField },
             rpcFormPanel: { target: 'rpc', context: this._formPanel }
         });
-        
-        // Event-Weiterleitungen von this._formPanel        
+
+        // Event-Weiterleitungen von this._formPanel
         this._formPanel.on('afterSave', function(e) {
             this.raiseEvent('afterSave', e);
         }, this );
-        
+
         // Config anwenden
         if (kijs.isObject(config)) {
             this.applyConfig(config, true);
         }
     }
-    
-    
+
+
     // --------------------------------------------------------------
     // GETTERS / SETTERS
     // --------------------------------------------------------------    
     get facadeFnSave() { return this._formPanel.facadeFnSave; }
     set facadeFnSave(val) { this._formPanel.facadeFnSave = val; }
-    
+
     get facadeFnLoad() { return this._comboField.facadeFnLoad; }
     set facadeFnLoad(val) { this._ComboField.facadeFnLoad = val; }
-    
+
     get value() { return this._textField.value; }
     set value(val) { this._textField.value = val; }
-    
+
     get rpcFormPanel() { return this._formPanel.rpc; }
-    set rpcFormPanel(val) { this._formPanel.rpc = val; }    
-    
+    set rpcFormPanel(val) { this._formPanel.rpc = val; }
+
     get rpcComboField() { return this._comboField.rpc; }
     set rpcComboField(val) { this._comboField.rpc = val; } 
-    
+
     // --------------------------------------------------------------
     // MEMBERS
     // --------------------------------------------------------------
     // PROTECTED
-    
+
     // Config definieren
     _createConfig() {
         this._comboField = this._createCombo();
         this._textField = this._createField();
-        this._formPanel = this._createFormPanel();        
-        
+        this._formPanel = this._createFormPanel();
+
         const config = {
             iconChar: '&#xf093',
             width: 400,
@@ -88,7 +88,7 @@ dbadmin.SelectWindow = class dbadmin_SelectWindow extends kijs.gui.Window {
         
         return config;
     }
-    
+
     // Combofeld definieren
     _createCombo() {
         return new kijs.gui.field.Combo({
@@ -100,7 +100,7 @@ dbadmin.SelectWindow = class dbadmin_SelectWindow extends kijs.gui.Window {
             }
         });
     }
-    
+
     // FormPanel definieren
     _createFormPanel() {
         return new kijs.gui.FormPanel({
@@ -142,7 +142,7 @@ dbadmin.SelectWindow = class dbadmin_SelectWindow extends kijs.gui.Window {
             ]
         });
     }
-    
+
     // Textfeld definieren
     _createField() {
         return new kijs.gui.field.Text({
@@ -153,13 +153,13 @@ dbadmin.SelectWindow = class dbadmin_SelectWindow extends kijs.gui.Window {
             }
         });
     }
-    
+
     // LISTENERS
     _onBtnActionClick(e) {
         this._formPanel.save();
     }
-    
-    
+
+
     // --------------------------------------------------------------
     // DESTRUCTOR
     // --------------------------------------------------------------
@@ -168,14 +168,14 @@ dbadmin.SelectWindow = class dbadmin_SelectWindow extends kijs.gui.Window {
         if (!preventDestructEvent) {
             this.raiseEvent('destruct');
         }
-        
+
         // Elemente/DOM-Objekte entladen
 
         // Variablen (Objekte/Arrays) leeren
         this._textField = null;
         this._comboField = null;
         this._formPanel = null;
-        
+
         // Basisklasse auch entladen
         super.destruct(true);
     }
