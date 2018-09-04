@@ -1,6 +1,6 @@
-# DBAdmin
+# DBAdmin Version 2.0
 
-# based on https://github.com/swissniggi/DBAdminPHP
+(based on https://github.com/swissniggi/DBAdminPHP)
 
 !! The Ajax-Version requires the new kijs-Framework // mail me for more details !!
 
