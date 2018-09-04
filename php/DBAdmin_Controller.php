@@ -183,7 +183,7 @@ class DBAdmin_Controller {
      */
     public function importDatabase($data) { 
         $dbname = $data->database;
-        $dump = isset($data->dump) ? $data->dump : null;
+        $dump = isset($data->dumps) ? $data->dumps : null;
         $delete = $data->delete;
         
         try{
@@ -231,7 +231,7 @@ class DBAdmin_Controller {
             try{
                 $pdo = $this->model->openDbConnection($host, $username, $password);
             } catch (Throwable $ex) {
-                return 'Benutzer oder Passwort falsch!';
+                return $ex;
             }
             $this->model->closeDbConnection($pdo);
                

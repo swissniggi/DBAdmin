@@ -9,7 +9,13 @@ kit.App = class kit_App {
     // CONSTRUCTOR
     // --------------------------------------------------------------
     constructor(config={}) {
-
+        
+        this._actionWindow = null;
+        this._databaseView = null;
+        this._loginWindow = null;
+        this._selectWindow = null,
+        this._viewport = null;       
+        
         // RPC-Instanz
         var rpcConfig = {};
         if (config.ajaxUrl) {
@@ -17,7 +23,7 @@ kit.App = class kit_App {
         }
         this._rpc = new kijs.gui.Rpc(rpcConfig);
         
-        this.viewport = null;
+        
     }
 
 
@@ -27,9 +33,13 @@ kit.App = class kit_App {
     run() {
         let _this = this;
         
+        this._databaseView = new dbadmin.DatabaseView({
+            rpc: this._rpc
+        });
+        
         // ViewPort erstellen
-        this.viewport = new kijs.gui.ViewPort({
-            cls: 'kijs-flexcolumn',            
+        this._viewport = new kijs.gui.ViewPort({
+            cls: 'kijs-flexcolumn',          
             elements: [
                 {
                     xtype: 'kijs.gui.Panel',
@@ -42,31 +52,18 @@ kit.App = class kit_App {
                         flex: 1
                     },
                     elements:[
-                        {
-                            xtype: 'kijs.gui.DataView',
-                            name: 'databases',
-                            selectType: 'single',
-                            rpc: this._rpc, 
-                            waitMaskTargetDomProperty: 'innerDom',
-                            autoLoad: true,
-                            facadeFnLoad: 'dbadmin.loadDbs',                        
-                            innerStyle: {
-                                padding: '10px',
-                                overflowY: 'auto',
-                                flex: 'initial'
-                            }
-                        }
+                            this._databaseView
                     ],
                     headerElements:[
                         {
                             xtype: 'kijs.gui.Button',
                             name: 'btnCreate',
-                            html: '<img src="img/create.PNG" style="width: 25px" alt="DB erstellen"></img>',
-                            toolTip: 'neue Datenbank erstellen',
+                            iconChar: '&#xf067',
                             on:{
                                 click: function(){
-                                    _this.showActionWindow('create');
-                                }
+                                    this.showActionWindow('create');
+                                },
+                                context: this
                             }
                         }
                     ],
@@ -74,22 +71,16 @@ kit.App = class kit_App {
                         {
                             xtype: 'kijs.gui.Button',
                             name: 'btnLogout',
-                            html: '<img src="img/logout.PNG" style="width: 30px" alt"Ausloggen"></img>',
-                            toolTip: 'Ausloggen',
+                            iconChar: '&#xf011',
                             on:{
                                 click: function(){
                                     sessionStorage.removeItem('ID');
                                     _this._rpc.do('dbadmin.logout', null, 
-                                    function(response) {
-                                        if (response.data.success === 'true') {
-                                            kijs.gui.CornerTipContainer.show('Info', 'Du wurdest erfolgreich ausgelogt', 'info');
-                                            this.showLoginWindow();
-                                            // DataView leeren
-                                            this.viewport.elements[0].elements[0].load(null);
-                                            
-                                        } else {
-                                            kijs.gui.MsgBox.error('Fehler', response.errorMsg);       
-                                        }
+                                    function() {
+                                        kijs.gui.CornerTipContainer.show('Info', 'Du wurdest erfolgreich ausgelogt', 'info');
+                                        this.showLoginWindow();
+                                        // DataView leeren
+                                        this._viewport.down('dvDatabases').load(null);
                                     }, _this, false, this.parent, 'dom', false);
                                 }
                             }
@@ -99,301 +90,178 @@ kit.App = class kit_App {
                         {
                             xtype: 'kijs.gui.Button',
                             name: 'btnDelete',
-                            html: '<img src="img/trash.PNG" style="width: 25px" alt="DB löschen"></img>',
-                            toolTip: 'Datenbank löschen',
+                            iconChar: '&#xf1f8',
                             style:{
                                 border: 'none'
                             },
                             on:{
                                 click: function(){
-                                    _this._rpc.do('dbadmin.delete', this.parent.parent.down('databases').getSelected().dataRow, 
-                                    function(response) {
-                                        if (response.data.success === 'true') {
-                                            kijs.gui.CornerTipContainer.show('Info', 'Datenbank erfolgreich gelöscht', 'info');
-                                            this.viewport.elements[0].elements[0].load();             
-                                        } else {
-                                            kijs.gui.MsgBox.error('Fehler', response.errorMsg);       
-                                        }
-                                    }, _this, false, this.parent, 'dom', false);
-                                }
+                                    if (this._viewport.down('dvDatabases').getSelected() === null) {
+                                        kijs.gui.MsgBox.alert('Achtung','Keine Datenbank ausgewählt!');
+                                    } else {
+                                        this._rpc.do('dbadmin.delete', this._viewport.down('dvDatabases').getSelected().dataRow, 
+                                        function(response) {
+                                            if (response.data.success === 'true') {
+                                                kijs.gui.CornerTipContainer.show('Info', 'Datenbank erfolgreich gelöscht', 'info');
+                                                this._viewport.down('dvDatabases').load();             
+                                            } else {
+                                                kijs.gui.MsgBox.error('Fehler', response.errorMsg);       
+                                            }
+                                        }, this, false, this._viewport, 'dom', false);
+                                    }
+                                },
+                                context: this
                             }
                         },{
                             xtype: 'kijs.gui.Button',
                             name: 'btnImport',
-                            html: '<img src="img/import.PNG" style="width: 25px" alt="Dump importieren"></img>',
-                            toolTip: 'Dump importieren',
+                            iconChar: '&#xf093',
                             style:{
                                 border: 'none'
                             },
                             on:{
                                 click: function(){
-                                    if (this.parent.parent.down('databases').getSelected() === null) {
+                                    if (this._viewport.down('dvDatabases').getSelected() === null) {
                                         kijs.gui.MsgBox.alert('Achtung','Keine Datenbank ausgewählt!');
                                     } else {
-                                        _this.showSelectWindow();
+                                        this.showSelectWindow();
                                     }
-                                }
+                                },
+                                context: this
                             }
                         },{
                             xtype: 'kijs.gui.Button',
                             name: 'btnExport',
-                            html: '<img src="img/export.PNG" style="width: 25px" alt="Dump exportieren"></img>',
-                            toolTip: 'Datenbank exportieren',
+                            iconChar: '&#xf019',
                             style:{
                                 border: 'none'
                             },
                             on:{
                                 click: function(){
-                                    if (this.parent.parent.down('databases').getSelected() === null) {
+                                    if (this._viewport.down('dvDatabases').getSelected() === null) {
                                         kijs.gui.MsgBox.alert('Achtung','Keine Datenbank ausgewählt!');
                                     } else {
-                                        _this._rpc.do('dbadmin.export', this.parent.parent.down('databases').getSelected().dataRow, 
+                                        this._rpc.do('dbadmin.export', this._viewport.down('dvDatabases').getSelected().dataRow, 
                                         function(response) {
                                             if (response.data.success === 'true') {
                                                 kijs.gui.CornerTipContainer.show('Info', 'Datenbank erfolgreich exportiert', 'info');
-                                                this.viewport.elements[0].elements[0].load();             
+                                                this._viewport.down('dvDatabases').load();             
                                             } else {
                                                 kijs.gui.MsgBox.error('Fehler', response.errorMsg);       
                                             }
-                                        }, _this, false, this.parent, 'dom', false);
+                                        }, this, false, this._viewport, 'dom', false);
                                     }
-                                }
+                                },
+                                context: this
                             }
                         },{
                             xtype: 'kijs.gui.Button',
                             name: 'btnDuplicate',
-                            html: '<img src="img/duplicate.PNG" style="width: 25px" alt="DB duplizieren"></img>',
-                            toolTip: 'Datenbank duplizieren',
-                            style:{
+                            iconChar: '&#xf0c5',
+                            style:{                                
                                 border: 'none'
                             },
                             on:{
                                 click: function(){
-                                    if (this.parent.parent.down('databases').getSelected() === null) {
+                                    if (this._viewport.down('dvDatabases').getSelected() === null) {
                                         kijs.gui.MsgBox.alert('Achtung','Keine Datenbank ausgewählt!');
                                     } else {
-                                        _this.showActionWindow('duplicate');
+                                        this.showActionWindow('duplicate');
                                     }
-                                }
+                                },
+                                context: this
                             }
                         },{
                             xtype: 'kijs.gui.Button',
                             name: 'btnRename',
-                            html: '<img src="img/edit.PNG" style="width: 25px" alt="DB umbenennen"></img>',
-                            toolTip: 'Datenbank umbenennen',
+                            iconChar: '&#xf044',
                             style:{
                                 border: 'none'
                             },
                             on:{
                                 click: function(){
-                                    if (this.parent.parent.down('databases').getSelected() === null) {
+                                    if (this._viewport.down('dvDatabases').getSelected() === null) {
                                         kijs.gui.MsgBox.alert('Achtung','Keine Datenbank ausgewählt!');
                                     } else {
-                                        _this.showActionWindow('rename');
+                                        this.showActionWindow('rename');
                                     }
-                                }
+                                },
+                                context: this
                             }
                         }                     
                     ]
                 }
             ]
         });
-        this.viewport.render();
+        this._viewport.render();
         
         if (!sessionStorage.getItem('ID')) {
             this.showLoginWindow();
         } else {
-            this.viewport.elements[0].elements[0].load();
+            this._viewport.down('dvDatabases').load();
         }
     }
     
     
     showActionWindow(action) {
-        let _this = this;
         let caption = '';
+        let iconChar = '';
         
         switch(action) {
-            case 'create': caption = 'neue Datenbank erstellen'; break;
-            case 'duplicate': caption = 'Datenbank duplizieren'; break;
-            case 'rename': caption = 'Datenbank umbenennen'; break;
+            case 'create': caption = 'neue Datenbank erstellen'; iconChar = '&#xf067'; break;
+            case 'duplicate': caption = 'Datenbank duplizieren'; iconChar = '&#xf0c5'; break;
+            case 'rename': caption = 'Datenbank umbenennen'; iconChar = '&#xf044'; break;
         }
         // Create-Window erstellen
-        let createWindow = new dbadmin_Window({
+        this._actionWindow = new dbadmin.ActionWindow({
             caption: caption,
-            closable: true,
-            modal: true,
-            width: 400,
-            defaults:{
-                width: 380,
-                height: 25,
-                style:{
-                    margin: '10px 5px 10px 5px'
-                }
-            },
-            elements:[
-                {
-                    xtype: 'kijs.gui.field.Text',
-                    labelWidth: 160,
-                    required: true,
-                    name: 'dbname',
-                    label: 'neuer Datenbankname'
-                },{
-                    xtype: 'kijs.gui.Button',
-                    name: 'btnLogin',
-                    width: 100,
-                    height: 30,
-                    caption: 'OK',
-                    on:{
-                        click: function(){
-                            let newDbname = this.parent.down('dbname');
-                            let oldDbname = action === 'create' ? null : _this.viewport.elements[0].elements[0].getSelected().dataRow['Datenbank'];
-
-                            if (newDbname.validate()) {
-                                _this._rpc.do('dbadmin.'+action, {
-                                    newDbname : newDbname.value,
-                                    oldDbname : oldDbname
-                                }, 
-                                function(response) {
-                                    if (response.data.success === 'true') {
-                                        createWindow.destruct();
-                                        kijs.gui.CornerTipContainer.show('Info', '"' + caption + '" war erfolgreich', 'info');
-                                        this.viewport.elements[0].elements[0].load();
-                                    } else {
-                                        kijs.gui.MsgBox.error('Fehler', response.errorMsg);       
-                                    }
-                                }, _this, false, this.parent, 'dom', false);
-                            } else {
-                                kijs.gui.MsgBox.alert('Achtung', 'Bitte Datenbankname angeben!');
-                            } 
-                        }
-                    }
-                }
-            ]
+            iconChar: iconChar,
+            value: action === 'create' ? 'create' : this._viewport.down('dvDatabases').getSelected().dataRow['Datenbankname'],
+            rpc: this._rpc,
+            facadeFnSave: 'dbadmin.'+action,
+            on:{
+                afterSave: this._onActionWindowAfterSave,
+                context: this
+            }     
         });
-        createWindow.show();
+        this._actionWindow.show();
     }
     
     
     showLoginWindow() {
-        let _this = this;
         // Window erstellen
-        let loginWindow = new dbadmin_Window({
-            caption: 'Login',
-            modal: true,
-            width: 300,
-            defaults:{
-                width: 280,
-                height: 25,
-                style:{
-                    margin: '10px'
-                }
-            },
-            elements:[
-                {
-                    xtype: 'kijs.gui.field.Text',
-                    labelWidth: 80,
-                    required: true,
-                    name: 'username',
-                    label: 'Benutzer'
-                },{
-                    xtype: 'kijs.gui.field.Text',
-                    labelWidth: 80,
-                    required: true,
-                    name: 'password',
-                    label: 'Passwort'
-                },{
-                    xtype: 'kijs.gui.Button',
-                    name: 'btnLogin',
-                    width: 100,
-                    height: 30,
-                    caption: 'Login',
-                    on:{
-                        click: function(){
-                            let username = this.parent.down('username');
-                            let password = this.parent.down('password');
-                            
-                            if (username.validate() && password.validate()) {
-                                _this._rpc.do('dbadmin.login', {username : username.value, password : password.value}, 
-                                function(response) {
-                                    if (response.data.success === 'true') {
-                                        loginWindow.destruct();
-                                        this.setSessionId();
-                                        this.viewport.elements[0].elements[0].load();
-                                    } else {
-                                        kijs.gui.MsgBox.error('Fehler', response.errorMsg);       
-                                    }
-                                }, _this, false, this.parent, 'dom', false);
-                            } else {
-                                kijs.gui.MsgBox.alert('Achtung', 'Bitte alle Felder ausfüllen!');
-                            }
-                        }
-                    }
-                }
-            ]
+        this._loginWindow = new dbadmin.LoginWindow({
+            rpc: this._rpc,
+            facadeFnSave: 'dbadmin.login',
+            on:{
+                afterSave: this._onLoginWindowAfterSave,
+                context: this
+            }
         });
-        loginWindow.show();
+        this._loginWindow.show();
     }
     
     
     showSelectWindow() {
-        let _this = this;       
-        
+        console.log(this._viewport.down('dvDatabases').getSelected());
         // Window erstellen
-        let selectWindow = new dbadmin_Window({
-            caption: 'Dumps',
-            modal: true,
-            width: 300,
-            closable: true,
-            defaults:{
-                width: 280,
-                height: 25,
-                style:{
-                    margin: '10px'
-                }
-            },
-            elements:[
-                {
-                    xtype: 'kijs.gui.field.Combo',
-                    name: 'dumps',                   
-                    rpc: this._rpc,
-                    autoLoad: true,
-                    facadeFnLoad: 'dbadmin.loadDumps'
-                },{
-                    xtype: 'kijs.gui.field.Checkbox',
-                    name: 'delete',
-                    caption: 'Dump nach import löschen'
-                },{
-                    xtype: 'kijs.gui.Button',
-                    name: 'btnImport',
-                    width: 100,
-                    height: 30,
-                    caption: 'Importieren',
-                    on:{
-                        click: function(){
-                            _this._rpc.do('dbadmin.import', {
-                                'database' : _this.viewport.elements[0].elements[0].getSelected().dataRow['Datenbank'],
-                                'dump' : this.parent.down('dumps').value,
-                                'delete' : this.parent.down('delete').value
-                            }, 
-                            function(response) {
-                                if (response.data.success === 'true') {
-                                    kijs.gui.CornerTipContainer.show('Info', 'Dump erfolgreich importiert', 'info');
-                                    this.viewport.elements[0].elements[0].load();
-                                    selectWindow.destruct();
-                                } else {
-                                    kijs.gui.MsgBox.error('Fehler', response.errorMsg);       
-                                }
-                            }, _this, false, this.parent, 'dom', false);
-                        }
-                    }
-                }
-            ]
+        this._selectWindow = new dbadmin.SelectWindow({
+            caption: 'Dumps',            
+            rpcFormPanel: this._rpc,
+            rpcComboField: this._rpc,
+            facadeFnSave: 'dbadmin.import',
+            facadeFnLoad: 'dbadmin.loadDumps',
+            value: this._viewport.down('dvDatabases').getSelected().dataRow['Datenbankname'],
+            on:{
+                afterSave: this._onSelectWindowAfterSave,
+                context: this
+            }
         });
-        selectWindow.show();
+        this._selectWindow.show();
     }
     
     
-    setSessionId() {
+    _setSessionId() {
         function s4() {
             return Math.floor((1 + Math.random()) * 0x10000)
                 .toString(16)
@@ -401,5 +269,25 @@ kit.App = class kit_App {
         }
         let Id = s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
         sessionStorage.setItem('ID', Id); 
+    }
+    
+    
+    // LISTENERS
+    _onActionWindowAfterSave(e) {
+        this._viewport.down('dvDatabases').load();
+        this._actionWindow.destruct();
+        kijs.gui.CornerTipContainer.show('Info', 'Aktion erfolgreich ausgeführt.', 'info');
+    }
+       
+    _onLoginWindowAfterSave(e) {
+        this._viewport.down('dvDatabases').load();
+        this._setSessionId();       
+        this._loginWindow.destruct();
+    }
+    
+    _onSelectWindowAfterSave(e) {
+        this._viewport.down('dvDatabases').load();
+        this._selectWindow.destruct();
+        kijs.gui.CornerTipContainer.show('Info', 'Dump erfolgreich importiert', 'info');
     }
 };
