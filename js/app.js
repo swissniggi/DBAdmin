@@ -20,7 +20,7 @@ kit.App = class kit_App {
         var rpcConfig = {};
         if (config.ajaxUrl) {
             rpcConfig.url = config.ajaxUrl;
-
+        }
         this._rpc = new kijs.gui.Rpc(rpcConfig);
     }
 
