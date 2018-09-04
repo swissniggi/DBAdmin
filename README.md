@@ -12,3 +12,4 @@ Features yet to come:
 - activation of click event on button on enter
 
 #Project from trial IPA, June 2018
+#Refined in August and September 2018
