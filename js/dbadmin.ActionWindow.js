@@ -51,6 +51,8 @@ dbadmin.ActionWindow = class dbadmin_ActionWindow extends kijs.gui.Window {
     // MEMBERS
     // --------------------------------------------------------------
     // PROTECTED
+    
+    // Config definieren
     _createConfig() {
         this._textField = this._createField();
         this._formPanel = this._createFormPanel();        
@@ -75,6 +77,7 @@ dbadmin.ActionWindow = class dbadmin_ActionWindow extends kijs.gui.Window {
         return config;
     }
     
+    // FormPanel definieren
     _createFormPanel() {
         return new kijs.gui.FormPanel({
             xtype: 'kijs.gui.FormPanel',
@@ -117,6 +120,7 @@ dbadmin.ActionWindow = class dbadmin_ActionWindow extends kijs.gui.Window {
         });
     }
     
+    // Textfeld definieren
     _createField() {
         return new kijs.gui.field.Text({
             name: 'oldDbname',

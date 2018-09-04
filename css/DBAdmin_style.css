@@ -3,17 +3,16 @@
 /* ------------------------------------------------ */
 
 .kijs-dataview .kijs-dataviewelement .dbadmin-icon{
-    font: normal normal normal 25px/1 FontAwesome;
+    font: normal normal normal 15px/1 FontAwesome;
     color: #4398dd;
-}
-
-.kijs-dataview .kijs-dataviewelement .dataViewDiv {
-    overflow: visible;
-    padding: 5px;
+    display: inline-block;
+    margin: 5px;
 }
 
 .kijs-dataview .kijs-dataviewelement .dbadmin-label {
     width: 80px;
     font-size: 10px;
     color: #888;
+    
+    padding-left: 5px;
 }

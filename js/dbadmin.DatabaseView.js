@@ -30,26 +30,21 @@ dbadmin.DatabaseView = class dbadmin_DatabaseView extends kijs.gui.DataView {
     // MEMBERS
     // --------------------------------------------------------------
     // PUBLIC
+    
+    // overwrite
     createElement(dataRow, index) {
-        let icon = '&#xf1c0';
         let html = '';
 
-        html += '<div class="dataViewDiv">';
-        html += ' <span class="dbadmin-icon">' + icon + '</span>';
+        html += '<div>';
+        html += ' <span class="dbadmin-icon">&#xf1c0</span>';
+        html += ' <span class="value">' + dataRow['Datenbankname'] + '</span>';
         html += '</div>';
-
-        kijs.Object.each(dataRow, function(key, val) {
-            if (key === 'Datenbankname') {
-                html += '<div>';
-                html += ' <span class="value">' + val + '</span>';
-                html += '</div>';
-            } else {
-                html += '<div>';
-                html += ' <span class="dbadmin-label">' + key + ': ' + val + '</span>';
-                html += '</div>';
-            }
-            
-        }, this);
+        html += '<div>';
+        html += ' <span class="dbadmin-label">Importdatum: ' + dataRow['Importdatum'] + '</span>';
+        html += '</div>';
+        html += '<div>';
+        html += ' <span class="dbadmin-label">Änderungsdatum: ' + dataRow['Änderungsdatum'] + '</span>';
+        html += '</div>'; 
         
         return new kijs.gui.DataViewElement({
             dataRow: dataRow,
@@ -58,8 +53,9 @@ dbadmin.DatabaseView = class dbadmin_DatabaseView extends kijs.gui.DataView {
     }
     
     // PROTECTED
-    _createConfig() {
-        
+    
+    // Config definieren
+    _createConfig() {       
         const config = {
             name: 'dvDatabases',
             selectType: 'single',
@@ -93,10 +89,6 @@ dbadmin.DatabaseView = class dbadmin_DatabaseView extends kijs.gui.DataView {
         // Basisklasse auch entladen
         super.destruct(true);
     }
-};/* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+};
 
 

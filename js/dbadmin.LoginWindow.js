@@ -49,6 +49,7 @@ dbadmin.LoginWindow = class dbadmin_LoginWindow extends kijs.gui.Window {
     // MEMBERS
     // --------------------------------------------------------------
     // PROTECTED
+    // Config definieren
     _createConfig() {
         this._formPanel = this._createFormPanel();
         
@@ -67,6 +68,7 @@ dbadmin.LoginWindow = class dbadmin_LoginWindow extends kijs.gui.Window {
         return config;
     }
     
+    // FormPanel definieren
     _createFormPanel() {
         return new kijs.gui.FormPanel({
             xtype: 'kijs.gui.FormPanel',

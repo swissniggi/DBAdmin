@@ -30,6 +30,10 @@ kit.App = class kit_App {
     // --------------------------------------------------------------
     // MEMBERS
     // --------------------------------------------------------------
+    /**
+     * App ausführen
+     * @returns {undefined}
+     */
     run() {        
         this._databaseView = new dbadmin.DatabaseView({
             rpc: this._rpc
@@ -40,6 +44,7 @@ kit.App = class kit_App {
             cls: 'kijs-flexcolumn',          
             elements: [
                 {
+                    // Panel definieren
                     xtype: 'kijs.gui.Panel',
                     name: 'mainPanel',
                     caption: 'DBAdmin',
@@ -51,22 +56,10 @@ kit.App = class kit_App {
                     },
                     elements:[
                             this._databaseView
-                    ],
-                    headerElements:[
-                        {
-                            xtype: 'kijs.gui.Button',
-                            name: 'btnCreate',
-                            iconChar: '&#xf067',
-                            on:{
-                                click: function(){
-                                    this.showActionWindow('create');
-                                },
-                                context: this
-                            }
-                        }
-                    ],
+                    ],                    
                     headerBarElements:[
                         {
+                            // Logout-Button definieren
                             xtype: 'kijs.gui.Button',
                             name: 'btnLogout',
                             iconChar: '&#xf011',
@@ -85,11 +78,25 @@ kit.App = class kit_App {
                             }
                         }
                     ],
-                    footerElements:[
+                    headerElements:[
                         {
+                            // Create-Button definieren
+                            xtype: 'kijs.gui.Button',
+                            name: 'btnCreate',
+                            iconChar: '&#xf067',
+                            toolTip: 'leere Datenbank erstellen',
+                            on:{
+                                click: function(){
+                                    this.showActionWindow('create');
+                                },
+                                context: this
+                            }
+                        },{
+                            // Delete-Button definieren
                             xtype: 'kijs.gui.Button',
                             name: 'btnDelete',
                             iconChar: '&#xf1f8',
+                            toolTip: 'selektierte Datenbank löschen',
                             style:{
                                 border: 'none'
                             },
@@ -112,9 +119,11 @@ kit.App = class kit_App {
                                 context: this
                             }
                         },{
+                            // Import-Button definieren
                             xtype: 'kijs.gui.Button',
                             name: 'btnImport',
                             iconChar: '&#xf019',
+                            toolTip: 'Dump in selektierte Datenbank importieren',
                             style:{
                                 border: 'none'
                             },
@@ -129,9 +138,11 @@ kit.App = class kit_App {
                                 context: this
                             }
                         },{
+                            // Export-Button definieren
                             xtype: 'kijs.gui.Button',
                             name: 'btnExport',
                             iconChar: '&#xf093',
+                            toolTip: 'Dump von selektierter Datenbank erstellen',
                             style:{
                                 border: 'none'
                             },
@@ -154,9 +165,11 @@ kit.App = class kit_App {
                                 context: this
                             }
                         },{
+                            // Duplicate-Button definieren
                             xtype: 'kijs.gui.Button',
                             name: 'btnDuplicate',
                             iconChar: '&#xf0c5',
+                            toolTip: 'selektierte Datenbank dumplizieren',
                             style:{                                
                                 border: 'none'
                             },
@@ -171,9 +184,11 @@ kit.App = class kit_App {
                                 context: this
                             }
                         },{
+                            // Rename-Button definieren
                             xtype: 'kijs.gui.Button',
                             name: 'btnRename',
                             iconChar: '&#xf044',
+                            toolTip: 'selektierte Datenbank umbenennen',
                             style:{
                                 border: 'none'
                             },
@@ -202,6 +217,11 @@ kit.App = class kit_App {
     }
     
     
+    /**
+     * Action-Fenster erstellen
+     * @param {string} action
+     * @returns {undefined}
+     */
     showActionWindow(action) {
         let caption = '';
         let iconChar = '';
@@ -227,6 +247,10 @@ kit.App = class kit_App {
     }
     
     
+    /**
+     * Login-Fenster erstellen
+     * @returns {undefined}
+     */
     showLoginWindow() {
         // Window erstellen
         this._loginWindow = new dbadmin.LoginWindow({
@@ -241,6 +265,10 @@ kit.App = class kit_App {
     }
     
     
+    /**
+     * Select-Fenster erstellen
+     * @returns {undefined}
+     */
     showSelectWindow() {
         console.log(this._viewport.down('dvDatabases').getSelected());
         // Window erstellen
@@ -259,7 +287,10 @@ kit.App = class kit_App {
         this._selectWindow.show();
     }
     
-    
+    /**
+     * Session-ID erstellen
+     * @returns {undefined}
+     */
     _setSessionId() {
         function s4() {
             return Math.floor((1 + Math.random()) * 0x10000)

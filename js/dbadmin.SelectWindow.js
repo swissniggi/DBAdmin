@@ -60,6 +60,8 @@ dbadmin.SelectWindow = class dbadmin_SelectWindow extends kijs.gui.Window {
     // MEMBERS
     // --------------------------------------------------------------
     // PROTECTED
+    
+    // Config definieren
     _createConfig() {
         this._comboField = this._createCombo();
         this._textField = this._createField();
@@ -86,6 +88,7 @@ dbadmin.SelectWindow = class dbadmin_SelectWindow extends kijs.gui.Window {
         return config;
     }
     
+    // Combofeld definieren
     _createCombo() {
         return new kijs.gui.field.Combo({
             name: 'dumps',
@@ -97,6 +100,7 @@ dbadmin.SelectWindow = class dbadmin_SelectWindow extends kijs.gui.Window {
         });
     }
     
+    // FormPanel definieren
     _createFormPanel() {
         return new kijs.gui.FormPanel({
             xtype: 'kijs.gui.FormPanel',
@@ -138,6 +142,7 @@ dbadmin.SelectWindow = class dbadmin_SelectWindow extends kijs.gui.Window {
         });
     }
     
+    // Textfeld definieren
     _createField() {
         return new kijs.gui.field.Text({
             name: 'database',
