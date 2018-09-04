@@ -1,5 +1,7 @@
 # DBAdmin
 
+# based on https://github.com/swissniggi/DBAdminPHP
+
 !! The Ajax-Version requires the new kijs-Framework // mail me for more details !!
 
 Folder dumps/ is ignored: contains Files to big to commit
