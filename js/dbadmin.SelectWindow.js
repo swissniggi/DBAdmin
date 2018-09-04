@@ -130,7 +130,7 @@ dbadmin.SelectWindow = class dbadmin_SelectWindow extends kijs.gui.Window {
                     height: 30,
                     caption: 'Importieren',
                     on:{
-                        click: this._onBtnLoginClick,
+                        click: this._onBtnActionClick,
                         context: this
                     }
                 }
@@ -149,7 +149,7 @@ dbadmin.SelectWindow = class dbadmin_SelectWindow extends kijs.gui.Window {
     }
     
     
-    _onBtnLoginClick(e) {
+    _onBtnActionClick(e) {
         this._formPanel.save();
     }
     

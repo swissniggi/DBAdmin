@@ -30,9 +30,7 @@ kit.App = class kit_App {
     // --------------------------------------------------------------
     // MEMBERS
     // --------------------------------------------------------------
-    run() {
-        let _this = this;
-        
+    run() {        
         this._databaseView = new dbadmin.DatabaseView({
             rpc: this._rpc
         });
@@ -74,15 +72,16 @@ kit.App = class kit_App {
                             iconChar: '&#xf011',
                             on:{
                                 click: function(){
-                                    sessionStorage.removeItem('ID');
-                                    _this._rpc.do('dbadmin.logout', null, 
+                                    localStorage.removeItem('ID');
+                                    this._rpc.do('dbadmin.logout', null, 
                                     function() {
                                         kijs.gui.CornerTipContainer.show('Info', 'Du wurdest erfolgreich ausgelogt', 'info');
                                         this.showLoginWindow();
                                         // DataView leeren
                                         this._viewport.down('dvDatabases').load(null);
-                                    }, _this, false, this.parent, 'dom', false);
-                                }
+                                    }, this, false, this._viewport, 'dom', false);
+                                },
+                                context: this
                             }
                         }
                     ],
@@ -102,7 +101,7 @@ kit.App = class kit_App {
                                         this._rpc.do('dbadmin.delete', this._viewport.down('dvDatabases').getSelected().dataRow, 
                                         function(response) {
                                             if (response.data.success === 'true') {
-                                                kijs.gui.CornerTipContainer.show('Info', 'Datenbank erfolgreich gelöscht', 'info');
+                                                kijs.gui.CornerTipContainer.show('Info', 'Datenbank erfolgreich gelöscht.', 'info');
                                                 this._viewport.down('dvDatabases').load();             
                                             } else {
                                                 kijs.gui.MsgBox.error('Fehler', response.errorMsg);       
@@ -115,7 +114,7 @@ kit.App = class kit_App {
                         },{
                             xtype: 'kijs.gui.Button',
                             name: 'btnImport',
-                            iconChar: '&#xf093',
+                            iconChar: '&#xf019',
                             style:{
                                 border: 'none'
                             },
@@ -132,7 +131,7 @@ kit.App = class kit_App {
                         },{
                             xtype: 'kijs.gui.Button',
                             name: 'btnExport',
-                            iconChar: '&#xf019',
+                            iconChar: '&#xf093',
                             style:{
                                 border: 'none'
                             },
@@ -144,7 +143,7 @@ kit.App = class kit_App {
                                         this._rpc.do('dbadmin.export', this._viewport.down('dvDatabases').getSelected().dataRow, 
                                         function(response) {
                                             if (response.data.success === 'true') {
-                                                kijs.gui.CornerTipContainer.show('Info', 'Datenbank erfolgreich exportiert', 'info');
+                                                kijs.gui.CornerTipContainer.show('Info', 'Datenbank erfolgreich exportiert.', 'info');
                                                 this._viewport.down('dvDatabases').load();             
                                             } else {
                                                 kijs.gui.MsgBox.error('Fehler', response.errorMsg);       
@@ -195,7 +194,7 @@ kit.App = class kit_App {
         });
         this._viewport.render();
         
-        if (!sessionStorage.getItem('ID')) {
+        if (!localStorage.getItem('ID')) {
             this.showLoginWindow();
         } else {
             this._viewport.down('dvDatabases').load();
@@ -268,15 +267,22 @@ kit.App = class kit_App {
                 .substring(1);
         }
         let Id = s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
-        sessionStorage.setItem('ID', Id); 
+        localStorage.setItem('ID', Id); 
     }
     
     
     // LISTENERS
     _onActionWindowAfterSave(e) {
+        let txt = '';
+        switch(e.raiseElement.facadeFnSave) {
+            case 'dbadmin.create': txt = 'erstellt.'; break;
+            case 'dbadmin.duplicate': txt = 'dupliziert.'; break
+            case 'dbadmin.rename': txt = 'umbenannt.'; break;
+        }
         this._viewport.down('dvDatabases').load();
+        console.log(e.raiseElement.facadeFnSave);
         this._actionWindow.destruct();
-        kijs.gui.CornerTipContainer.show('Info', 'Aktion erfolgreich ausgeführt.', 'info');
+        kijs.gui.CornerTipContainer.show('Info', 'Datenbank erfolgreich '+txt, 'info');
     }
        
     _onLoginWindowAfterSave(e) {
@@ -288,6 +294,6 @@ kit.App = class kit_App {
     _onSelectWindowAfterSave(e) {
         this._viewport.down('dvDatabases').load();
         this._selectWindow.destruct();
-        kijs.gui.CornerTipContainer.show('Info', 'Dump erfolgreich importiert', 'info');
+        kijs.gui.CornerTipContainer.show('Info', 'Dump erfolgreich importiert.', 'info');
     }
 };

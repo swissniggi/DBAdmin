@@ -37,7 +37,7 @@ dbadmin.ActionWindow = class dbadmin_ActionWindow extends kijs.gui.Window {
     
     // --------------------------------------------------------------
     // GETTERS / SETTERS
-    // --------------------------------------------------------------    
+    // --------------------------------------------------------------
     get facadeFnSave() { return this._formPanel.facadeFnSave; }
     set facadeFnSave(val) { this._formPanel.facadeFnSave = val; }  
     
@@ -109,7 +109,7 @@ dbadmin.ActionWindow = class dbadmin_ActionWindow extends kijs.gui.Window {
                     height: 30,
                     caption: 'OK',
                     on:{
-                        click: this._onBtnLoginClick,
+                        click: this._onBtnActionClick,
                         context: this
                     }
                 }
@@ -128,7 +128,7 @@ dbadmin.ActionWindow = class dbadmin_ActionWindow extends kijs.gui.Window {
     }
     
     
-    _onBtnLoginClick(e) {
+    _onBtnActionClick(e) {
         this._formPanel.save();
     }
     
