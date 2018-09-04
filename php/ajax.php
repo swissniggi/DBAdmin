@@ -15,6 +15,8 @@
         
         try{
             switch ($request->facadeFn) {
+                
+                // Datenbanken auslesen
                 case 'dbadmin.loadDbs':
                     $return = $con->selectDatabases();
 
@@ -44,7 +46,8 @@
                         $response->rows = $rows;
                     }                
                     break;
-
+                
+                // Dumps auslesen
                 case 'dbadmin.loadDumps':
                     $return = $con->getDumpList();
 
@@ -63,6 +66,7 @@
                     }
                     break;
 
+                // Einloggen
                 case 'dbadmin.login':
                     $return = $con->loginUser($request->data->formData);
 
@@ -75,6 +79,7 @@
                     }
                     break;
 
+                // neue Datenbank erstellen
                 case 'dbadmin.create':
                     $return = $con->createDatabase($request->data->formData->newDbname);
 
@@ -87,6 +92,7 @@
                     }
                     break;
 
+                // Dump importieren
                 case 'dbadmin.import':
                     $return = $con->importDatabase($request->data->formData);
 
@@ -99,6 +105,7 @@
                     }
                     break;
 
+                // Datenbank exportieren
                 case 'dbadmin.export':
                     $return = $con->exportDatabase($request->data->Datenbankname, true);
 
@@ -111,6 +118,7 @@
                     }
                     break;
 
+                // Datenbank duplizieren
                 case 'dbadmin.duplicate':
                     $return = $con->duplicateDatabase($request->data->formData->newDbname, $request->data->formData->oldDbname);
 
@@ -123,6 +131,7 @@
                     }
                     break;
 
+                // Datenbank umbenennen
                 case 'dbadmin.rename':
                     $return = $con->renameDatabase($request->data->formData->newDbname, $request->data->formData->oldDbname);
 
@@ -135,6 +144,7 @@
                     }
                     break;
 
+                // Datenbank löschen
                 case 'dbadmin.delete':
                     $return = $con->deleteDatabase($request->data->Datenbankname);
 
@@ -147,6 +157,7 @@
                     }
                     break;
 
+                // Ausloggen
                 case 'dbadmin.logout':
                     $return = $con->logoutUser();                
                     break;
@@ -158,5 +169,5 @@
         }
         $responses[] = $response;
     }
-    
+    // Antwort ausgeben
     print(json_encode($responses));

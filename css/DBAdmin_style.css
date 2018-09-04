@@ -2,13 +2,16 @@
 /*              Overwrites kijs Styles               */
 /* ------------------------------------------------ */
 
+/* Datenbank-Icon in DataView */
 .kijs-dataview .kijs-dataviewelement .dbadmin-icon{
     font: normal normal normal 15px/1 FontAwesome;
     color: #4398dd;
+    
     display: inline-block;
     margin: 5px;
 }
 
+/* Import- und Änderungsdatum in DataView */
 .kijs-dataview .kijs-dataviewelement .dbadmin-label {
     width: 80px;
     font-size: 10px;
