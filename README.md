@@ -6,4 +6,9 @@ Folder dumps/ is ignored: contains Files to big to commit
 
 ==> additional folder 'dumps' must be created in root directory on install
 
+Features yet to come:
+
+- actual password field in login window
+- activation of click event on button on enter
+
 #Project from trial IPA, June 2018
