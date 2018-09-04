@@ -37,8 +37,16 @@ kit.App = class kit_App {
             rpc: this._rpc
         });
 
+        let buttons = ({
+            btnCreate : true,
+            btnDelete : true, 
+            btnImport : true, 
+            btnExport : true, 
+            btnDuplicate : true, 
+            btnRename : true
+        });
         let mainPanel = new dbadmin.MainPanel();
-        let panel = mainPanel.create(this, true, true, true, true, true, true, this._databaseView);
+        let panel = mainPanel.create(this, buttons, this._databaseView);
         
         // ViewPort erstellen
         this._viewport = new kijs.gui.ViewPort({

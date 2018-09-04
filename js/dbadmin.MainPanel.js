@@ -13,23 +13,18 @@ dbadmin.MainPanel = class dbadmin_MainPanel {
    
     /**
      * Erstellt ein MainPanel
-     * @param {Object}                  context Kontext für Funktionen
-     * @param {boolean} btnCreate       true = Create-Button erstellen
-     * @param {boolean} btnDelete       true = Delete-Button erstellen
-     * @param {boolean} btnImport       true = Import-Button erstellen
-     * @param {boolean} btnExport       true = Export-Button erstellen
-     * @param {boolean} btnDuplicate    true = Duplicate-Button erstellen
-     * @param {boolean} btnRename       true = Rename-Button erstellen
+     * @param {Object} context          Kontext für Funktionen
+     * @param {Object} buttons          Enthält für jeden Button true oder false
      * @param {Object|null}             dataView Instanz der DataView,
                                         NULL = keine DataView vorhanden
      * @returns {mainPanel}
      */
-    create(context, btnCreate, btnDelete, btnImport, btnExport, btnDuplicate, btnRename, dataView = null) {
+    create(context, buttons, dataView = null) {
         // gewünschte Buttons erstellen
-        let buttons = [];
-        
-        // Create-Button definieren
-        if (btnCreate) {
+        let buttonsArray = [];
+                
+        if (buttons['btnCreate']) {
+            // Create-Button definieren
             let buttonCreate = new kijs.gui.Button({
                 name: 'btnCreate',
                 iconChar: '&#xf067',
@@ -42,11 +37,11 @@ dbadmin.MainPanel = class dbadmin_MainPanel {
                 }
             });
             
-            buttons.push(buttonCreate);
+            buttonsArray.push(buttonCreate);
         }
-        
-        // Delete-Button definieren
-        if (btnDelete) {
+                
+        if (buttons['btnDelete']) {
+            // Delete-Button definieren
             let buttonDelete = new kijs.gui.Button({
                 name: 'btnDelete',
                 iconChar: '&#xf1f8',
@@ -74,11 +69,11 @@ dbadmin.MainPanel = class dbadmin_MainPanel {
                 }
             });
             
-            buttons.push(buttonDelete);
+            buttonsArray.push(buttonDelete);
         }
-        
-        // Import-Button definieren
-        if (btnImport) {
+                
+        if (buttons['btnImport']) {
+            // Import-Button definieren
             let buttonImport = new kijs.gui.Button({
                 name: 'btnImport',
                 iconChar: '&#xf019',
@@ -98,11 +93,11 @@ dbadmin.MainPanel = class dbadmin_MainPanel {
                 }
             });
             
-            buttons.push(buttonImport);
+            buttonsArray.push(buttonImport);
         }
-        
-        // Export-Button definieren
-        if (btnExport) {
+                
+        if (buttons['btnExport']) {
+            // Export-Button definieren
             let buttonExport = new kijs.gui.Button({
                 name: 'btnExport',
                 iconChar: '&#xf093',
@@ -130,11 +125,11 @@ dbadmin.MainPanel = class dbadmin_MainPanel {
                 }
             });
             
-            buttons.push(buttonExport);
+            buttonsArray.push(buttonExport);
         }
-        
-        // Duplicate-Button definieren
-        if (btnDuplicate) {
+               
+        if (buttons['btnDuplicate']) {
+            // Duplicate-Button definieren
             let buttonDuplicate = new kijs.gui.Button({
                 name: 'btnDuplicate',
                 iconChar: '&#xf0c5',
@@ -154,11 +149,11 @@ dbadmin.MainPanel = class dbadmin_MainPanel {
                 }
             });
             
-            buttons.push(buttonDuplicate);
+            buttonsArray.push(buttonDuplicate);
         }
-        
-        // Rename-Button definieren
-        if (btnRename) {
+               
+        if (buttons['btnRename']) {
+            // Rename-Button definieren
             let buttonRename = new kijs.gui.Button({
                 name: 'btnRename',
                 iconChar: '&#xf044',
@@ -178,7 +173,7 @@ dbadmin.MainPanel = class dbadmin_MainPanel {
                 }
             });
             
-            buttons.push(buttonRename);
+            buttonsArray.push(buttonRename);
         }
         
         // Panel definieren
@@ -217,7 +212,7 @@ dbadmin.MainPanel = class dbadmin_MainPanel {
             ]
         });
         
-        mainPanel.header.add(buttons);
+        mainPanel.header.add(buttonsArray);
         
         return mainPanel;
     }
