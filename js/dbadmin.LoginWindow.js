@@ -60,6 +60,7 @@ dbadmin.LoginWindow = class dbadmin_LoginWindow extends kijs.gui.Window {
             closable: false,
             maximizable: false,
             resizable: false,
+            modal: true,
             elements:[
                 this._formPanel
             ]

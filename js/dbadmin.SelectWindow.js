@@ -73,6 +73,7 @@ dbadmin.SelectWindow = class dbadmin_SelectWindow extends kijs.gui.Window {
             closable: true,
             maximizable: false,
             resizable: false,
+            modal: true,
             defaults:{
                 width: 380,
                 height: 25,

@@ -62,6 +62,7 @@ dbadmin.ActionWindow = class dbadmin_ActionWindow extends kijs.gui.Window {
             closable: true,
             maximizable: false,
             resizable: false,
+            modal: true,
             defaults:{
                 width: 380,
                 height: 25,
