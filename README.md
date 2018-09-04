@@ -2,9 +2,7 @@
 
 (based on https://github.com/swissniggi/DBAdminPHP)
 
-!! The Ajax-Version requires the new kijs-Framework // mail me for more details !!
-
-Folder dumps/ is ignored: contains Files to big to commit
+!! requires the new kijs-Framework // mail me for more details !!
 
 ==> additional folder 'dumps' must be created in root directory on install
 
