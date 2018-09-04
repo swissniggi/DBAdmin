@@ -57,6 +57,7 @@ kit.App = class kit_App {
         });
         this._viewport.render();
 
+        // bei Start der Anwendung Login-Fenster anzeigen
         if (!localStorage.getItem('ID')) {
             this.showLoginWindow();
         } else {
