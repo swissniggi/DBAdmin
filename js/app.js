@@ -21,9 +21,7 @@ kit.App = class kit_App {
         if (config.ajaxUrl) {
             rpcConfig.url = config.ajaxUrl;
         }
-        this._rpc = new kijs.gui.Rpc(rpcConfig);
-        
-        
+        this._rpc = new kijs.gui.Rpc(rpcConfig);       
     }
 
 
@@ -55,7 +53,7 @@ kit.App = class kit_App {
                         flex: 1
                     },
                     elements:[
-                            this._databaseView
+                        this._databaseView
                     ],                    
                     headerBarElements:[
                         {
@@ -286,6 +284,7 @@ kit.App = class kit_App {
         });
         this._selectWindow.show();
     }
+    
     
     /**
      * Session-ID erstellen

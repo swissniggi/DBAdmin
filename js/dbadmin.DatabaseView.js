@@ -17,14 +17,7 @@ dbadmin.DatabaseView = class dbadmin_DatabaseView extends kijs.gui.DataView {
         if (kijs.isObject(config)) {
             this.applyConfig(config, true);
         }
-    }
-    
-    
-    // --------------------------------------------------------------
-    // GETTERS / SETTERS
-    // --------------------------------------------------------------
-    
-    
+    }   
     
     // --------------------------------------------------------------
     // MEMBERS

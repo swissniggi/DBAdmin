@@ -153,7 +153,7 @@ dbadmin.SelectWindow = class dbadmin_SelectWindow extends kijs.gui.Window {
         });
     }
     
-    
+    // LISTENERS
     _onBtnActionClick(e) {
         this._formPanel.save();
     }

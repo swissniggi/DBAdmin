@@ -131,7 +131,7 @@ dbadmin.ActionWindow = class dbadmin_ActionWindow extends kijs.gui.Window {
         });
     }
     
-    
+    // LISTENERS
     _onBtnActionClick(e) {
         this._formPanel.save();
     }

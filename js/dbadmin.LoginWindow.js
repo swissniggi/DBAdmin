@@ -116,7 +116,7 @@ dbadmin.LoginWindow = class dbadmin_LoginWindow extends kijs.gui.Window {
         });
     }
     
-    
+    // LISTENERS
     _onBtnLoginClick(e) {
         this._formPanel.save();
     }
