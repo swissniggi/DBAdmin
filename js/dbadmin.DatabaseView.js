@@ -55,6 +55,9 @@ dbadmin.DatabaseView = class dbadmin_DatabaseView extends kijs.gui.DataView {
             waitMaskTargetDomProperty: 'innerDom',
             autoLoad: true,
             facadeFnLoad: 'dbadmin.loadDbs',
+            style:{
+                width: '100%'
+            },
             innerStyle: {
                 padding: '10px',
                 overflowY: 'auto',
