@@ -8,7 +8,7 @@
 
 Features yet to come:
 
-- ~actual password field in login window~<br />solved with class extending _kijs.gui.field.Text_.<br />Class __kijs.gui.field.Password__ will be used as soon as it works.
+- ~actual password field in login window~<br />solved with class _dbadmin.PasswordField_ extending _kijs.gui.field.Text_.<br />Class __kijs.gui.field.Password__ will be used as soon as it works.
 - activation of click event on button on enter
 
 #Project from trial IPA, June 2018
