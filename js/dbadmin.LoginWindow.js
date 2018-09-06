@@ -71,8 +71,9 @@ dbadmin.LoginWindow = class dbadmin_LoginWindow extends kijs.gui.Window {
 
     // FormPanel definieren
     _createFormPanel() {
+        let password = this._createPasswordField();
+        
         return new kijs.gui.FormPanel({
-            xtype: 'kijs.gui.FormPanel',
             name: 'loginFormPanel',
             defaults:{
                 width: 280,
@@ -88,13 +89,8 @@ dbadmin.LoginWindow = class dbadmin_LoginWindow extends kijs.gui.Window {
                     required: true,
                     name: 'username',
                     label: 'Benutzer'
-                },{
-                    xtype: 'kijs.gui.field.Text',
-                    labelWidth: 80,
-                    required: true,
-                    name: 'password',
-                    label: 'Passwort'
-                }
+                },
+                password
             ],
             footerStyle:{
                 padding: '10px'
@@ -114,6 +110,21 @@ dbadmin.LoginWindow = class dbadmin_LoginWindow extends kijs.gui.Window {
                     }
                 }
             ]
+        });
+    }
+    
+    // Passwortfeld definieren
+    _createPasswordField() {
+        return new dbadmin.PasswordField({
+            width: 280,
+            height: 25,
+            labelWidth: 80,
+            required: true,
+            name: 'password',
+            label: 'Passwort',
+            style:{
+                margin: '10px'
+            }
         });
     }
 

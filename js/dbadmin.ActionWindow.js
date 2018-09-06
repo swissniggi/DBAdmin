@@ -96,7 +96,7 @@ dbadmin.ActionWindow = class dbadmin_ActionWindow extends kijs.gui.Window {
                     labelWidth: 160,
                     required: true,
                     name: 'newDbname',
-                    label: 'neuer Datenbankname'
+                    label: 'Neuer Datenbankname'
                 },
                 this._textField
             ],

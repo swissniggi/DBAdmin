@@ -52,15 +52,19 @@ dbadmin.MainPanel = class dbadmin_MainPanel {
                         if (this._viewport.down('dvDatabases').getSelected() === null) {
                             kijs.gui.MsgBox.alert('Achtung','Keine Datenbank ausgewählt!');
                         } else {
-                            this._rpc.do('dbadmin.delete', this._viewport.down('dvDatabases').getSelected().dataRow, 
-                            function(response) {
-                                if (response.data.success === 'true') {
-                                    kijs.gui.CornerTipContainer.show('Info', 'Datenbank erfolgreich gelöscht.', 'info');
-                                    this._viewport.down('dvDatabases').load();
-                                } else {
-                                    kijs.gui.MsgBox.error('Fehler', response.errorMsg);
+                            kijs.gui.MsgBox.confirm('Wirklich löschen?','Willst du die Datenban wirklich löschen?', function(e) {
+                                if (e.btn === 'yes') {
+                                    this._rpc.do('dbadmin.delete', this._viewport.down('dvDatabases').getSelected().dataRow, 
+                                    function(response) {
+                                        if (response.data.success === 'true') {
+                                            kijs.gui.CornerTipContainer.show('Info', 'Datenbank erfolgreich gelöscht.', 'info');
+                                            this._viewport.down('dvDatabases').load();
+                                        } else {
+                                            kijs.gui.MsgBox.error('Fehler', response.errorMsg);
+                                        }
+                                    }, this, false, this._viewport, 'dom', false);
                                 }
-                            }, this, false, this._viewport, 'dom', false);
+                            }, context);
                         }
                     },
                     context: context
@@ -108,15 +112,19 @@ dbadmin.MainPanel = class dbadmin_MainPanel {
                         if (this._viewport.down('dvDatabases').getSelected() === null) {
                             kijs.gui.MsgBox.alert('Achtung','Keine Datenbank ausgewählt!');
                         } else {
-                            this._rpc.do('dbadmin.export', this._viewport.down('dvDatabases').getSelected().dataRow, 
-                            function(response) {
-                                if (response.data.success === 'true') {
-                                    kijs.gui.CornerTipContainer.show('Info', 'Datenbank erfolgreich exportiert.', 'info');
-                                    this._viewport.down('dvDatabases').load();
-                                } else {
-                                    kijs.gui.MsgBox.error('Fehler', response.errorMsg);
+                            kijs.gui.MsgBox.confirm('Wirklich exportieren?', 'Willst du die Datenbank wirklich exportieren?', function(e) {
+                                if (e.btn === 'yes') {
+                                    this._rpc.do('dbadmin.export', this._viewport.down('dvDatabases').getSelected().dataRow, 
+                                    function(response) {
+                                        if (response.data.success === 'true') {
+                                            kijs.gui.CornerTipContainer.show('Info', 'Datenbank erfolgreich exportiert.', 'info');
+                                            this._viewport.down('dvDatabases').load();
+                                        } else {
+                                            kijs.gui.MsgBox.error('Fehler', response.errorMsg);
+                                        }
+                                    }, this, false, this._viewport, 'dom', false);
                                 }
-                            }, this, false, this._viewport, 'dom', false);
+                            }, context);
                         }
                     },
                     context: context
@@ -198,7 +206,7 @@ dbadmin.MainPanel = class dbadmin_MainPanel {
                             localStorage.clear();
                             this._rpc.do('dbadmin.logout', null, 
                             function() {
-                                kijs.gui.CornerTipContainer.show('Info', 'Du wurdest erfolgreich ausgelogt', 'info');
+                                kijs.gui.CornerTipContainer.show('Info', 'Du wurdest erfolgreich ausgelogt.', 'info');
                                 this.showLoginWindow();
                                 // DataView leeren
                                 this._viewport.down('dvDatabases').load(null);

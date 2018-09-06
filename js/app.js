@@ -76,7 +76,7 @@ kit.App = class kit_App {
         let iconChar = '';
 
         switch(action) {
-            case 'create': caption = 'neue Datenbank erstellen'; iconChar = '&#xf067'; break;
+            case 'create': caption = 'Neue Datenbank erstellen'; iconChar = '&#xf067'; break;
             case 'duplicate': caption = 'Datenbank duplizieren'; iconChar = '&#xf0c5'; break;
             case 'rename': caption = 'Datenbank umbenennen'; iconChar = '&#xf044'; break;
         }
