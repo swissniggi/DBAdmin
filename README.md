@@ -8,7 +8,7 @@
 
 Features yet to come:
 
-- ~actual password field in login window~ solved with class extending kijs.gui.field.Text. kijs.gui.fiel.Password will be used as soon as it works
+- ~actual password field in login window~ solved with class extending _kijs.gui.field.Text_. __kijs.gui.field.Password__ will be used as soon as it works
 - activation of click event on button on enter
 
 #Project from trial IPA, June 2018
