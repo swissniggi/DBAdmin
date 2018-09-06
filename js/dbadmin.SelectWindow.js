@@ -68,7 +68,7 @@ dbadmin.SelectWindow = class dbadmin_SelectWindow extends kijs.gui.Window {
         this._formPanel = this._createFormPanel();
 
         const config = {
-            iconChar: '&#xf093',
+            iconChar: '&#xf019',
             width: 400,
             closable: true,
             maximizable: false,

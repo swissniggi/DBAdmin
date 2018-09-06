@@ -195,7 +195,7 @@ dbadmin.MainPanel = class dbadmin_MainPanel {
                     iconChar: '&#xf011',
                     on:{
                         click: function(){
-                            localStorage.removeItem('ID');
+                            localStorage.clear();
                             this._rpc.do('dbadmin.logout', null, 
                             function() {
                                 kijs.gui.CornerTipContainer.show('Info', 'Du wurdest erfolgreich ausgelogt', 'info');

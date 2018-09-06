@@ -18,7 +18,7 @@ class DBAdmin_Controller {
                                        
         if (!$_SESSION['root']) {
             if ($match === 0) {
-                return 'Der Datenbankname muss folgendes Format haben:\n\'Benutzername_Applikation_Organisation\'\nBeispiel: \'dev_xy_wz_kkk\'';
+                return "Der Datenbankname muss folgendes Format haben:<br />'Benutzername_Applikation_Organisation'<br />Beispiel: 'dev_xy_wz_kkk'";
             }
             $dbSubstrings = explode('_', $dbname);
             $check = $dbSubstrings[0].'_'.$dbSubstrings[1];

@@ -93,6 +93,8 @@ kit.App = class kit_App {
             }
         });
         this._actionWindow.show();
+        // bei Benutzern mit Root-Rechten ist 'User' ein leerer String
+        this._actionWindow.down('newDbname').value = localStorage.getItem('User');
     }
 
 
@@ -119,7 +121,6 @@ kit.App = class kit_App {
      * @returns {undefined}
      */
     showSelectWindow() {
-        console.log(this._viewport.down('dvDatabases').getSelected());
         // Window erstellen
         this._selectWindow = new dbadmin.SelectWindow({
             caption: 'Dumps',
@@ -168,7 +169,12 @@ kit.App = class kit_App {
 
     _onLoginWindowAfterSave(e) {
         this._viewport.down('dvDatabases').load();
-        this._setSessionId();       
+        this._setSessionId();
+        let username = this._loginWindow.down('username').value;
+
+        if (username.includes('_')) {
+            localStorage.setItem('User', username);
+        }
         this._loginWindow.destruct();
     }
 
