@@ -50,7 +50,7 @@ dbadmin.App = class dbadmin_App {
         // ViewPort erstellen
         this._viewport = new kijs.gui.ViewPort({
             cls: 'kijs-flexcolumn',
-            elements: [
+            elements:[
                 panel
             ]
         });

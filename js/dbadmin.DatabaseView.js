@@ -58,7 +58,7 @@ dbadmin.DatabaseView = class dbadmin_DatabaseView extends kijs.gui.DataView {
             style:{
                 width: '100%'
             },
-            innerStyle: {
+            innerStyle:{
                 padding: '10px',
                 overflowY: 'auto',
                 flex: 'initial'

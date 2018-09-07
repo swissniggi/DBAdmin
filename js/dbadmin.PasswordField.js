@@ -14,7 +14,7 @@ dbadmin.PasswordField = class dbadmin_PasswordField extends kijs.gui.field.Text 
         this._inputDom = new kijs.gui.Dom({
             disableEnterEscBubbeling: true,
             nodeTagName: 'input',
-            nodeAttribute: {
+            nodeAttribute:{
                 id: this._inputId,
                 type: 'password'
             }
