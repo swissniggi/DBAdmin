@@ -142,14 +142,15 @@ dbadmin.App = class dbadmin_App {
      * @returns {undefined}
      */
     _setSessionId() {
-        function hexString() {
-            return Math.floor((1 + Math.random()) * 0x10000)
-                .toString(16)
-                .substring(1);
+        let id = '';
+
+        while (id.length < 28) {
+            id += (Math.floor((1 + Math.random()) * 0x100000).toString(16));
+            id += '-';
         }
-        let Id = hexString() + hexString() + '-' + hexString() + '-' + hexString() + '-' 
-                + hexString() + '-' + hexString() + hexString() + hexString();
-        localStorage.setItem('ID', Id); 
+
+        id += (Math.floor((1 + Math.random()) * 0x100000).toString(16));
+        localStorage.setItem('ID', id); 
     }
 
 
