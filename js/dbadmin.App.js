@@ -142,12 +142,13 @@ dbadmin.App = class dbadmin_App {
      * @returns {undefined}
      */
     _setSessionId() {
-        function s4() {
+        function hexString() {
             return Math.floor((1 + Math.random()) * 0x10000)
                 .toString(16)
                 .substring(1);
         }
-        let Id = s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
+        let Id = hexString() + hexString() + '-' + hexString() + '-' + hexString() + '-' 
+                + hexString() + '-' + hexString() + hexString() + hexString();
         localStorage.setItem('ID', Id); 
     }
 
