@@ -86,6 +86,7 @@ class DBAdmin_Model {
     
     /**
      * Liest alle Daten für die HTML-Tabelle aus
+     * @param Object $pdo
      * @return array
      */
     public function selectDatabases($pdo) {
