@@ -47,6 +47,7 @@ dbadmin.ActionWindow = class dbadmin_ActionWindow extends kijs.gui.Window {
     get rpc() { return this._formPanel.rpc; }
     set rpc(val) { this._formPanel.rpc = val; }
 
+
     // --------------------------------------------------------------
     // MEMBERS
     // --------------------------------------------------------------
