@@ -12,6 +12,8 @@ class DBAdmin_Controller {
     
     /**
      * Überprüft den Datenbanknamen
+     * @param string $dbname
+     * @return boolean|string
      */
     public function checkDbname($dbname) {
         $match = preg_match('/^dev_[a-z]{2}_[a-z]{2,3}_[a-z]{1,50}$/', $dbname);
@@ -35,7 +37,9 @@ class DBAdmin_Controller {
     
     
     /**
-     * Erstellt eine neue Datenbank
+     * Erstellt eine Datenbank
+     * @param string $dbname
+     * @return \Throwable|boolean
      */
     public function createDatabase($dbname) {
         $return = true;
@@ -64,8 +68,11 @@ class DBAdmin_Controller {
         return $return;
     }
     
+    
     /**
-     * Löscht die gewählte Datenbank
+     * Löscht eine Datenbank
+     * @param string $dbname
+     * @return \Throwable|boolean
      */
     public function deleteDatabase($dbname) {
         $return = true;
@@ -86,6 +93,9 @@ class DBAdmin_Controller {
     
     /**
      * Dupliziert eine Datenbank
+     * @param string $newDbname
+     * @param string $oldDbname
+     * @return \Throwable|boolean
      */
     public function duplicateDatabase($newDbname, $oldDbname) {
         $return = true;
@@ -131,7 +141,10 @@ class DBAdmin_Controller {
         
     
     /**
-     * Exportiert eine Datenbank
+     * 
+     * @param string $dbname
+     * @param boolean $exportOnly
+     * @return \Throwable|boolean
      */
     public function exportDatabase($dbname, $exportOnly) {
         $return = true;
@@ -146,6 +159,10 @@ class DBAdmin_Controller {
     }
         
     
+    /**
+     * Gibt ein Array mit den Dumpnamen zurück
+     * @return \Throwable|array
+     */
     public function getDumpList() {
         if (isset($_SESSION['username'])) {
             try{
@@ -158,8 +175,12 @@ class DBAdmin_Controller {
             return $return;
         }
     }
+    
+    
     /**
-     * Eruiert, ob der Benutzer root-Rechte hat
+     * Ermittelt ob Benutzer Root-Rechte hat
+     * @param string $username
+     * @return boolean
      */
     public function getUserRights($username) {
         $conf = realpath('../config');
@@ -179,15 +200,16 @@ class DBAdmin_Controller {
     
     
     /**
-     * Importiert einen Dump
+     * Importiert einen Dump in die Datenbank
+     * @param Object $data
+     * @return \Throwable|boolean
      */
     public function importDatabase($data) { 
         $dbname = $data->database;
         $dump = isset($data->dumps) ? $data->dumps : null;
         $delete = $data->delete;
-        
-        try{
-            $return = true;
+        $return = true;
+        try{            
             require_once 'DBAdmin_FileReader.php';
             $reader = new DBAdmin_FileReader();
             $reader->executeDump($dump, $dbname, $delete);
@@ -205,7 +227,9 @@ class DBAdmin_Controller {
         
     
     /**
-     * Überprüft die Logindaten
+     * Logt den Benutzer ein
+     * @param Object $data
+     * @return \Throwable|boolean
      */
     public function loginUser($data) {
         $return = true;
@@ -267,7 +291,8 @@ class DBAdmin_Controller {
         
     
     /**
-     * Logt den angemeldeten Benutzer aus
+     * Logt den Benutzer aus
+     * @return boolean
      */
     public function logoutUser() { 
         unlink(realpath('../config/user_'.$_SESSION['username'].'.conf'));
@@ -275,8 +300,9 @@ class DBAdmin_Controller {
         return true;
     }
     
+    
     /**
-     * Öffnet eine Verbindung zu MySQL mit einem root-Benutzer
+     * Erstellt eine Verbindung zur Datenbank
      */
     public function openRootDbConnection() {
         require_once 'DBAdmin_Model.php';
@@ -292,8 +318,12 @@ class DBAdmin_Controller {
         $this->model->rootPdo = $this->model->openDbConnection($config->host, $config->user, $config->password);
     }
     
+    
     /**
      * Benennt eine Datenbank um
+     * @param string $newDbname
+     * @param string $oldDbname
+     * @return \Throwable|boolean
      */
     public function renameDatabase($newDbname, $oldDbname) {
         $return = true;
@@ -328,6 +358,10 @@ class DBAdmin_Controller {
     }
     
     
+    /**
+     * Gibt ein Array mit Datenbanken zurück
+     * @return \Throwable|array
+     */
     public function selectDatabases() {
         if (isset($_SESSION['username'])) {
             try{
