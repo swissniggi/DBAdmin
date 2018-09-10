@@ -90,6 +90,7 @@ dbadmin.App = class dbadmin_App {
                     xtype: 'kijs.gui.Button',
                     name: 'btnLogout',
                     iconChar: '&#xf011',
+                    toolTip: 'ausloggen',
                     style:{
                         marginRight: '6px'
                     },
