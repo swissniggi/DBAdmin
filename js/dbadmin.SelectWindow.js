@@ -13,8 +13,7 @@ dbadmin.SelectWindow = class dbadmin_SelectWindow extends kijs.gui.Window {
         super();
 
         this._comboField = null;
-        this._formPanel = null; 
-        this._textField = null;
+        this._formPanel = null;
 
         // Config generieren
         config = Object.assign({}, this._createConfig(), config);
@@ -23,7 +22,7 @@ dbadmin.SelectWindow = class dbadmin_SelectWindow extends kijs.gui.Window {
         Object.assign(this._configMap, {
             facadeFnLoad: { target: 'facadeFnLoad', context: this._comboField },
             facadeFnSave: { target: 'facadeFnSave', context: this._formPanel },
-            value: { target: 'value', context: this._textField },
+            data: { target: 'data', context: this._formPanel },
             rpcComboField: { target: 'rpc', context: this._comboField },
             rpcFormPanel: { target: 'rpc', context: this._formPanel }
         });
@@ -49,8 +48,8 @@ dbadmin.SelectWindow = class dbadmin_SelectWindow extends kijs.gui.Window {
     get facadeFnLoad() { return this._comboField.facadeFnLoad; }
     set facadeFnLoad(val) { this._ComboField.facadeFnLoad = val; }
 
-    get value() { return this._textField.value; }
-    set value(val) { this._textField.value = val; }
+    get data() { return this._formPanel.data; }
+    set data(val) { this._formPanel.data = val; }
 
     get rpcFormPanel() { return this._formPanel.rpc; }
     set rpcFormPanel(val) { this._formPanel.rpc = val; }
@@ -66,7 +65,6 @@ dbadmin.SelectWindow = class dbadmin_SelectWindow extends kijs.gui.Window {
     // Config definieren
     _createConfig() {
         this._comboField = this._createCombo();
-        this._textField = this._createField();
         this._formPanel = this._createFormPanel();
 
         const config = {
@@ -117,7 +115,6 @@ dbadmin.SelectWindow = class dbadmin_SelectWindow extends kijs.gui.Window {
             },
             elements:[
                 this._comboField,
-                this._textField,
                 {
                     xtype: 'kijs.gui.field.Checkbox',
                     name: 'delete',
@@ -145,17 +142,6 @@ dbadmin.SelectWindow = class dbadmin_SelectWindow extends kijs.gui.Window {
         });
     }
 
-    // Textfeld definieren
-    _createField() {
-        return new kijs.gui.field.Text({
-            name: 'database',
-            required: true,
-            style:{
-                display: 'none'
-            }
-        });
-    }
-
     // LISTENERS
     _onBtnActionClick(e) {
         this._formPanel.save();
@@ -174,7 +160,6 @@ dbadmin.SelectWindow = class dbadmin_SelectWindow extends kijs.gui.Window {
         // Elemente/DOM-Objekte entladen
 
         // Variablen (Objekte/Arrays) leeren
-        this._textField = null;
         this._comboField = null;
         this._formPanel = null;
 

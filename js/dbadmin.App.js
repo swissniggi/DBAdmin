@@ -167,16 +167,29 @@ dbadmin.App = class dbadmin_App {
         let iconChar = '';
         let data = {};
 
-        switch(action) {
-            case 'create': caption = 'Neue Datenbank erstellen'; iconChar = '&#xf067'; break;
-            case 'duplicate': caption = 'Datenbank duplizieren'; iconChar = '&#xf0c5'; break;
-            case 'rename': caption = 'Datenbank umbenennen'; iconChar = '&#xf044'; break;
+        let oldDbname = '';
+        if (this._viewport.down('dvDatabases').getSelected() !== null) {
+            oldDbname = this._viewport.down('dvDatabases').getSelected().dataRow['Datenbankname'];
         }
         
-        if (action === 'create') {
-            data = { oldDbname: action };
-        } else {
-            data = { oldDbname: this._viewport.down('dvDatabases').getSelected().dataRow['Datenbankname'] };
+        switch (action) {
+            case 'create': 
+                caption = 'Neue Datenbank erstellen'; 
+                iconChar = '&#xf067';
+                break;
+                
+            case 'duplicate': 
+                caption = 'Datenbank duplizieren'; 
+                iconChar = '&#xf0c5'; 
+                data.oldDbname = oldDbname;
+                break;
+                
+            case 'rename': 
+                caption = 'Datenbank umbenennen'; 
+                iconChar = '&#xf044'; 
+                data.oldDbname = oldDbname;
+                break;
+                
         }
         
         // Create-Window erstellen
@@ -220,6 +233,8 @@ dbadmin.App = class dbadmin_App {
      * @returns {undefined}
      */
     showSelectWindow() {
+        let data = { database: this._viewport.down('dvDatabases').getSelected().dataRow['Datenbankname'] };
+        
         // Window erstellen
         this._selectWindow = new dbadmin.SelectWindow({
             caption: 'Dumps',
@@ -227,7 +242,7 @@ dbadmin.App = class dbadmin_App {
             rpcComboField: this._rpc,
             facadeFnSave: 'dbadmin.import',
             facadeFnLoad: 'dbadmin.loadDumps',
-            value: this._viewport.down('dvDatabases').getSelected().dataRow['Datenbankname'],
+            data: data,
             on:{
                 afterSave: this._onSelectWindowAfterSave,
                 context: this
