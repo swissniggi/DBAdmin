@@ -1,4 +1,6 @@
 
+/* global this, kijs */
+
 // --------------------------------------------------------------
 // dbadmin.LoginWindow
 // --------------------------------------------------------------
@@ -11,7 +13,6 @@ dbadmin.ActionWindow = class dbadmin_ActionWindow extends kijs.gui.Window {
         super();
 
         this._formPanel = null; 
-        this._textField = null;
 
         // Config generieren
         config = Object.assign({}, this._createConfig(), config);
@@ -19,7 +20,7 @@ dbadmin.ActionWindow = class dbadmin_ActionWindow extends kijs.gui.Window {
          // Mapping für die Zuweisung der Config-Eigenschaften
         Object.assign(this._configMap, {
             facadeFnSave: { target: 'facadeFnSave', context: this._formPanel },
-            value: { target: 'value', context: this._textField },
+            data: { target: 'data', context: this._formPanel },
             rpc: { target: 'rpc', context: this._formPanel }
         });
 
@@ -40,9 +41,9 @@ dbadmin.ActionWindow = class dbadmin_ActionWindow extends kijs.gui.Window {
     // --------------------------------------------------------------
     get facadeFnSave() { return this._formPanel.facadeFnSave; }
     set facadeFnSave(val) { this._formPanel.facadeFnSave = val; }
-
-    get value() { return this._textField.value; }
-    set value(val) { this._textField.value = val; }
+    
+    get data() { return this._formPanel.data; }
+    set data(val) {this._formPanel.data = val; }
 
     get rpc() { return this._formPanel.rpc; }
     set rpc(val) { this._formPanel.rpc = val; }
@@ -55,7 +56,6 @@ dbadmin.ActionWindow = class dbadmin_ActionWindow extends kijs.gui.Window {
 
     // Config definieren
     _createConfig() {
-        this._textField = this._createField();
         this._formPanel = this._createFormPanel();
 
         const config = {
@@ -98,8 +98,7 @@ dbadmin.ActionWindow = class dbadmin_ActionWindow extends kijs.gui.Window {
                     required: true,
                     name: 'newDbname',
                     label: 'Neuer Datenbankname'
-                },
-                this._textField
+                }
             ],
             footerStyle:{
                 padding: '10px'
@@ -121,17 +120,6 @@ dbadmin.ActionWindow = class dbadmin_ActionWindow extends kijs.gui.Window {
             ]
         });
     }
-    
-    // Textfeld definieren
-    _createField() {
-        return new kijs.gui.field.Text({
-            name: 'oldDbname',
-            required: true,
-            style:{
-                display: 'none'
-            }
-        });
-    }
 
     // LISTENERS
     _onBtnActionClick(e) {
@@ -151,7 +139,6 @@ dbadmin.ActionWindow = class dbadmin_ActionWindow extends kijs.gui.Window {
         // Elemente/DOM-Objekte entladen
 
         // Variablen (Objekte/Arrays) leeren
-        this._textField = null;
         this._formPanel = null;
 
         // Basisklasse auch entladen

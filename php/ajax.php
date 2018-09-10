@@ -78,6 +78,19 @@
                         );
                     }
                     break;
+                    
+                // feststellen ob ein Benutzer angemeldet ist
+                case 'dbadmin.checkLogin':
+                    if (isset($_SESSION['username'])) {
+                        $response->data = array(
+                            'username' => $_SESSION['username']
+                        );
+                    } else {
+                        $response->data = array(
+                            'username' => false
+                        );
+                    }
+                    break;
 
                 // neue Datenbank erstellen
                 case 'dbadmin.create':

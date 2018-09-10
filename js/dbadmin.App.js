@@ -1,3 +1,5 @@
+/* global kijs */
+
 // --------------------------------------------------------------
 // dbadmin.App
 // --------------------------------------------------------------
@@ -48,16 +50,26 @@ dbadmin.App = class dbadmin_App {
         
         this._viewport.render();
 
-        // bei Start der Anwendung Login-Fenster anzeigen
-        if (!localStorage.getItem('ID')) {
-            this.showLoginWindow();
-        } else {
-            this._viewport.down('dvDatabases').load();
-        }
+        // feststellen ob ein Benutzer angemeldet ist
+        this._rpc.do('dbadmin.checkLogin', null, 
+        function(response) {
+            if (response.data.username !== false) {
+                localStorage.setItem('Benutzer', response.data.username);
+                this._viewport.down('dvDatabases').load();
+            } else {
+                this.showLoginWindow();
+            }
+        }, this, false, this._viewport, 'dom', false);
     }
     
     
+    /**
+     * Hauptpanel erstellen
+     * @returns {kijs.gui.Panel}
+     */
     createMainPanel() {
+        let toolTip = 'angemeldet als ' + localStorage.getItem('Benutzer');
+        
         // Panel definieren
         return new kijs.gui.Panel({
             name: 'mainPanel',
@@ -77,6 +89,7 @@ dbadmin.App = class dbadmin_App {
                     xtype: 'kijs.gui.Button',
                     name: 'btnLogout',
                     iconChar: '&#xf011',
+                    toolTip: toolTip,
                     on:{
                         click: this._onBtnLogoutClick,
                         context: this
@@ -152,17 +165,25 @@ dbadmin.App = class dbadmin_App {
     showActionWindow(action) {
         let caption = '';
         let iconChar = '';
+        let data = {};
 
         switch(action) {
             case 'create': caption = 'Neue Datenbank erstellen'; iconChar = '&#xf067'; break;
             case 'duplicate': caption = 'Datenbank duplizieren'; iconChar = '&#xf0c5'; break;
             case 'rename': caption = 'Datenbank umbenennen'; iconChar = '&#xf044'; break;
         }
+        
+        if (action === 'create') {
+            data = { oldDbname: action };
+        } else {
+            data = { oldDbname: this._viewport.down('dvDatabases').getSelected().dataRow['Datenbankname'] };
+        }
+        
         // Create-Window erstellen
         this._actionWindow = new dbadmin.ActionWindow({
             caption: caption,
             iconChar: iconChar,
-            value: action === 'create' ? 'create' : this._viewport.down('dvDatabases').getSelected().dataRow['Datenbankname'],
+            data: data,
             rpc: this._rpc,
             facadeFnSave: 'dbadmin.'+action,
             on:{
@@ -213,23 +234,6 @@ dbadmin.App = class dbadmin_App {
             }
         });
         this._selectWindow.show();
-    }
-
-
-    /**
-     * Session-ID erstellen
-     * @returns {undefined}
-     */
-    _setSessionId() {
-        let id = '';
-        
-        while (id.length < 28) {
-            id += (Math.floor((1 + Math.random()) * 0x100000).toString(16));
-            id += '-';
-        }
-
-        id += (Math.floor((1 + Math.random()) * 0x100000).toString(16));
-        localStorage.setItem('ID', id); 
     }
 
 
