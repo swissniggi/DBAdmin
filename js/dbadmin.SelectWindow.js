@@ -57,11 +57,11 @@ dbadmin.SelectWindow = class dbadmin_SelectWindow extends kijs.gui.Window {
     get rpcComboField() { return this._comboField.rpc; }
     set rpcComboField(val) { this._comboField.rpc = val; } 
 
+
     // --------------------------------------------------------------
     // MEMBERS
     // --------------------------------------------------------------
     // PROTECTED
-
     // Config definieren
     _createConfig() {
         this._comboField = this._createCombo();

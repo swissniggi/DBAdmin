@@ -24,7 +24,6 @@ dbadmin.DatabaseView = class dbadmin_DatabaseView extends kijs.gui.DataView {
     // MEMBERS
     // --------------------------------------------------------------
     // PUBLIC
-
     // overwrite
     createElement(dataRow, index) {
         let html = '';
@@ -47,7 +46,6 @@ dbadmin.DatabaseView = class dbadmin_DatabaseView extends kijs.gui.DataView {
     }
 
     // PROTECTED
-
     // Config definieren
     _createConfig() {
         const config = {

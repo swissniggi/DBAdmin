@@ -53,7 +53,6 @@ dbadmin.ActionWindow = class dbadmin_ActionWindow extends kijs.gui.Window {
     // MEMBERS
     // --------------------------------------------------------------
     // PROTECTED
-
     // Config definieren
     _createConfig() {
         this._formPanel = this._createFormPanel();
