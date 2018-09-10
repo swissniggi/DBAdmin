@@ -323,7 +323,7 @@ dbadmin.App = class dbadmin_App {
     }
     
     _onBtnLogoutClick(e) {
-        localStorage.clear();
+        sessionStorage.clear();
         this._rpc.do('dbadmin.logout', null, 
         function() {
             kijs.gui.CornerTipContainer.show('Info', 'Du wurdest erfolgreich ausgelogt.', 'info');
@@ -351,7 +351,7 @@ dbadmin.App = class dbadmin_App {
         let username = this._loginWindow.down('username').value;
 
         if (username.includes('_')) {
-            localStorage.setItem('User', username);
+            sessionStorage.setItem('Benutzer', username);
         }
         this._loginWindow.destruct();
     }
