@@ -54,7 +54,7 @@ dbadmin.App = class dbadmin_App {
         this._rpc.do('dbadmin.checkLogin', null, 
         function(response) {
             if (response.data.username !== false) {
-                localStorage.setItem('Benutzer', response.data.username);
+                sessionStorage.setItem('Benutzer', response.data.username);
                 this._viewport.down('dvDatabases').load();
             } else {
                 this.showLoginWindow();
@@ -68,7 +68,7 @@ dbadmin.App = class dbadmin_App {
      * @returns {kijs.gui.Panel}
      */
     createMainPanel() {
-        let caption = 'angemeldet als ' + localStorage.getItem('Benutzer');
+        let caption = 'angemeldet als ' + sessionStorage.getItem('Benutzer');
         
         // Panel definieren
         return new kijs.gui.Panel({
@@ -83,8 +83,7 @@ dbadmin.App = class dbadmin_App {
                 this._databaseView
             ],
             headerBarElements:[
-                {
-                    // Logout-Button definieren
+                {                    
                     xtype: 'kijs.gui.Button',
                     name: 'btnLogout',
                     caption: caption,
@@ -207,7 +206,7 @@ dbadmin.App = class dbadmin_App {
             }
         });
         // bei Benutzern mit Root-Rechten ist 'User' ein leerer String
-        this._actionWindow.down('newDbname').value = localStorage.getItem('User');
+        this._actionWindow.down('newDbname').value = sessionStorage.getItem('User');
         this._actionWindow.show();
     }
 
