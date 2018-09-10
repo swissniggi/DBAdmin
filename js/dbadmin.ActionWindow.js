@@ -134,7 +134,7 @@ dbadmin.ActionWindow = class dbadmin_ActionWindow extends kijs.gui.Window {
         if (!preventDestructEvent) {
             this.raiseEvent('destruct');
         }
-        
+
         // Elemente/DOM-Objekte entladen
 
         // Variablen (Objekte/Arrays) leeren

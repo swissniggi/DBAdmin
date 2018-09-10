@@ -67,14 +67,14 @@ dbadmin.LoginWindow = class dbadmin_LoginWindow extends kijs.gui.Window {
                 this._formPanel
             ]
         };
-        
+
         return config;
     }
 
     // FormPanel definieren
     _createFormPanel() {
         let password = this._createPasswordField();
-        
+
         return new kijs.gui.FormPanel({
             name: 'loginFormPanel',
             defaults:{
@@ -114,7 +114,7 @@ dbadmin.LoginWindow = class dbadmin_LoginWindow extends kijs.gui.Window {
             ]
         });
     }
-    
+
     // Passwortfeld definieren
     _createPasswordField() {
         return new dbadmin.PasswordField({
@@ -144,12 +144,12 @@ dbadmin.LoginWindow = class dbadmin_LoginWindow extends kijs.gui.Window {
         if (!preventDestructEvent) {
             this.raiseEvent('destruct');
         }
-        
+
         // Elemente/DOM-Objekte entladen
 
         // Variablen (Objekte/Arrays) leeren
         this._formPanel = null;
-        
+
         // Basisklasse auch entladen
         super.destruct(true);
     }

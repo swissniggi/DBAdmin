@@ -12,7 +12,7 @@ dbadmin.PasswordField = class dbadmin_PasswordField extends kijs.gui.field.Text 
     // --------------------------------------------------------------
     constructor(config={}) {
         super(false);
-        
+
         this._inputDom = new kijs.gui.Dom({
             disableEnterEscBubbeling: true,
             nodeTagName: 'input',
@@ -20,14 +20,14 @@ dbadmin.PasswordField = class dbadmin_PasswordField extends kijs.gui.field.Text 
                 id: this._inputId,
                 type: 'password'
             }
-        });                
-        
+        });
+
         // Config anwenden
         if (kijs.isObject(config)) {
             this.applyConfig(config, true);
         }
-    }    
-    
+    }
+
     // --------------------------------------------------------------
     // DESTRUCTOR
     // --------------------------------------------------------------
@@ -36,15 +36,15 @@ dbadmin.PasswordField = class dbadmin_PasswordField extends kijs.gui.field.Text 
         if (!preventDestructEvent) {
             this.raiseEvent('destruct');
         }
-        
+
         // Elemente/DOM-Objekte entladen
         if (this._inputDom) {
             this._inputDom.destruct();
         }
-            
+
         // Variablen (Objekte/Arrays) leeren
         this._inputDom = null;
-        
+
         // Basisklasse entladen
         super.destruct(true);
     }
