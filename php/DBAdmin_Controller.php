@@ -17,6 +17,11 @@ class DBAdmin_Controller {
      */
     public function checkDbname($dbname) {
         $match = preg_match('/^dev_[a-z]{2}_[a-z]{2,3}_[a-z]{1,50}$/', $dbname);
+        $umlaute = preg_match('/\w*([äÄöÖüÜ])\w*/', $dbname);
+        
+        if ($umlaute !== 0) {
+            return "Der Datenbankname darf keine Umlaute enthalten!";
+        }
                                        
         if (!$_SESSION['root']) {
             if ($match === 0) {

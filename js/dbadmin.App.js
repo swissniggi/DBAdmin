@@ -282,7 +282,7 @@ dbadmin.App = class dbadmin_App {
                         }
                     }, this, false, this._viewport, 'dom', false);
                 }
-            });
+            }, this);
         }
     }
 
@@ -310,7 +310,7 @@ dbadmin.App = class dbadmin_App {
                         }
                     }, this, false, this._viewport, 'dom', false);
                 }
-            });
+            }, this);
         }
     }
 
