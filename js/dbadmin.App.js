@@ -68,14 +68,13 @@ dbadmin.App = class dbadmin_App {
      * @returns {kijs.gui.Panel}
      */
     createMainPanel() {
-        let toolTip = 'angemeldet als ' + localStorage.getItem('Benutzer');
+        let caption = 'angemeldet als ' + localStorage.getItem('Benutzer');
         
         // Panel definieren
         return new kijs.gui.Panel({
             name: 'mainPanel',
             caption: 'DBAdmin',
             footerCaption: '&copy; by Nicolas Burgunder',
-            iconCls: 'icoWizard16',
             cls: 'kijs-flexrow',
             style:{
                 flex: 1
@@ -88,8 +87,11 @@ dbadmin.App = class dbadmin_App {
                     // Logout-Button definieren
                     xtype: 'kijs.gui.Button',
                     name: 'btnLogout',
+                    caption: caption,
                     iconChar: '&#xf011',
-                    toolTip: toolTip,
+                    style:{
+                        marginRight: '6px'
+                    },
                     on:{
                         click: this._onBtnLogoutClick,
                         context: this
