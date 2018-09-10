@@ -347,7 +347,6 @@ dbadmin.App = class dbadmin_App {
 
     _onLoginWindowAfterSave(e) {
         this._viewport.down('dvDatabases').load();
-        this._setSessionId();
         let username = this._loginWindow.down('username').value;
 
         if (username.includes('_')) {
