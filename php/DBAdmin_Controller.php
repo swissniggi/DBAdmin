@@ -17,24 +17,22 @@ class DBAdmin_Controller {
     public function checkDbname($dbname) {
         $match = preg_match('/^dev_[a-z]{2}_[a-z]{2,3}_[a-z]{1,50}$/', $dbname);
         $umlaute = preg_match('/([äÄöÖüÜ])/', $dbname);
-        
-        if ($umlaute === 0) {                                                   
-            if (!$_SESSION['root']) {
-                if ($match === 0) {
-                    throw new Exception(
-                            "Der Datenbankname muss folgendes Format haben:".
-                            "<br />'Benutzername_Applikation_Organisation'".
-                            "<br />Beispiel: 'dev_xy_wz_kkk'"
-                            );
-                }
-                $dbSubstrings = explode('_', $dbname);
-                $check = $dbSubstrings[0].'_'.$dbSubstrings[1];
-
-                if ($check !== $_SESSION['username']) {
-                    throw new Exception('Recht zum erstellen einer Datenbank mit diesem Namen fehlt!');
-                }
+                                                          
+        if (!$_SESSION['root']) {
+            if ($match === 0) {
+                throw new Exception(
+                        "Der Datenbankname muss folgendes Format haben:".
+                        "<br />'Benutzername_Applikation_Organisation'".
+                        "<br />Beispiel: 'dev_xy_wz_kkk'"
+                        );
             }
-        } else {
+            $dbSubstrings = explode('_', $dbname);
+            $check = $dbSubstrings[0].'_'.$dbSubstrings[1];
+
+            if ($check !== $_SESSION['username']) {
+                throw new Exception('Recht zum erstellen einer Datenbank mit diesem Namen fehlt!');
+            }
+        } else if ($umlaute !== 0) {
             throw new Exception("Der Datenbankname darf keine Umlaute enthalten!");        
         }
     }

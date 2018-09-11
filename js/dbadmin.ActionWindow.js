@@ -96,7 +96,8 @@ dbadmin.ActionWindow = class dbadmin_ActionWindow extends kijs.gui.Window {
                     labelWidth: 160,
                     required: true,
                     name: 'newDbname',
-                    label: 'Neuer Datenbankname'
+                    label: 'Neuer Datenbankname',
+                    helpText: 'Erlaubte Zeichen:<br />-Kleinbuchstaben<br />-Underlines<br />Keine Umlaute!'
                 }
             ],
             footerStyle:{
