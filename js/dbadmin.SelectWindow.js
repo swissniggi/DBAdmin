@@ -1,5 +1,4 @@
-
-/* global kijs */
+/* global kijs, this */
 
 // --------------------------------------------------------------
 // dbadmin.LoginWindow

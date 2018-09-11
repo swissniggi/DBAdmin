@@ -1,4 +1,3 @@
-
 /* global this, kijs */
 
 // --------------------------------------------------------------
@@ -73,7 +72,7 @@ dbadmin.LoginWindow = class dbadmin_LoginWindow extends kijs.gui.Window {
 
     // FormPanel definieren
     _createFormPanel() {
-        let password = this._createPasswordField();
+        const password = this._createPasswordField();
 
         return new kijs.gui.FormPanel({
             name: 'loginFormPanel',

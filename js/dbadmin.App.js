@@ -212,7 +212,7 @@ dbadmin.App = class dbadmin_App {
         
         if (username.includes('_')) {
             this._actionWindow.down('newDbname').value = username;
-        }        
+        }
         this._actionWindow.show();
     }
 
@@ -240,7 +240,7 @@ dbadmin.App = class dbadmin_App {
      * @returns {undefined}
      */
     showSelectWindow() {
-        let data = { database: this._viewport.down('dvDatabases').getSelected().dataRow['Datenbankname'] };
+        const data = { database: this._viewport.down('dvDatabases').getSelected().dataRow['Datenbankname'] };
 
         // Window erstellen
         this._selectWindow = new dbadmin.SelectWindow({
