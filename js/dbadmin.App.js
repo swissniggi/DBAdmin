@@ -143,7 +143,7 @@ dbadmin.App = class dbadmin_App {
                     iconChar: '&#xf0c5',
                     toolTip: 'selektierte Datenbank dumplizieren',
                     on:{
-                        click: this._onBtnRenameClick,
+                        click: this._onBtnDuplicateClick,
                         context: this
                     }
                 },{
@@ -193,7 +193,6 @@ dbadmin.App = class dbadmin_App {
                 iconChar = '&#xf044'; 
                 data.oldDbname = oldDbname;
                 break;
-
         }
         
         // Create-Window erstellen
@@ -213,8 +212,7 @@ dbadmin.App = class dbadmin_App {
         
         if (username.includes('_')) {
             this._actionWindow.down('newDbname').value = username;
-        }
-        
+        }        
         this._actionWindow.show();
     }
 
@@ -349,9 +347,11 @@ dbadmin.App = class dbadmin_App {
             case 'dbadmin.duplicate': txt = 'dupliziert.'; break
             case 'dbadmin.rename': txt = 'umbenannt.'; break;
         }
-        this._viewport.down('dvDatabases').load();
-        this._actionWindow.destruct();
+               
         kijs.gui.CornerTipContainer.show('Info', 'Datenbank erfolgreich '+txt, 'info');
+        this._actionWindow.destruct();
+        
+        this._viewport.down('dvDatabases').load();
     }
 
     _onLoginWindowAfterSave(e) {
