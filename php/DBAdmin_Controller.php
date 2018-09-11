@@ -13,29 +13,30 @@ class DBAdmin_Controller {
     /**
      * Überprüft den Datenbanknamen
      * @param string $dbname
-     * @return boolean|string
      */
     public function checkDbname($dbname) {
-        $return = true;
         $match = preg_match('/^dev_[a-z]{2}_[a-z]{2,3}_[a-z]{1,50}$/', $dbname);
         $umlaute = preg_match('/([äÄöÖüÜ])/', $dbname);
         
         if ($umlaute === 0) {                                                   
             if (!$_SESSION['root']) {
                 if ($match === 0) {
-                    $return = "Der Datenbankname muss folgendes Format haben:<br />'Benutzername_Applikation_Organisation'<br />Beispiel: 'dev_xy_wz_kkk'";
+                    throw new Exception(
+                            "Der Datenbankname muss folgendes Format haben:".
+                            "<br />'Benutzername_Applikation_Organisation'".
+                            "<br />Beispiel: 'dev_xy_wz_kkk'"
+                            );
                 }
                 $dbSubstrings = explode('_', $dbname);
                 $check = $dbSubstrings[0].'_'.$dbSubstrings[1];
 
                 if ($check !== $_SESSION['username']) {
-                    $return = 'Recht zum erstellen einer Datenbank mit diesem Namen fehlt!';
+                    throw new Exception('Recht zum erstellen einer Datenbank mit diesem Namen fehlt!');
                 }
             }
         } else {
-            $return = "Der Datenbankname darf keine Umlaute enthalten!";        
+            throw new Exception("Der Datenbankname darf keine Umlaute enthalten!");        
         }
-        return $return;
     }
     
     
@@ -44,14 +45,10 @@ class DBAdmin_Controller {
      * @param string $dbname
      * @return \Throwable|boolean
      */
-    public function createDatabase($dbname) {
-        $return = true;
+    public function createDatabase($dbname) {        
         try{
-            $check = $this->checkDbname($dbname);
-        
-            if (is_string($check)) {
-                throw new Exception($check);            
-            }
+            $this->checkDbname($dbname);
+                    
             $this->openRootDbConnection();
 
             // Prüfen ob gleichnamige Datenbank existiert
@@ -60,12 +57,11 @@ class DBAdmin_Controller {
             }
 
             // Datenbank erstellen
-            $result = $this->model->createDatabase($dbname);
-
-            if (!$result) {
+            if (!$this->model->createDatabase($dbname)) {
                 throw new Exception('Erstellen der Datenbank fehlgeschlagen!');
             }
             $this->model->closeDbConnection($this->model->rootPdo);
+            $return = true;
         } catch (Throwable $ex) {
             $return = $ex;
         }
@@ -78,8 +74,7 @@ class DBAdmin_Controller {
      * @param string $dbname
      * @return \Throwable|boolean
      */
-    public function deleteDatabase($dbname) {
-        $return = true;
+    public function deleteDatabase($dbname) {   
         try{
             $this->openRootDbConnection();
             $result = $this->model->deleteDatabase($dbname);            
@@ -88,6 +83,7 @@ class DBAdmin_Controller {
                 throw new Exception('Löschen der Datenbank fehlgeschlagen!');
             }
             $this->model->closeDbConnection($this->model->rootPdo);
+            $return = true;
         } catch (Throwable $ex) {
             $return = $ex;
         }
@@ -101,42 +97,27 @@ class DBAdmin_Controller {
      * @param string $oldDbname
      * @return \Throwable|boolean
      */
-    public function duplicateDatabase($newDbname, $oldDbname) {
-        $return = true;
+    public function duplicateDatabase($newDbname, $oldDbname) {        
         try{
             // Datenbankname prüfen
-            $check = $this->checkDbname($newDbname);
-
-            if (is_string($check)) {
-                throw new Exception($check);
-            }
-            
+            $this->checkDbname($newDbname);
+           
             $this->openRootDbConnection();
             
             // neue Datenbank erstellen
-            $return = $this->createDatabase($newDbname);
-            
-            if ($return !== true) {
-                throw new Exception($return);
-            }
+            $this->createDatabase($newDbname);
 
             // Datenbank exportieren
-            $return = $this->exportDatabase($oldDbname, false);
-            
-            if ($return !== true) {
-                throw new Exception($return);
-            }
+            $this->exportDatabase($oldDbname, false);
 
             // Datenbank importieren
             $data = new stdClass();
             $data->database = $newDbname;
             $data->delete  = true;
-            $return = $this->importDatabase($data);
-            
-            if ($return !== true) {
-                throw new Exception($return);
-            }
+            $this->importDatabase($data);
+
             $this->model->closeDbConnection($this->model->rootPdo);
+            $return = true;
         } catch (Throwable $ex) {
             $return = $ex;
         }
@@ -150,12 +131,12 @@ class DBAdmin_Controller {
      * @param boolean $exportOnly
      * @return \Throwable|boolean
      */
-    public function exportDatabase($dbname, $exportOnly) {
-        $return = true;
+    public function exportDatabase($dbname, $exportOnly) {        
         try{
             require_once 'DBAdmin_FileReader.php';
             $reader = new DBAdmin_FileReader();
             $reader->createDump($dbname, $exportOnly);
+            $return = true;
         } catch (Throwable $ex) {
             $return = $ex;
         }
@@ -211,8 +192,7 @@ class DBAdmin_Controller {
     public function importDatabase($data) { 
         $dbname = $data->database;
         $dump = isset($data->dumps) ? $data->dumps : null;
-        $delete = $data->delete;
-        $return = true;
+        $delete = $data->delete;        
         try{            
             require_once 'DBAdmin_FileReader.php';
             $reader = new DBAdmin_FileReader();
@@ -223,6 +203,7 @@ class DBAdmin_Controller {
                 throw new Exception('Speichern des Import-Datums fehlgeschlagen!');
             }
             $this->model->closeDbConnection($this->model->rootPdo);
+            $return = true;
         } catch (Throwable $ex) {
             $return = $ex;
         }
@@ -235,8 +216,7 @@ class DBAdmin_Controller {
      * @param Object $data
      * @return \Throwable|boolean
      */
-    public function loginUser($data) {
-        $return = true;
+    public function loginUser($data) {        
         try{
             $username = mb_strtolower($data->username);
             $password = $data->password;
@@ -254,12 +234,12 @@ class DBAdmin_Controller {
             if (!isset($config->host)) {
                 throw new Exception('Datei config.json ist fehlerhaft!');
             }
-            $host = $config->host;       
+            $host = $config->host;                  
             
             try{
                 $pdo = $this->model->openDbConnection($host, $username, $password);
             } catch (Throwable $ex) {
-                return $ex;
+                throw new Exception('Benutzername oder Passwort falsch!');
             }
             $this->model->closeDbConnection($pdo);
                
@@ -287,6 +267,7 @@ class DBAdmin_Controller {
             $_SESSION['root'] = $root;
             $_SESSION['username'] = $username; 
             $_SESSION['id'] = md5($password);
+            $return = true;
         } catch (Throwable $ex) {
             $return = $ex;
         }
@@ -329,14 +310,10 @@ class DBAdmin_Controller {
      * @param string $oldDbname
      * @return \Throwable|boolean
      */
-    public function renameDatabase($newDbname, $oldDbname) {
-        $return = true;
+    public function renameDatabase($newDbname, $oldDbname) {        
         try{
-            $check = $this->checkDbname($newDbname);
-        
-            if (is_string($check)) {
-                throw new Exception($check);
-            }
+            $this->checkDbname($newDbname);
+
             $this->openRootDbConnection();
 
             // neue Datenbank erstellen
@@ -355,6 +332,7 @@ class DBAdmin_Controller {
             $this->importDatabase($data);
             
             $this->model->closeDbConnection($this->model->rootPdo);
+            $return = true;
         } catch (Throwable $ex) {
             $return = $ex;
         }

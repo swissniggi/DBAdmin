@@ -20,7 +20,7 @@ class DBAdmin_Model {
      */
     public function createDatabase($dbname) {
         $createDb = $this->rootPdo->prepare(
-            "CREATE DATABASE IF NOT EXISTS ".$dbname." CHARACTER SET utf8 COLLATE utf8_general_ci;"
+            "CREATE DATABASE ".$dbname." CHARACTER SET utf8 COLLATE utf8_general_ci;"
             );
         return $createDb->execute();
     }
