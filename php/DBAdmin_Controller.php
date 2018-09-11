@@ -16,28 +16,26 @@ class DBAdmin_Controller {
      * @return boolean|string
      */
     public function checkDbname($dbname) {
+        $return = true;
         $match = preg_match('/^dev_[a-z]{2}_[a-z]{2,3}_[a-z]{1,50}$/', $dbname);
         $umlaute = preg_match('/([äÄöÖüÜ])/', $dbname);
         
-        if ($umlaute !== 0) {
-            return "Der Datenbankname darf keine Umlaute enthalten!";
-        }
-                                       
-        if (!$_SESSION['root']) {
-            if ($match === 0) {
-                return "Der Datenbankname muss folgendes Format haben:<br />'Benutzername_Applikation_Organisation'<br />Beispiel: 'dev_xy_wz_kkk'";
-            }
-            $dbSubstrings = explode('_', $dbname);
-            $check = $dbSubstrings[0].'_'.$dbSubstrings[1];
-            
-            if ($check !== $_SESSION['username']) {
-                return 'Recht zum erstellen einer Datenbank mit diesem Namen fehlt!';
-            } else {
-                return true;
+        if ($umlaute === 0) {                                                   
+            if (!$_SESSION['root']) {
+                if ($match === 0) {
+                    $return = "Der Datenbankname muss folgendes Format haben:<br />'Benutzername_Applikation_Organisation'<br />Beispiel: 'dev_xy_wz_kkk'";
+                }
+                $dbSubstrings = explode('_', $dbname);
+                $check = $dbSubstrings[0].'_'.$dbSubstrings[1];
+
+                if ($check !== $_SESSION['username']) {
+                    $return = 'Recht zum erstellen einer Datenbank mit diesem Namen fehlt!';
+                }
             }
         } else {
-            return true;
+            $return = "Der Datenbankname darf keine Umlaute enthalten!";        
         }
+        return $return;
     }
     
     
@@ -67,6 +65,7 @@ class DBAdmin_Controller {
             if (!$result) {
                 throw new Exception('Erstellen der Datenbank fehlgeschlagen!');
             }
+            $this->model->closeDbConnection($this->model->rootPdo);
         } catch (Throwable $ex) {
             $return = $ex;
         }
