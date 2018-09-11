@@ -20,32 +20,30 @@
                 case 'dbadmin.loadDbs':
                     $return = $con->selectDatabases();
 
-                    if (isset($return)) {
-                        if ($return instanceof Exception || $return instanceof Error) {
-                            $response->errorMsg = $return->getMessage(); 
-                        } else {
-                            $rows = array();
+                    if ($return instanceof Exception || $return instanceof Error) {
+                        $response->errorMsg = $return->getMessage(); 
+                    } else {
+                        $rows = array();
 
-                            foreach ($return as $database) {
-                                // evtl. Daten formatieren
-                                $importdate = $database['importdate'];
-                                if ($importdate !== '--') {
-                                    $importdate = date('d.m.Y', strtotime($importdate));
-                                }
+                        foreach ($return as $database) {
+                            // evtl. Daten formatieren
+                            $importdate = $database['importdate'];
+                            if ($importdate !== '--') {
+                                $importdate = date('d.m.Y', strtotime($importdate));
+                            }
 
-                                $changedate = $database['changedate'];
-                                if ($changedate !== '--') {
-                                    $changedate = date('d.m.Y', strtotime($changedate));
-                                }
+                            $changedate = $database['changedate'];
+                            if ($changedate !== '--') {
+                                $changedate = date('d.m.Y', strtotime($changedate));
+                            }
 
-                                $rows[] = array(
-                                    'Datenbankname' => $database['dbname'], 
-                                    'Importdatum' => $importdate,
-                                    'Änderungsdatum' => $changedate
-                                );
-                            }                    
-                            $response->rows = $rows;
-                        }
+                            $rows[] = array(
+                                'Datenbankname' => $database['dbname'], 
+                                'Importdatum' => $importdate,
+                                'Änderungsdatum' => $changedate
+                            );
+                        }                    
+                        $response->rows = $rows;
                     }
                     break;
                 

@@ -337,7 +337,7 @@ dbadmin.App = class dbadmin_App {
             kijs.gui.CornerTipContainer.show('Info', 'Du wurdest erfolgreich ausgelogt.', 'info');
             this.showLoginWindow();
             // DataView leeren
-            this._viewport.down('dvDatabases').load(null);
+            this._viewport.down('dvDatabases').data = null;
             this._viewport.down('mainPanel').headerBar.down('btnLogout').caption = '';
         }, this, false, this._viewport, 'dom', false);
     }
