@@ -77,7 +77,7 @@ dbadmin.App = class dbadmin_App {
         return new kijs.gui.Panel({
             name: 'mainPanel',
             caption: 'DBAdmin',
-            footerCaption: '&copy; by Nicolas Burgunder',
+            footerCaption: '&copy; 2018 by Nicolas Burgunder',
             cls: 'kijs-flexrow',
             style:{
                 flex: 1
