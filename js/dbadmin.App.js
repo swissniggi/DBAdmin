@@ -208,7 +208,7 @@ dbadmin.App = class dbadmin_App {
                 context: this
             }
         });
-        // bei Benutzern mit Root-Rechten ist 'User' ein leerer String
+
         let username = sessionStorage.getItem('Benutzer');
         
         if (username.includes('_')) {
