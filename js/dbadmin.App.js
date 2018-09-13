@@ -30,45 +30,6 @@ dbadmin.App = class dbadmin_App {
     // MEMBERS
     // --------------------------------------------------------------
     /**
-     * App ausführen
-     * @returns {undefined}
-     */
-    run() {
-        this._databaseView = new dbadmin.DatabaseView({
-            rpc: this._rpc
-        });
-
-        const mainPanel = this.createMainPanel();
-
-        // ViewPort erstellen
-        this._viewport = new kijs.gui.ViewPort({
-            cls: 'kijs-flexcolumn',
-            elements:[
-                mainPanel
-            ]
-        });
-        
-        this._viewport.render();
-
-        // feststellen ob ein Benutzer angemeldet ist
-        this._rpc.do('dbadmin.checkLogin', null, 
-        function(response) {
-            if (response.data.username !== false) {
-                sessionStorage.setItem('Benutzer', response.data.username);
-
-                // Caption des Logout-Buttons setzen
-                let caption = 'angemeldet als ' + sessionStorage.getItem('Benutzer');
-                mainPanel.headerBar.down('btnLogout').caption = caption;
-
-                this._viewport.down('dvDatabases').load();
-            } else {
-                this.showLoginWindow();
-            }
-        }, this, false, this._viewport, 'dom', false);
-    }
-
-
-    /**
      * Hauptpanel erstellen
      * @returns {kijs.gui.Panel}
      */
@@ -159,6 +120,45 @@ dbadmin.App = class dbadmin_App {
             ]
         });
     }
+    
+    
+    /**
+     * App ausführen
+     * @returns {undefined}
+     */
+    run() {
+        this._databaseView = new dbadmin.DatabaseView({
+            rpc: this._rpc
+        });
+
+        const mainPanel = this.createMainPanel();
+
+        // ViewPort erstellen
+        this._viewport = new kijs.gui.ViewPort({
+            cls: 'kijs-flexcolumn',
+            elements:[
+                mainPanel
+            ]
+        });
+        
+        this._viewport.render();
+
+        // feststellen ob ein Benutzer angemeldet ist
+        this._rpc.do('dbadmin.checkLogin', null, 
+        function(response) {
+            if (response.data.username !== false) {
+                sessionStorage.setItem('Benutzer', response.data.username);
+
+                // Caption des Logout-Buttons setzen
+                let caption = 'angemeldet als ' + sessionStorage.getItem('Benutzer');
+                mainPanel.headerBar.down('btnLogout').caption = caption;
+
+                this._viewport.down('dvDatabases').load();
+            } else {
+                this.showLoginWindow();
+            }
+        }, this, false, this._viewport, 'dom', false);
+    }
 
 
     /**
@@ -186,13 +186,13 @@ dbadmin.App = class dbadmin_App {
             case 'duplicate':
                 caption = 'Datenbank duplizieren';
                 iconChar = '&#xf0c5';
-                data.oldDbname = oldDbName;
+                data.oldDbName = oldDbName;
                 break;
                 
             case 'rename':
                 caption = 'Datenbank umbenennen';
                 iconChar = '&#xf044';
-                data.oldDbname = oldDbName;
+                data.oldDbName = oldDbName;
                 value = oldDbName;
                 break;
         }
@@ -286,15 +286,15 @@ dbadmin.App = class dbadmin_App {
             }, this);
         }
     }
-
-    _onBtnImportClick(e) {
+    
+    _onBtnDuplicateClick(e) {
         if (this._viewport.down('dvDatabases').getSelected() === null) {
             kijs.gui.MsgBox.alert('Achtung','Keine Datenbank ausgewählt!');
         } else {
-            this.showSelectWindow();
+            this.showActionWindow('duplicate');
         }
     }
-
+    
     _onBtnExportClick(e) {
         if (this._viewport.down('dvDatabases').getSelected() === null) {
             kijs.gui.MsgBox.alert('Achtung','Keine Datenbank ausgewählt!');
@@ -315,19 +315,11 @@ dbadmin.App = class dbadmin_App {
         }
     }
 
-    _onBtnDuplicateClick(e) {
+    _onBtnImportClick(e) {
         if (this._viewport.down('dvDatabases').getSelected() === null) {
             kijs.gui.MsgBox.alert('Achtung','Keine Datenbank ausgewählt!');
         } else {
-            this.showActionWindow('duplicate');
-        }
-    }
-    
-    _onBtnRenameClick(e) {
-        if (this._viewport.down('dvDatabases').getSelected() === null) {
-            kijs.gui.MsgBox.alert('Achtung','Keine Datenbank ausgewählt!');
-        } else {
-            this.showActionWindow('rename');
+            this.showSelectWindow();
         }
     }
 
@@ -342,6 +334,15 @@ dbadmin.App = class dbadmin_App {
             this._viewport.down('mainPanel').headerBar.down('btnLogout').caption = '';
         }, this, false, this._viewport, 'dom', false);
     }
+    
+    _onBtnRenameClick(e) {
+        if (this._viewport.down('dvDatabases').getSelected() === null) {
+            kijs.gui.MsgBox.alert('Achtung','Keine Datenbank ausgewählt!');
+        } else {
+            this.showActionWindow('rename');
+        }
+    }
+
 
     _onActionWindowAfterSave(e) {
         let txt = '';

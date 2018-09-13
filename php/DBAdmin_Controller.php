@@ -1,11 +1,11 @@
 <?php
 
 class DBAdmin_Controller {
-       
-    protected $model = null;
-    protected $username = null;
-    protected $sessionId = null;
+
+    protected $model = null;   
     protected $root = false;
+    protected $sessionId = null;
+    protected $username = null;
     
     public function __construct() {
         require_once 'DBAdmin_Model.php';
@@ -325,11 +325,12 @@ class DBAdmin_Controller {
                 throw new Exception('fwrite ist fehlgeschlagen!');
             }
             fclose($conffile);
-
-            $_SESSION['root'] = $root;
-            $_SESSION['username'] = $username; 
-            $_SESSION['id'] = md5($password);
-            $return = true;
+            
+            $return = array(
+                'root' => $root,
+                'username' => $username,
+                'id' => md5($password)
+            );
         } catch (Throwable $ex) {
             $return = $ex;
         }
@@ -407,38 +408,145 @@ class DBAdmin_Controller {
      */
     public function run() {
         session_start();
-        if (!empty($_SESSION)) {
-            $this->username = $_SESSION['username'];
-            $this->sessionId = $_SESSION['id'];
+        
+        if (!empty($_SESSION)) {            
             $this->root = $_SESSION['root'];
+            $this->sessionId = $_SESSION['id'];
+            $this->username = $_SESSION['username'];                        
         }
 
         $requests = json_decode(file_get_contents("php://input"));
-        $responses = array();        
+        $responses = array();
+        
+        // letzte verwendete Datenbank abrufen
+        if (isset($_SESSION['lastUsedDatabase'])) {
+            $lastUsedDatabase = $_SESSION['lastUsedDatabase'];
+        } else {
+            $lastUsedDatabase = null;
+        }
 
         if (isset($requests)) {
             foreach ($requests as $request) {
                 $response = new stdClass();
-                $response->tid = $request->tid;
-                $response->data = new stdClass();
-                $response->rows = new stdClass();
-
+                $response->tid = $request->tid;               
+                
                 try {
                     switch ($request->facadeFn) {
 
+                        // feststellen ob ein Benutzer angemeldet ist
+                        case 'dbadmin.checkLogin':
+                            $response->data = new stdClass();
+                            
+                            if (isset($this->username)) {
+                                $response->data = array(
+                                    'username' => $this->username
+                                );
+                            } else {
+                                $response->data = array(
+                                    'username' => false
+                                );
+                            }
+                            break;
+                            
+                        // neue Datenbank erstellen
+                        case 'dbadmin.create':
+                            $response->data = new stdClass();
+                            $return = $this->createDatabase($request->data->formData->newDbName);
+
+                            if ($return instanceof Exception || $return instanceof Error) {
+                                $response->errorMsg = $return->getMessage(); 
+                            } else {
+                                $lastUsedDatabase = $request->data->formData->newDbName;
+                                $response->data = array(
+                                    'success' => 'true'
+                                );
+                            }
+                            break;
+                            
+                        // Datenbank löschen
+                        case 'dbadmin.delete':
+                            $response->data = new stdClass();
+                            $return = $this->deleteDatabase($request->data->Datenbankname);
+
+                            if ($return instanceof Exception || $return instanceof Error) {
+                                $response->errorMsg = $return->getMessage(); 
+                            } else {
+                                $response->data = array(
+                                    'success' => 'true'
+                                );
+                            }
+                            break;
+                            
+                        // Datenbank duplizieren
+                        case 'dbadmin.duplicate':
+                            $response->data = new stdClass();
+                            $return = $this->duplicateDatabase($request->data->formData->newDbName, $request->data->formData->oldDbName);
+
+                            if ($return instanceof Exception || $return instanceof Error) {
+                                $response->errorMsg = $return->getMessage(); 
+                            } else {
+                                $lastUsedDatabase= $request->data->formData->newDbName;
+                                $response->data = array(
+                                    'success' => 'true'
+                                );
+                            }
+                            break;
+                            
+                        // Datenbank exportieren
+                        case 'dbadmin.export':
+                            $response->data = new stdClass();
+                            $return = $this->exportDatabase($request->data->Datenbankname, true);
+
+                            if ($return instanceof Exception || $return instanceof Error) {
+                                $response->errorMsg = $return->getMessage(); 
+                            } else {
+                                $lastUsedDatabase= $request->data->Datenbankname;
+                                $response->data = array(
+                                    'success' => 'true'
+                                );
+                            }
+                            break;
+                            
+                        // Dump importieren
+                        case 'dbadmin.import':
+                            $response->data = new stdClass();
+                            $return = $this->importDatabase($request->data->formData);
+
+                            if ($return instanceof Exception || $return instanceof Error) {
+                                $response->errorMsg = $return->getMessage(); 
+                            } else {
+                                $lastUsedDatabase= $request->data->formData->database;
+                                $response->data = array(
+                                    'success' => 'true'
+                                );                              
+                            }
+                            break;
+                            
                         // Datenbanken auslesen
                         case 'dbadmin.loadDbs':
+                            $response->rows = new stdClass();
+                            $response->selectFilters = new stdClass();
                             $return = $this->getDatabases();
 
                             if ($return instanceof Exception || $return instanceof Error) {
                                 $response->errorMsg = $return->getMessage(); 
                             } else {                                                   
                                 $response->rows = $return;
+                                
+                                if (isset($lastUsedDatabase)) {
+                                    $response->selectFilters->field = 'Datenbankname';
+                                    $response->selectFilters->value = $lastUsedDatabase;
+                                } else {
+                                    $response->selectFilters = null;
+                                }
+                                
+                                $lastUsedDatabase = null;
                             }
                             break;
 
                         // Dumps auslesen
                         case 'dbadmin.loadDumps':
+                            $response->rows = new stdClass();
                             $return = $this->getDumpList();
 
                             if ($return instanceof Exception || $return instanceof Error) {
@@ -458,6 +566,7 @@ class DBAdmin_Controller {
 
                         // Einloggen
                         case 'dbadmin.login':
+                            $response->data = new stdClass();
                             $return = $this->loginUser($request->data->formData);
 
                             if ($return instanceof Exception || $return instanceof Error) {
@@ -466,103 +575,31 @@ class DBAdmin_Controller {
                                 $response->data = array(
                                     'success' => 'true'
                                 );
+                                // Daten in Session speichern
+                                $_SESSION['root'] = $return->root;
+                                $_SESSION['username'] = $return->username; 
+                                $_SESSION['id'] = $return->id;
                             }
                             break;
-
-                        // feststellen ob ein Benutzer angemeldet ist
-                        case 'dbadmin.checkLogin':
-                            if (isset($this->username)) {
-                                $response->data = array(
-                                    'username' => $this->username
-                                );
-                            } else {
-                                $response->data = array(
-                                    'username' => false
-                                );
-                            }
-                            break;
-
-                        // neue Datenbank erstellen
-                        case 'dbadmin.create':
-                            $return = $this->createDatabase($request->data->formData->newDbName);
-
-                            if ($return instanceof Exception || $return instanceof Error) {
-                                $response->errorMsg = $return->getMessage(); 
-                            } else {
-                                $response->data = array(
-                                    'success' => 'true'
-                                );
-                            }
-                            break;
-
-                        // Dump importieren
-                        case 'dbadmin.import':
-                            $return = $this->importDatabase($request->data->formData);
-
-                            if ($return instanceof Exception || $return instanceof Error) {
-                                $response->errorMsg = $return->getMessage(); 
-                            } else {
-                                $response->data = array(
-                                    'success' => 'true'
-                                );                              
-                            }
-                            break;
-
-                        // Datenbank exportieren
-                        case 'dbadmin.export':
-                            $return = $this->exportDatabase($request->data->Datenbankname, true);
-
-                            if ($return instanceof Exception || $return instanceof Error) {
-                                $response->errorMsg = $return->getMessage(); 
-                            } else {
-                                $response->data = array(
-                                    'success' => 'true'
-                                );
-                            }
-                            break;
-
-                        // Datenbank duplizieren
-                        case 'dbadmin.duplicate':
-                            $return = $this->duplicateDatabase($request->data->formData->newDbName, $request->data->formData->oldDbName);
-
-                            if ($return instanceof Exception || $return instanceof Error) {
-                                $response->errorMsg = $return->getMessage(); 
-                            } else {
-                                $response->data = array(
-                                    'success' => 'true'
-                                );
-                            }
+                            
+                        // Ausloggen
+                        case 'dbadmin.logout':
+                            $return = $this->logoutUser();                
                             break;
 
                         // Datenbank umbenennen
                         case 'dbadmin.rename':
+                            $response->data = new stdClass();
                             $return = $this->renameDatabase($request->data->formData->newDbName, $request->data->formData->oldDbName);
 
                             if ($return instanceof Exception || $return instanceof Error) {
                                 $response->errorMsg = $return->getMessage(); 
                             } else {
+                                $lastUsedDatabase= $request->data->formData->newDbName;
                                 $response->data = array(
                                     'success' => 'true'
                                 );
                             }
-                            break;
-
-                        // Datenbank löschen
-                        case 'dbadmin.delete':
-                            $return = $this->deleteDatabase($request->data->Datenbankname);
-
-                            if ($return instanceof Exception || $return instanceof Error) {
-                                $response->errorMsg = $return->getMessage(); 
-                            } else {
-                                $response->data = array(
-                                    'success' => 'true'
-                                );
-                            }
-                            break;
-
-                        // Ausloggen
-                        case 'dbadmin.logout':
-                            $return = $this->logoutUser();                
                             break;
 
                         default: 
@@ -575,9 +612,13 @@ class DBAdmin_Controller {
 
                 $responses[] = $response;
             }
+            // letzte verwendete Datenbank in Session speichern
+            $_SESSION['lastUsedDatabase'] = $lastUsedDatabase;            
+            
             // Antwort ausgeben
             print(json_encode($responses));
         } else {
+            // HTML laden
             echo file_get_contents('template/main.html');
         }
     }
