@@ -112,6 +112,8 @@ dbadmin.ActionWindow = class dbadmin_ActionWindow extends kijs.gui.Window {
         });
     }
     
+    // Textfeld definieren
+    // muss separat sein, damit das 'value' zugewiesen werden kann
     _createTextField() {
         return new kijs.gui.field.Text({
             xtype: 'kijs.gui.field.Text',

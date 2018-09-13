@@ -28,6 +28,8 @@ class DBAdmin_Model {
     
     /**
      * Exportiert einen Dump via Kommandozeilenbefehl
+     * @param string $username
+     * @param string $sessionId
      * @param string $dbName
      * @param boolean $exportOnly
      */
@@ -71,7 +73,9 @@ class DBAdmin_Model {
     
     /**
      * Importiert einen Dump via Kommandozeilenbefehl
-     * @param string $dump
+     * @param string $username
+     * @param string $sessionId
+     * @param string|null $dump
      * @param string $dbName
      * @param boolean $delete
      */

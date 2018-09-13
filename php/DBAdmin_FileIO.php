@@ -4,6 +4,7 @@ class DBAdmin_FileIO {
        
     /**
      * Erstellt eine Liste mit allen Dumps
+     * @param string $username
      * @return array
      */
     public function getDumpList($username) {
