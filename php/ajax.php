@@ -13,7 +13,7 @@
         $response->data = new stdClass();
         $response->rows = new stdClass();
         
-        try{
+        try {
             switch ($request->facadeFn) {
                 
                 // Datenbanken auslesen

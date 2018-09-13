@@ -44,7 +44,7 @@ class DBAdmin_Controller {
      * @return \Throwable|boolean
      */
     public function createDatabase($dbname) {        
-        try{
+        try {
             $this->checkDbname($dbname);
                     
             $this->openRootDbConnection();
@@ -73,7 +73,7 @@ class DBAdmin_Controller {
      * @return \Throwable|boolean
      */
     public function deleteDatabase($dbname) {   
-        try{
+        try {
             $this->openRootDbConnection();
             $result = $this->model->deleteDatabase($dbname);            
         
@@ -96,7 +96,7 @@ class DBAdmin_Controller {
      * @return \Throwable|boolean
      */
     public function duplicateDatabase($newDbname, $oldDbname) {        
-        try{
+        try {
             // Datenbankname prüfen
             $this->checkDbname($newDbname);
            
@@ -130,7 +130,7 @@ class DBAdmin_Controller {
      * @return \Throwable|boolean
      */
     public function exportDatabase($dbname, $exportOnly) {        
-        try{
+        try {
             require_once 'DBAdmin_FileReader.php';
             $reader = new DBAdmin_FileReader();
             $reader->createDump($dbname, $exportOnly);
@@ -191,7 +191,7 @@ class DBAdmin_Controller {
         $dbname = $data->database;
         $dump = isset($data->dumps) ? $data->dumps : null;
         $delete = $data->delete;        
-        try{            
+        try {            
             require_once 'DBAdmin_FileReader.php';
             $reader = new DBAdmin_FileReader();
             $reader->executeDump($dump, $dbname, $delete);
@@ -215,7 +215,7 @@ class DBAdmin_Controller {
      * @return \Throwable|boolean
      */
     public function loginUser($data) {        
-        try{
+        try {
             $username = mb_strtolower($data->username);
             $password = $data->password;
 
@@ -234,7 +234,7 @@ class DBAdmin_Controller {
             }
             $host = $config->host;                  
             
-            try{
+            try {
                 $pdo = $this->model->openDbConnection($host, $username, $password);
             } catch (Throwable $ex) {
                 throw new Exception('Benutzername oder Passwort falsch!');
@@ -309,7 +309,7 @@ class DBAdmin_Controller {
      * @return \Throwable|boolean
      */
     public function renameDatabase($newDbname, $oldDbname) {        
-        try{
+        try {
             $this->checkDbname($newDbname);
 
             $this->openRootDbConnection();
@@ -344,7 +344,7 @@ class DBAdmin_Controller {
      */
     public function selectDatabases() {
         if (isset($_SESSION['username'])) {
-            try{
+            try {
                 // Benutzerdaten aus conf-File auslesen            
                 $userdata = [];
                 $userconf = realpath('../config').'/user_'.$_SESSION['username'].'.conf';
