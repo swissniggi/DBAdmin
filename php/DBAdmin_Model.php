@@ -35,7 +35,6 @@ class DBAdmin_Model {
      */
     public function createDump($username, $sessionId, $dbName, $exportOnly) {
         // Pfad des Config-Files angeben
-        // es enthält den MySQL-Benutzernamen und das Passwort, sowie den Hostnamen
         $mysqlConf = realpath('config/user_'.$username.'.conf');
         
         if (!is_file($mysqlConf)) {
@@ -81,7 +80,6 @@ class DBAdmin_Model {
      */
     public function executeDump($username, $sessionId, $dump, $dbName, $delete) {
         // Pfad des Config-Files angeben
-        // es enthält den MySQL-Benutzernamen und das Passwort, sowie den Hostnamen
         $mysqlConf = realpath('config/user_'.$username.'.conf');
         
         if (!is_file($mysqlConf)) {
