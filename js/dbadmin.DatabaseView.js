@@ -41,7 +41,8 @@ dbadmin.DatabaseView = class dbadmin_DatabaseView extends kijs.gui.DataView {
         
         return new kijs.gui.DataViewElement({
             dataRow: dataRow,
-            html: html
+            html: html,
+            name: dataRow['Datenbankname']
         });
     }
 

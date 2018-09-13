@@ -169,11 +169,12 @@ dbadmin.App = class dbadmin_App {
     showActionWindow(action) {
         let caption = '';
         let iconChar = '';
+        let value = '';
         let data = {};
 
-        let oldDbname = '';
+        let oldDbName = '';
         if (this._viewport.down('dvDatabases').getSelected() !== null) {
-            oldDbname = this._viewport.down('dvDatabases').getSelected().dataRow['Datenbankname'];
+            oldDbName = this._viewport.down('dvDatabases').getSelected().dataRow['Datenbankname'];
         }
 
         switch (action) {
@@ -184,14 +185,15 @@ dbadmin.App = class dbadmin_App {
                 
             case 'duplicate':
                 caption = 'Datenbank duplizieren';
-                iconChar = '&#xf0c5'; 
-                data.oldDbname = oldDbname;
+                iconChar = '&#xf0c5';
+                data.oldDbname = oldDbName;
                 break;
                 
             case 'rename':
                 caption = 'Datenbank umbenennen';
-                iconChar = '&#xf044'; 
-                data.oldDbname = oldDbname;
+                iconChar = '&#xf044';
+                data.oldDbname = oldDbName;
+                value = oldDbName;
                 break;
         }
         
@@ -200,6 +202,7 @@ dbadmin.App = class dbadmin_App {
             caption: caption,
             iconChar: iconChar,
             data: data,
+            value: value,
             rpc: this._rpc,
             facadeFnSave: 'dbadmin.'+action,
             on:{
@@ -210,8 +213,8 @@ dbadmin.App = class dbadmin_App {
 
         let username = sessionStorage.getItem('Benutzer');
         
-        if (username.includes('_')) {
-            this._actionWindow.down('newDbname').value = username;
+        if (username.includes('_') && action !== 'rename') {
+            this._actionWindow.down('newDbName').value = username;
         }
         this._actionWindow.show();
     }
@@ -268,7 +271,7 @@ dbadmin.App = class dbadmin_App {
         if (this._viewport.down('dvDatabases').getSelected() === null) {
             kijs.gui.MsgBox.alert('Achtung','Keine Datenbank ausgewählt!');
         } else {
-            kijs.gui.MsgBox.confirm('Wirklich löschen?','Willst du die Datenban wirklich löschen?', function(e) {
+            kijs.gui.MsgBox.confirm('Wirklich löschen?','Willst du die Datenbank wirklich löschen?', function(e) {
                 if (e.btn === 'yes') {
                     this._rpc.do('dbadmin.delete', this._viewport.down('dvDatabases').getSelected().dataRow, 
                     function(response) {
@@ -347,7 +350,7 @@ dbadmin.App = class dbadmin_App {
             case 'dbadmin.duplicate': txt = 'dupliziert.'; break
             case 'dbadmin.rename': txt = 'umbenannt.'; break;
         }
-               
+         
         kijs.gui.CornerTipContainer.show('Info', 'Datenbank erfolgreich '+txt, 'info');
         this._actionWindow.destruct();
         

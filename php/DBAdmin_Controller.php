@@ -3,6 +3,9 @@
 class DBAdmin_Controller {
        
     protected $model = null;
+    protected $username = null;
+    protected $sessionId = null;
+    protected $root = false;
     
     public function __construct() {
         require_once 'DBAdmin_Model.php';
@@ -12,14 +15,14 @@ class DBAdmin_Controller {
     
     /**
      * Überprüft den Datenbanknamen
-     * @param string $dbname
+     * @param string $dbName
      */
-    public function checkDbname($dbname) {
-        $match = preg_match('/^dev_[a-z]{2}_[a-z]{2,3}_[a-z]{1,50}$/', $dbname);
-        $umlaute = preg_match('/([äÄöÖüÜ])/', $dbname);
+    public function checkDbname($dbName) {
+        $match = preg_match('/^dev_[a-z]{2}_[a-z]{2,3}_[a-z]{1,50}$/', $dbName);
+        $umlaute = preg_match('/([äÄöÖüÜ])/', $dbName);
                                                           
         if ($umlaute === 0) {
-            if (!$_SESSION['root']) {
+            if (!$this->root) {
                 if ($match === 0) {
                     throw new Exception(
                             "Der Datenbankname muss folgendes Format haben:".
@@ -27,10 +30,10 @@ class DBAdmin_Controller {
                             "<br />Beispiel: 'dev_xy_wz_kkk'"
                             );
                 }
-                $dbSubstrings = explode('_', $dbname);
+                $dbSubstrings = explode('_', $dbName);
                 $check = $dbSubstrings[0].'_'.$dbSubstrings[1];
 
-                if ($check !== $_SESSION['username']) {
+                if ($check !== $this->username) {
                     throw new Exception('Recht zum erstellen einer Datenbank mit diesem Namen fehlt!');
                 }
             }
@@ -42,22 +45,22 @@ class DBAdmin_Controller {
     
     /**
      * Erstellt eine Datenbank
-     * @param string $dbname
+     * @param string $dbName
      * @return \Throwable|boolean
      */
-    public function createDatabase($dbname) {        
+    public function createDatabase($dbName) {        
         try {
-            $this->checkDbname($dbname);
+            $this->checkDbname($dbName);
                     
             $this->openRootDbConnection();
 
             // Prüfen ob gleichnamige Datenbank existiert
-            if (count($this->model->selectDatabase($dbname)) !== 0) {
+            if (count($this->model->getDatabase($dbName)) !== 0) {
                 throw new Exception('Gleichnamige Datenbank existiert schon!');
             }
 
             // Datenbank erstellen
-            if (!$this->model->createDatabase($dbname)) {
+            if (!$this->model->createDatabase($dbName)) {
                 throw new Exception('Erstellen der Datenbank fehlgeschlagen!');
             }
             $this->model->closeDbConnection($this->model->rootPdo);
@@ -71,13 +74,13 @@ class DBAdmin_Controller {
     
     /**
      * Löscht eine Datenbank
-     * @param string $dbname
+     * @param string $dbName
      * @return \Throwable|boolean
      */
-    public function deleteDatabase($dbname) {   
+    public function deleteDatabase($dbName) {   
         try {
             $this->openRootDbConnection();
-            $result = $this->model->deleteDatabase($dbname);            
+            $result = $this->model->deleteDatabase($dbName);            
         
             if (!$result) {
                 throw new Exception('Löschen der Datenbank fehlgeschlagen!');
@@ -93,26 +96,26 @@ class DBAdmin_Controller {
     
     /**
      * Dupliziert eine Datenbank
-     * @param string $newDbname
-     * @param string $oldDbname
+     * @param string $newDbName
+     * @param string $oldDbName
      * @return \Throwable|boolean
      */
-    public function duplicateDatabase($newDbname, $oldDbname) {        
+    public function duplicateDatabase($newDbName, $oldDbName) {        
         try {
             // Datenbankname prüfen
-            $this->checkDbname($newDbname);
+            $this->checkDbname($newDbName);
            
             $this->openRootDbConnection();
             
             // neue Datenbank erstellen
-            $this->createDatabase($newDbname);
+            $this->createDatabase($newDbName);
 
             // Datenbank exportieren
-            $this->exportDatabase($oldDbname, false);
+            $this->exportDatabase($oldDbName, false);
 
             // Datenbank importieren
             $data = new stdClass();
-            $data->database = $newDbname;
+            $data->database = $newDbName;
             $data->delete  = true;
             $this->importDatabase($data);
 
@@ -127,16 +130,77 @@ class DBAdmin_Controller {
     
     /**
      * 
-     * @param string $dbname
+     * @param string $dbName
      * @param boolean $exportOnly
      * @return \Throwable|boolean
      */
-    public function exportDatabase($dbname, $exportOnly) {        
+    public function exportDatabase($dbName, $exportOnly) {        
         try {
-            require_once 'DBAdmin_FileReader.php';
-            $reader = new DBAdmin_FileReader();
-            $reader->createDump($dbname, $exportOnly);
+            $this->model->createDump($this->username, $this->sessionId, $dbName, $exportOnly);
             $return = true;
+        } catch (Throwable $ex) {
+            $return = $ex;
+        }
+        return $return;
+    }
+        
+    
+    /**
+     * Gibt ein Array mit Datenbanken zurück
+     * @return \Throwable|array
+     */
+    public function getDatabases() {
+        try {
+            // Benutzerdaten aus conf-File auslesen            
+            $userData = [];
+            $userConf = realpath('config').'/user_'.$this->username.'.conf';
+
+            if (!is_file($userConf)) {
+                throw new Exception('Die Conf-Datei des Users wurde nicht gefunden!');
+            }
+            $conffile = fopen($userConf, 'r');
+
+            if (!$conffile) {
+                throw new Exception('fopen ist fehlgeschlagen!');
+            }
+
+            while (($line = fgets($conffile)) !== false) {          
+                if (mb_strpos($line, '=') !== false) {
+                    $value = explode('=', $line);
+                    $userData[] = trim($value[1]);
+                }
+            }
+            fclose($conffile);
+
+            // Anführungszeichen vor und nach dem Passwort entfernen
+            $userData[2] = str_replace('"','',$userData[2]);
+
+            // Datenbankverbindung herstellen
+            $this->model->rootPdo = $this->model->openDbConnection($userData[0], $userData[1], $userData[2]);
+
+            $result = $this->model->getDatabases($this->model->rootPdo);
+            
+            $return = [];
+            
+            foreach ($result as $database) {
+                // evtl. Daten formatieren
+                $importDate = $database['importDate'];
+                if ($importDate !== '--') {
+                    $importDate = date('d.m.Y', strtotime($importDate));
+                }
+
+                $changeDate = $database['changeDate'];
+                if ($changeDate !== '--') {
+                    $changeDate = date('d.m.Y', strtotime($changeDate));
+                }
+                
+                $return[] = array(
+                    'Datenbankname' => $database['dbName'], 
+                    'Importdatum' => $importDate,
+                    'Änderungsdatum' => $changeDate
+                );
+            }
+            $this->model->closeDbConnection($this->model->rootPdo);
         } catch (Throwable $ex) {
             $return = $ex;
         }
@@ -149,11 +213,11 @@ class DBAdmin_Controller {
      * @return \Throwable|array
      */
     public function getDumpList() {
-        if (isset($_SESSION['username'])) {
+        if (isset($this->username)) {
             try{
-                require_once 'DBAdmin_FileReader.php';
-                $fileReader = new DBAdmin_FileReader();
-                $return = $fileReader->getDumpList();
+                require_once 'DBAdmin_FileIO.php';
+                $fileIO = new DBAdmin_FileIO();
+                $return = $fileIO->getDumpList($this->username);
             } catch (Throwable $ex) {
                 $return = $ex;
             }
@@ -168,13 +232,13 @@ class DBAdmin_Controller {
      * @return boolean
      */
     public function getUserRights($username) {
-        $conf = realpath('../config');
+        $conf = realpath('config');
         $host = json_decode(file_get_contents($conf.'/config.json'));
         
         if (!isset($host->host)) {
             throw new Exception('Datei config.json ist fehlerhaft!');
         }
-        $result = $this->model->selectUserRights($host->host, $username);
+        $result = $this->model->getUserRights($host->host, $username);
 
         if (strpos($result[0][0], 'ALL PRIVILEGES ON *.*') === false) {
             return false;
@@ -190,16 +254,14 @@ class DBAdmin_Controller {
      * @return \Throwable|boolean
      */
     public function importDatabase($data) { 
-        $dbname = $data->database;
+        $dbName = $data->database;
         $dump = isset($data->dumps) ? $data->dumps : null;
         $delete = $data->delete;        
-        try {            
-            require_once 'DBAdmin_FileReader.php';
-            $reader = new DBAdmin_FileReader();
-            $reader->executeDump($dump, $dbname, $delete);
+        try {
+            $this->model->executeDump($this->username, $this->sessionId, $dump, $dbName, $delete);
 
             $this->openRootDbConnection();
-            if (!$this->model->insertImportDate($dbname)) {
+            if (!$this->model->insertImportDate($dbName)) {
                 throw new Exception('Speichern des Import-Datums fehlgeschlagen!');
             }
             $this->model->closeDbConnection($this->model->rootPdo);
@@ -224,7 +286,7 @@ class DBAdmin_Controller {
             require_once 'DBAdmin_Model.php';
             $this->model = new DBAdmin_Model();
 
-            $conf = realpath('../config');
+            $conf = realpath('config');
             if (!is_file($conf.'/config.json')) {
                 throw new Exception('Datei config.json nicht gefunden!');
             }
@@ -280,7 +342,7 @@ class DBAdmin_Controller {
      * @return boolean
      */
     public function logoutUser() { 
-        unlink(realpath('../config/user_'.$_SESSION['username'].'.conf'));
+        unlink(realpath('config/user_'.$this->username.'.conf'));
         session_destroy();
         return true;
     }
@@ -294,7 +356,7 @@ class DBAdmin_Controller {
         $this->model = new DBAdmin_Model();
         
         // MySQL-Verbindung herstellen
-        $conf = realpath('../config');
+        $conf = realpath('config');
         $config = json_decode(file_get_contents($conf.'/config.json'));
         
         if (!isset($config->host)) {
@@ -306,28 +368,28 @@ class DBAdmin_Controller {
     
     /**
      * Benennt eine Datenbank um
-     * @param string $newDbname
-     * @param string $oldDbname
+     * @param string $newDbName
+     * @param string $oldDbName
      * @return \Throwable|boolean
      */
-    public function renameDatabase($newDbname, $oldDbname) {        
+    public function renameDatabase($newDbName, $oldDbName) {        
         try {
-            $this->checkDbname($newDbname);
+            $this->checkDbname($newDbName);
 
             $this->openRootDbConnection();
 
             // neue Datenbank erstellen
-            $this->createDatabase($newDbname);
+            $this->createDatabase($newDbName);
 
             // Datenbank exportieren
-            $this->exportDatabase($oldDbname, false);
+            $this->exportDatabase($oldDbName, false);
 
             // Datenbank löschen
-            $this->model->deleteDatabase($oldDbname);        
+            $this->model->deleteDatabase($oldDbName);        
 
             // Datenbank importieren
             $data = new stdClass();
-            $data->database = $newDbname;
+            $data->database = $newDbName;
             $data->delete = true;
             $this->importDatabase($data);
             
@@ -341,43 +403,182 @@ class DBAdmin_Controller {
     
     
     /**
-     * Gibt ein Array mit Datenbanken zurück
-     * @return \Throwable|array
+     * Analysiert die Requests
      */
-    public function selectDatabases() {
-        try {
-            // Benutzerdaten aus conf-File auslesen            
-            $userdata = [];
-            $userconf = realpath('../config').'/user_'.$_SESSION['username'].'.conf';
-
-            if (!is_file($userconf)) {
-                throw new Exception('Die Conf-Datei des Users wurde nicht gefunden!');
-            }
-            $conffile = fopen($userconf, 'r');
-
-            if (!$conffile) {
-                throw new Exception('fopen ist fehlgeschlagen!');
-            }
-
-            while (($line = fgets($conffile)) !== false) {          
-                if (mb_strpos($line, '=') !== false) {
-                    $value = explode('=', $line);
-                    $userdata[] = trim($value[1]);
-                }
-            }
-            fclose($conffile);
-
-            // Anführungszeichen vor und nach dem Passwort entfernen
-            $userdata[2] = str_replace('"','',$userdata[2]);
-
-            // Datenbankverbindung herstellen
-            $this->model->rootPdo = $this->model->openDbConnection($userdata[0], $userdata[1], $userdata[2]);
-
-            $return = $this->model->selectDatabases($this->model->rootPdo);
-            $this->model->closeDbConnection($this->model->rootPdo);
-        } catch (Throwable $ex) {
-            $return = $ex;
+    public function run() {
+        session_start();
+        if (!empty($_SESSION)) {
+            $this->username = $_SESSION['username'];
+            $this->sessionId = $_SESSION['id'];
+            $this->root = $_SESSION['root'];
         }
-        return $return;
-    }   
+
+        $requests = json_decode(file_get_contents("php://input"));
+        $responses = array();        
+
+        if (isset($requests)) {
+            foreach ($requests as $request) {
+                $response = new stdClass();
+                $response->tid = $request->tid;
+                $response->data = new stdClass();
+                $response->rows = new stdClass();
+
+                try {
+                    switch ($request->facadeFn) {
+
+                        // Datenbanken auslesen
+                        case 'dbadmin.loadDbs':
+                            $return = $this->getDatabases();
+
+                            if ($return instanceof Exception || $return instanceof Error) {
+                                $response->errorMsg = $return->getMessage(); 
+                            } else {                                                   
+                                $response->rows = $return;
+                            }
+                            break;
+
+                        // Dumps auslesen
+                        case 'dbadmin.loadDumps':
+                            $return = $this->getDumpList();
+
+                            if ($return instanceof Exception || $return instanceof Error) {
+                                $response->errorMsg = $return->getMessage(); 
+                            } else {
+                                $rows = array();
+
+                                foreach ($return as $dump) {
+                                    $rows[] = array(
+                                        'value' => $dump,
+                                        'caption' => $dump
+                                    );
+                                }                    
+                                $response->rows = $rows;
+                            }
+                            break;
+
+                        // Einloggen
+                        case 'dbadmin.login':
+                            $return = $this->loginUser($request->data->formData);
+
+                            if ($return instanceof Exception || $return instanceof Error) {
+                                $response->errorMsg = $return->getMessage(); 
+                            } else {
+                                $response->data = array(
+                                    'success' => 'true'
+                                );
+                            }
+                            break;
+
+                        // feststellen ob ein Benutzer angemeldet ist
+                        case 'dbadmin.checkLogin':
+                            if (isset($this->username)) {
+                                $response->data = array(
+                                    'username' => $this->username
+                                );
+                            } else {
+                                $response->data = array(
+                                    'username' => false
+                                );
+                            }
+                            break;
+
+                        // neue Datenbank erstellen
+                        case 'dbadmin.create':
+                            $return = $this->createDatabase($request->data->formData->newDbName);
+
+                            if ($return instanceof Exception || $return instanceof Error) {
+                                $response->errorMsg = $return->getMessage(); 
+                            } else {
+                                $response->data = array(
+                                    'success' => 'true'
+                                );
+                            }
+                            break;
+
+                        // Dump importieren
+                        case 'dbadmin.import':
+                            $return = $this->importDatabase($request->data->formData);
+
+                            if ($return instanceof Exception || $return instanceof Error) {
+                                $response->errorMsg = $return->getMessage(); 
+                            } else {
+                                $response->data = array(
+                                    'success' => 'true'
+                                );                              
+                            }
+                            break;
+
+                        // Datenbank exportieren
+                        case 'dbadmin.export':
+                            $return = $this->exportDatabase($request->data->Datenbankname, true);
+
+                            if ($return instanceof Exception || $return instanceof Error) {
+                                $response->errorMsg = $return->getMessage(); 
+                            } else {
+                                $response->data = array(
+                                    'success' => 'true'
+                                );
+                            }
+                            break;
+
+                        // Datenbank duplizieren
+                        case 'dbadmin.duplicate':
+                            $return = $this->duplicateDatabase($request->data->formData->newDbName, $request->data->formData->oldDbName);
+
+                            if ($return instanceof Exception || $return instanceof Error) {
+                                $response->errorMsg = $return->getMessage(); 
+                            } else {
+                                $response->data = array(
+                                    'success' => 'true'
+                                );
+                            }
+                            break;
+
+                        // Datenbank umbenennen
+                        case 'dbadmin.rename':
+                            $return = $this->renameDatabase($request->data->formData->newDbName, $request->data->formData->oldDbName);
+
+                            if ($return instanceof Exception || $return instanceof Error) {
+                                $response->errorMsg = $return->getMessage(); 
+                            } else {
+                                $response->data = array(
+                                    'success' => 'true'
+                                );
+                            }
+                            break;
+
+                        // Datenbank löschen
+                        case 'dbadmin.delete':
+                            $return = $this->deleteDatabase($request->data->Datenbankname);
+
+                            if ($return instanceof Exception || $return instanceof Error) {
+                                $response->errorMsg = $return->getMessage(); 
+                            } else {
+                                $response->data = array(
+                                    'success' => 'true'
+                                );
+                            }
+                            break;
+
+                        // Ausloggen
+                        case 'dbadmin.logout':
+                            $return = $this->logoutUser();                
+                            break;
+
+                        default: 
+                            $response->errorMsg = 'Aktion nicht gefunden!';   
+
+                    }                               
+                } catch (Exception $ex) {
+                    $response->errorMsg = $ex->getMessage();
+                }
+
+                $responses[] = $response;
+            }
+            // Antwort ausgeben
+            print(json_encode($responses));
+        } else {
+            echo file_get_contents('template/main.html');
+        }
+    }
 }
