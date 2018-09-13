@@ -343,41 +343,39 @@ class DBAdmin_Controller {
      * @return \Throwable|array
      */
     public function selectDatabases() {
-        if (isset($_SESSION['username'])) {
-            try {
-                // Benutzerdaten aus conf-File auslesen            
-                $userdata = [];
-                $userconf = realpath('../config').'/user_'.$_SESSION['username'].'.conf';
+        try {
+            // Benutzerdaten aus conf-File auslesen
+            $userdata = [];
+            $userconf = realpath('../config').'/user_'.$_SESSION['username'].'.conf';
 
-                if (!is_file($userconf)) {
-                    throw new Exception('Die Conf-Datei des Users wurde nicht gefunden!');
-                }
-                $conffile = fopen($userconf, 'r');
-
-                if (!$conffile) {
-                    throw new Exception('fopen ist fehlgeschlagen!');
-                }
-
-                while (($line = fgets($conffile)) !== false) {          
-                    if (mb_strpos($line, '=') !== false) {
-                        $value = explode('=', $line);
-                        $userdata[] = trim($value[1]);
-                    }
-                }
-                fclose($conffile);
-
-                // Anführungszeichen vor und nach dem Passwort entfernen
-                $userdata[2] = str_replace('"','',$userdata[2]);
-
-                // Datenbankverbindung herstellen
-                $this->model->rootPdo = $this->model->openDbConnection($userdata[0], $userdata[1], $userdata[2]);
-
-                $return = $this->model->selectDatabases($this->model->rootPdo);
-                $this->model->closeDbConnection($this->model->rootPdo);
-            } catch (Throwable $ex) {
-                $return = $ex;
+            if (!is_file($userconf)) {
+                throw new Exception('Die Conf-Datei des Users wurde nicht gefunden!');
             }
-            return $return;
+            $conffile = fopen($userconf, 'r');
+
+            if (!$conffile) {
+                throw new Exception('fopen ist fehlgeschlagen!');
+            }
+
+            while (($line = fgets($conffile)) !== false) {          
+                if (mb_strpos($line, '=') !== false) {
+                    $value = explode('=', $line);
+                    $userdata[] = trim($value[1]);
+                }
+            }
+            fclose($conffile);
+
+            // Anführungszeichen vor und nach dem Passwort entfernen
+            $userdata[2] = str_replace('"','',$userdata[2]);
+
+            // Datenbankverbindung herstellen
+            $this->model->rootPdo = $this->model->openDbConnection($userdata[0], $userdata[1], $userdata[2]);
+
+            $return = $this->model->selectDatabases($this->model->rootPdo);
+            $this->model->closeDbConnection($this->model->rootPdo);
+        } catch (Throwable $ex) {
+            $return = $ex;
         }
-    }
+        return $return;
+    }   
 }
