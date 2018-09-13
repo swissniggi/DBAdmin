@@ -10,6 +10,12 @@ class DBAdmin_Controller {
     public function __construct() {
         require_once 'DBAdmin_Model.php';
         $this->model = new DBAdmin_Model;
+
+        if (!empty($_SESSION)) {
+            $this->root = $_SESSION['root'];
+            $this->sessionId = $_SESSION['id'];
+            $this->username = $_SESSION['username'];
+        }
     }
     
     
@@ -158,19 +164,19 @@ class DBAdmin_Controller {
             if (!is_file($userConf)) {
                 throw new Exception('Die Conf-Datei des Users wurde nicht gefunden!');
             }
-            $conffile = fopen($userConf, 'r');
+            $confFile = fopen($userConf, 'r');
 
-            if (!$conffile) {
+            if (!$confFile) {
                 throw new Exception('fopen ist fehlgeschlagen!');
             }
 
-            while (($line = fgets($conffile)) !== false) {          
+            while (($line = fgets($confFile)) !== false) {          
                 if (mb_strpos($line, '=') !== false) {
                     $value = explode('=', $line);
                     $userData[] = trim($value[1]);
                 }
             }
-            fclose($conffile);
+            fclose($confFile);
 
             // Anführungszeichen vor und nach dem Passwort entfernen
             $userData[2] = str_replace('"','',$userData[2]);
@@ -308,23 +314,23 @@ class DBAdmin_Controller {
             // mit root zur Datenbank verbinden
             $this->openRootDbConnection();
 
-            // eruieren ob der eingeloggte User root-Rechte hat
+            // Rechte des Benutzers abfragen
             $root = $this->getUserRights($username);
             $this->model->closeDbConnection($this->model->rootPdo);                                     
 
             // conf-File für Benutzer erstellen
-            $conffile = fopen($conf.'/user_'.$username.'.conf', 'w');
+            $confFile = fopen($conf.'/user_'.$username.'.conf', 'w');
 
-            if (!$conffile) {
+            if (!$confFile) {
                 throw new Exception('fopen ist fehlgeschlagen!');
             }
             $txt = "[client]\r\nhost=".$host."\r\nuser=".$username."\r\npassword=\"".$password."\"";
-            $write = fwrite($conffile, $txt);
+            $write = fwrite($confFile, $txt);
 
             if ($write === false) {
                 throw new Exception('fwrite ist fehlgeschlagen!');
             }
-            fclose($conffile);
+            fclose($confFile);
             
             $return = array(
                 'root' => $root,
@@ -408,21 +414,15 @@ class DBAdmin_Controller {
      */
     public function run() {
         session_start();
-        
-        if (!empty($_SESSION)) {            
-            $this->root = $_SESSION['root'];
-            $this->sessionId = $_SESSION['id'];
-            $this->username = $_SESSION['username'];                        
-        }
 
         $requests = json_decode(file_get_contents("php://input"));
         $responses = array();
         
+        $lastUsedDatabase = null;
+        
         // letzte verwendete Datenbank abrufen
         if (isset($_SESSION['lastUsedDatabase'])) {
             $lastUsedDatabase = $_SESSION['lastUsedDatabase'];
-        } else {
-            $lastUsedDatabase = null;
         }
 
         if (isset($requests)) {
@@ -485,7 +485,7 @@ class DBAdmin_Controller {
                             if ($return instanceof Exception || $return instanceof Error) {
                                 $response->errorMsg = $return->getMessage(); 
                             } else {
-                                $lastUsedDatabase= $request->data->formData->newDbName;
+                                $lastUsedDatabase = $request->data->formData->newDbName;
                                 $response->data = array(
                                     'success' => 'true'
                                 );
@@ -500,7 +500,7 @@ class DBAdmin_Controller {
                             if ($return instanceof Exception || $return instanceof Error) {
                                 $response->errorMsg = $return->getMessage(); 
                             } else {
-                                $lastUsedDatabase= $request->data->Datenbankname;
+                                $lastUsedDatabase = $request->data->Datenbankname;
                                 $response->data = array(
                                     'success' => 'true'
                                 );
@@ -515,7 +515,7 @@ class DBAdmin_Controller {
                             if ($return instanceof Exception || $return instanceof Error) {
                                 $response->errorMsg = $return->getMessage(); 
                             } else {
-                                $lastUsedDatabase= $request->data->formData->database;
+                                $lastUsedDatabase = $request->data->formData->database;
                                 $response->data = array(
                                     'success' => 'true'
                                 );                              
@@ -536,11 +536,10 @@ class DBAdmin_Controller {
                                 if (isset($lastUsedDatabase)) {
                                     $response->selectFilters->field = 'Datenbankname';
                                     $response->selectFilters->value = $lastUsedDatabase;
+                                    $lastUsedDatabase = null;
                                 } else {
                                     $response->selectFilters = null;
-                                }
-                                
-                                $lastUsedDatabase = null;
+                                }                                                                
                             }
                             break;
 
@@ -595,7 +594,7 @@ class DBAdmin_Controller {
                             if ($return instanceof Exception || $return instanceof Error) {
                                 $response->errorMsg = $return->getMessage(); 
                             } else {
-                                $lastUsedDatabase= $request->data->formData->newDbName;
+                                $lastUsedDatabase = $request->data->formData->newDbName;
                                 $response->data = array(
                                     'success' => 'true'
                                 );
@@ -609,7 +608,6 @@ class DBAdmin_Controller {
                 } catch (Exception $ex) {
                     $response->errorMsg = $ex->getMessage();
                 }
-
                 $responses[] = $response;
             }
             // letzte verwendete Datenbank in Session speichern
