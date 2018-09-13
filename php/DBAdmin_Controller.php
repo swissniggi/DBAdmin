@@ -65,7 +65,6 @@ class DBAdmin_Controller {
                 throw new Exception('Gleichnamige Datenbank existiert schon!');
             }
 
-            // Datenbank erstellen
             if (!$this->model->createDatabase($dbName)) {
                 throw new Exception('Erstellen der Datenbank fehlgeschlagen!');
             }
@@ -310,8 +309,7 @@ class DBAdmin_Controller {
                 throw new Exception('Benutzername oder Passwort falsch!');
             }
             $this->model->closeDbConnection($pdo);
-               
-            // mit root zur Datenbank verbinden
+
             $this->openRootDbConnection();
 
             // Rechte des Benutzers abfragen
