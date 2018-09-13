@@ -24,7 +24,6 @@ class DBAdmin_FileIO {
                 throw new Exception('Dumps-Ordner für Benutzer konnte nicht erstellt werden!');
             }
         }
-        
         $files = scandir($dumps);
         
         if ($files === false) {

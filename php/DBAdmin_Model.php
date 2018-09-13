@@ -188,7 +188,7 @@ class DBAdmin_Model {
      */
     public function insertImportDate($dbName) {
         $insertImportDate = $this->rootPdo->prepare(
-            "INSERT INTO dbadmin.lastimport (dbName, importDate)"
+            "INSERT INTO dbadmin.lastimport (dbName, importDate) "
             . "VALUES (:dbName, DATE(NOW()));"
             );
         $insertImportDate->bindParam(':dbName', $dbName);
