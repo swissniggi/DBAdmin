@@ -242,7 +242,10 @@ dbadmin.App = class dbadmin_App {
      * @returns {undefined}
      */
     showSelectWindow() {
-        const data = { database: this._viewport.down('dvDatabases').getSelected().dataRow['Datenbankname'] };
+        const data = {
+            database: this._viewport.down('dvDatabases').getSelected().dataRow['Datenbankname'],
+            importDate: this._viewport.down('dvDatabases').getSelected().dataRow['Importdatum']
+        };
 
         // Window erstellen
         this._selectWindow = new dbadmin.SelectWindow({

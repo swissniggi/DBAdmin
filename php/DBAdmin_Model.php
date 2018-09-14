@@ -149,7 +149,24 @@ class DBAdmin_Model {
         $getDBs->execute();
         $result = $getDBs->fetchAll();
         return $result;
-    }     
+    }
+    
+    
+    /**
+     * Gibt die Anzahl der tabellen in der ausgewählten Datenbank zurück
+     * @param string $dbName
+     * @return array
+     */
+    public function getNumberOfTables($dbName) {
+        $getTables = $this->rootPdo->prepare(
+            "SELECT COUNT(*) AS numberOfTables FROM information_schema.TABLES "
+            . "WHERE table_schema = :dbName;"
+            );
+        $getTables->bindParam(':dbName', $dbName);
+        $getTables->execute();
+        $result = $getTables->fetchAll();
+        return $result;
+    }
     
     
     /**

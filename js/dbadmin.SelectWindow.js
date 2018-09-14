@@ -143,7 +143,22 @@ dbadmin.SelectWindow = class dbadmin_SelectWindow extends kijs.gui.Window {
 
     // LISTENERS
     _onBtnActionClick(e) {
-        this._formPanel.save();
+        console.log(this._formPanel.data['importDate']);
+        if (this._formPanel.data['importDate'] !== '--') {
+            kijs.gui.MsgBox.confirm(
+                'Achtung!', 
+                'Diese Datenbank enthält Daten.</br >Diese werden beim Import überschrieben.<br />Möchtest du das wirklich?', 
+                function(e) {
+                    if (e.btn === 'yes') {
+                        this._formPanel.save();
+                    } else {
+                        this.destruct();
+                    }
+                }, this
+            );
+        } else {
+            this._formPanel.save();
+        }
     }
 
 

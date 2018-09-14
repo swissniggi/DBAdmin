@@ -145,7 +145,7 @@ class DBAdmin_Controller {
 
                             if ($return instanceof Exception || $return instanceof Error) {
                                 $response->errorMsg = $return->getMessage(); 
-                            } else {                                                   
+                            } else {                                
                                 $response->rows = $return;
                                 
                                 if (isset($lastUsedDatabase)) {
@@ -409,6 +409,7 @@ class DBAdmin_Controller {
             $return = [];
             
             foreach ($result as $database) {
+                $numberOfTables = $this->model->getNumberOfTables($database['dbName']);
                 // evtl. Daten formatieren
                 $importDate = $database['importDate'];
                 if ($importDate !== '--') {
@@ -423,7 +424,8 @@ class DBAdmin_Controller {
                 $return[] = array(
                     'Datenbankname' => $database['dbName'], 
                     'Importdatum' => $importDate,
-                    'Änderungsdatum' => $changeDate
+                    'Änderungsdatum' => $changeDate,
+                    'AnzahlTabellen' => $numberOfTables[0]['numberOfTables']
                 );
             }
             $this->model->closeDbConnection($this->model->rootPdo);
