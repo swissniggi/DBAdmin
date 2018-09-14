@@ -24,7 +24,7 @@ class DBAdmin_Controller {
      * Überprüft den Datenbanknamen
      * @param string $dbName
      */
-    public function checkDbname($dbName) {
+    private function checkDbname($dbName) {
         $match = preg_match('/^dev_[a-z]{2}_[a-z]{2,3}_[a-z]{1,50}$/', $dbName);
         $umlaute = preg_match('/([äÄöÖüÜ])/', $dbName);
                                                           
@@ -55,7 +55,7 @@ class DBAdmin_Controller {
      * @param string $dbName
      * @return \Throwable|boolean
      */
-    public function createDatabase($dbName) {        
+    private function createDatabase($dbName) {        
         try {
             $this->checkDbname($dbName);
                     
@@ -83,7 +83,7 @@ class DBAdmin_Controller {
      * @param string $dbName
      * @return \Throwable|boolean
      */
-    public function deleteDatabase($dbName) {   
+    private function deleteDatabase($dbName) {   
         try {
             $this->openRootDbConnection();
             $result = $this->model->deleteDatabase($dbName);            
@@ -106,7 +106,7 @@ class DBAdmin_Controller {
      * @param string $oldDbName
      * @return \Throwable|boolean
      */
-    public function duplicateDatabase($newDbName, $oldDbName) {        
+    private function duplicateDatabase($newDbName, $oldDbName) {        
         try {
             // Datenbankname prüfen
             $this->checkDbname($newDbName);
@@ -140,7 +140,7 @@ class DBAdmin_Controller {
      * @param boolean $exportOnly
      * @return \Throwable|boolean
      */
-    public function exportDatabase($dbName, $exportOnly) {        
+    private function exportDatabase($dbName, $exportOnly) {        
         try {
             $this->model->createDump($this->username, $this->sessionId, $dbName, $exportOnly);
             $return = true;
@@ -155,7 +155,7 @@ class DBAdmin_Controller {
      * Gibt ein Array mit Datenbanken zurück
      * @return \Throwable|array
      */
-    public function getDatabases() {
+    private function getDatabases() {
         try {
             // Benutzerdaten aus conf-File auslesen            
             $userData = [];
@@ -218,7 +218,7 @@ class DBAdmin_Controller {
      * Gibt ein Array mit den Dumpnamen zurück
      * @return \Throwable|array
      */
-    public function getDumpList() {
+    private function getDumpList() {
         if (isset($this->username)) {
             try{
                 require_once 'DBAdmin_FileIO.php';
@@ -237,7 +237,7 @@ class DBAdmin_Controller {
      * @param string $username
      * @return boolean
      */
-    public function getUserRights($username) {
+    private function getUserRights($username) {
         $conf = realpath('config');
         $host = json_decode(file_get_contents($conf.'/config.json'));
         
@@ -259,7 +259,7 @@ class DBAdmin_Controller {
      * @param Object $data
      * @return \Throwable|boolean
      */
-    public function importDatabase($data) { 
+    private function importDatabase($data) { 
         $dbName = $data->database;
         $dump = isset($data->dumps) ? $data->dumps : null;
         $delete = $data->delete;        
@@ -284,7 +284,7 @@ class DBAdmin_Controller {
      * @param Object $data
      * @return \Throwable|boolean
      */
-    public function loginUser($data) {        
+    private function loginUser($data) {        
         try {
             $username = mb_strtolower($data->username);
             $password = $data->password;
@@ -347,7 +347,7 @@ class DBAdmin_Controller {
      * Logt den Benutzer aus
      * @return boolean
      */
-    public function logoutUser() { 
+    private function logoutUser() { 
         unlink(realpath('config/user_'.$this->username.'.conf'));
         session_destroy();
         return true;
@@ -357,7 +357,7 @@ class DBAdmin_Controller {
     /**
      * Erstellt eine Verbindung zur Datenbank
      */
-    public function openRootDbConnection() {
+    private function openRootDbConnection() {
         require_once 'DBAdmin_Model.php';
         $this->model = new DBAdmin_Model();
         
@@ -378,7 +378,7 @@ class DBAdmin_Controller {
      * @param string $oldDbName
      * @return \Throwable|boolean
      */
-    public function renameDatabase($newDbName, $oldDbName) {        
+    private function renameDatabase($newDbName, $oldDbName) {        
         try {
             $this->checkDbname($newDbName);
 
