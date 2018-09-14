@@ -410,6 +410,14 @@ class DBAdmin_Controller {
             
             foreach ($result as $database) {
                 $numberOfTables = $this->model->getNumberOfTables($database['dbName']);
+                $sizeOfDatabase = $this->model->getDatabaseSize($database['dbName']);
+                
+                if (isset($sizeOfDatabase[0]['dbSize'])) {
+                    $dbSize = $sizeOfDatabase[0]['dbSize'].'KB';
+                } else {
+                    $dbSize = '0KB';
+                }
+
                 // evtl. Daten formatieren
                 $importDate = $database['importDate'];
                 if ($importDate !== '--') {
@@ -425,7 +433,8 @@ class DBAdmin_Controller {
                     'Datenbankname' => $database['dbName'], 
                     'Importdatum' => $importDate,
                     'Änderungsdatum' => $changeDate,
-                    'AnzahlTabellen' => $numberOfTables[0]['numberOfTables']
+                    'AnzahlTabellen' => $numberOfTables[0]['numberOfTables'],
+                    'DatenbankGrösse' => $dbSize
                 );
             }
             $this->model->closeDbConnection($this->model->rootPdo);

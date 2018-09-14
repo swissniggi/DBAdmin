@@ -118,11 +118,30 @@ class DBAdmin_Model {
      */
     public function getDatabase($dbName) {
         $getDB = $this->rootPdo->prepare(
-            "SELECT SCHEMA_NAME FROM information_schema.SCHEMATA WHERE SCHEMA_NAME = :name;"
+            "SELECT SCHEMA_NAME FROM information_schema.SCHEMATA WHERE SCHEMA_NAME = :dbName;"
             );
-        $getDB->bindParam(':name', $dbName);
+        $getDB->bindParam(':dbName', $dbName);
         $getDB->execute();
         $result = $getDB->fetchAll();
+        return $result;
+    }
+    
+    
+    /**
+     * Gibt die Grösse einer Datenbank zurück
+     * @param string $dbName
+     * @return array
+     */
+    public function getDatabaseSize($dbName) {
+        $getDBSize = $this->rootPdo->prepare(
+                "SELECT REPLACE(FORMAT(SUM("
+                . "data_length + index_length)/1000,0)"
+                . ", ',' ,'\'') AS dbSize FROM information_schema.TABLES "
+                . "WHERE table_schema = :dbName;"
+                );
+        $getDBSize->bindParam(':dbName', $dbName);
+        $getDBSize->execute();
+        $result = $getDBSize->fetchAll();
         return $result;
     }
     
