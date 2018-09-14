@@ -17,4 +17,4 @@ Features yet to come:
 
 __2018/09/14__<br />
 Changed the name of the repository from 'DBAdminJS' to 'DBAdmin'.</br>
-The base repository was changed from 'DBAdminPHP' to 'DBAdminOld? accordingly.
+The base repository was changed from 'DBAdminPHP' to 'DBAdminOld' accordingly.
