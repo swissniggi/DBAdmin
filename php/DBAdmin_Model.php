@@ -128,25 +128,6 @@ class DBAdmin_Model {
     
     
     /**
-     * Gibt die Grösse einer Datenbank zurück
-     * @param string $dbName
-     * @return array
-     */
-    public function getDatabaseSize($dbName) {
-        $getDBSize = $this->rootPdo->prepare(
-                "SELECT REPLACE(FORMAT(SUM("
-                . "data_length + index_length)/1000,0)"
-                . ", ',' ,'\'') AS dbSize FROM information_schema.TABLES "
-                . "WHERE table_schema = :dbName;"
-                );
-        $getDBSize->bindParam(':dbName', $dbName);
-        $getDBSize->execute();
-        $result = $getDBSize->fetchAll();
-        return $result;
-    }
-    
-    
-    /**
      * Liest alle Daten für die HTML-Tabelle aus
      * @param Object $pdo
      * @return array
