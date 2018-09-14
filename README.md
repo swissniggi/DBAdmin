@@ -1,6 +1,6 @@
 # DBAdmin Version 2.0
 
-(based on https://github.com/swissniggi/DBAdminPHP)
+(based on https://github.com/swissniggi/DBAdminOld)
 
 !! requires the new kijs-Framework // mail me for more details !!
 
@@ -14,3 +14,7 @@ Features yet to come:
 #Project from trial IPA, June 2018
 
 #Refined in August and September 2018
+
+__2018/09/14__<br />
+Changed the name of the repository from 'DBAdminJS' to 'DBAdmin'.</br>
+The base repository was changed from 'DBAdminPHP' to 'DBAdminOld? accordingly.
