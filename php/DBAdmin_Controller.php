@@ -25,7 +25,7 @@ class DBAdmin_Controller {
      * @param string $dbName
      */
     private function checkDbname($dbName) {
-        $match = preg_match('/^dev_[a-z]{2}_[a-z]{2,3}_[a-z]{1,50}$/', $dbName);
+        $match = preg_match('/^dev_[a-z]{2}_[a-z]{2,3}_[a-z0-9]{1,50}$/', $dbName);
         $umlaute = preg_match('/([äÄöÖüÜ])/', $dbName);
                                                           
         if ($umlaute === 0) {
