@@ -4,8 +4,7 @@
 // dbadmin.PasswordField
 // --------------------------------------------------------------
 
-dbadmin.PasswordField = class dbadmin_PasswordField extends kijs.gui.field.Text {
-    
+dbadmin.PasswordField = class dbadmin_PasswordField extends kijs.gui.field.Text {  
     // --------------------------------------------------------------
     // CONSTRUCTOR
     // --------------------------------------------------------------
