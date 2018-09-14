@@ -8,10 +8,11 @@ class DBAdmin_Controller {
     protected $username = null;
     
     public function __construct() {
+        session_start();
         require_once 'DBAdmin_Model.php';
         $this->model = new DBAdmin_Model;
 
-        if (!empty($_SESSION)) {
+        if (count($_SESSION) > 1) {
             $this->root = $_SESSION['root'];
             $this->sessionId = $_SESSION['id'];
             $this->username = $_SESSION['username'];
@@ -411,8 +412,6 @@ class DBAdmin_Controller {
      * Analysiert die Requests
      */
     public function run() {
-        session_start();
-
         $requests = json_decode(file_get_contents("php://input"));
         $responses = array();
         
@@ -573,9 +572,9 @@ class DBAdmin_Controller {
                                     'success' => 'true'
                                 );
                                 // Daten in Session speichern
-                                $_SESSION['root'] = $return->root;
-                                $_SESSION['username'] = $return->username; 
-                                $_SESSION['id'] = $return->id;
+                                $_SESSION['root'] = $return['root'];
+                                $_SESSION['username'] = $return['username']; 
+                                $_SESSION['id'] = $return['id'];
                             }
                             break;
                             
