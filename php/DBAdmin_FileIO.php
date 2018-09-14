@@ -2,6 +2,9 @@
 
 class DBAdmin_FileIO {       
        
+    // --------------------------------------------------------------
+    // PUBLIC MEMBERS
+    // --------------------------------------------------------------
     /**
      * Erstellt eine Liste mit allen Dumps
      * @param string $username

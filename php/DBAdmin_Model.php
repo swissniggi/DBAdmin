@@ -3,7 +3,10 @@
 class DBAdmin_Model {
     
     public $rootPdo = null;
-    
+        
+    // --------------------------------------------------------------
+    // PUBLIC MEMBERS
+    // --------------------------------------------------------------
     /**
      * Beendet die Datenbankverbindung
      * @param PDO $pdo
