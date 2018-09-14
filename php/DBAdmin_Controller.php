@@ -413,20 +413,20 @@ class DBAdmin_Controller {
                 $sizeOfDatabase = $this->model->getDatabaseSize($database['dbName']);
                 
                 if (isset($sizeOfDatabase[0]['dbSize'])) {
-                    $dbSize = $sizeOfDatabase[0]['dbSize'].'KB';
+                    $dbSize = $sizeOfDatabase[0]['dbSize'].' KB';
                 } else {
-                    $dbSize = '0KB';
+                    $dbSize = '0 KB';
                 }
 
                 // evtl. Daten formatieren
                 $importDate = $database['importDate'];
                 if ($importDate !== '--') {
-                    $importDate = date('d.m.Y', strtotime($importDate));
+                    $importDate = date('d.m.Y H:i', strtotime($importDate));
                 }
 
                 $changeDate = $database['changeDate'];
                 if ($changeDate !== '--') {
-                    $changeDate = date('d.m.Y', strtotime($changeDate));
+                    $changeDate = date('d.m.Y H:i', strtotime($changeDate));
                 }
                 
                 $return[] = array(

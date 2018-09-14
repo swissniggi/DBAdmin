@@ -160,7 +160,7 @@ class DBAdmin_Model {
         $getDBs = $pdo->prepare(
             "SELECT is_SCHE.SCHEMA_NAME AS dbName, "
             . "COALESCE(MAX(dba.importDate), '--') AS importDate, "
-            . "COALESCE(MAX(DATE(is_TAB.UPDATE_TIME)), '--') AS changeDate "
+            . "COALESCE(MAX(is_TAB.UPDATE_TIME), '--') AS changeDate "
             . "FROM information_schema.SCHEMATA AS is_SCHE "
             . "LEFT JOIN dbadmin.lastimport AS dba ON is_SCHE.SCHEMA_NAME = dba.dbName "
             . "LEFT JOIN information_schema.TABLES AS is_TAB ON is_SCHE.SCHEMA_NAME = is_TAB.TABLE_SCHEMA "
@@ -228,7 +228,7 @@ class DBAdmin_Model {
     public function insertImportDate($dbName) {
         $insertImportDate = $this->rootPdo->prepare(
             "INSERT INTO dbadmin.lastimport (dbName, importDate) "
-            . "VALUES (:dbName, DATE(NOW()));"
+            . "VALUES (:dbName, NOW());"
             );
         $insertImportDate->bindParam(':dbName', $dbName);
         return $insertImportDate->execute();

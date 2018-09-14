@@ -33,18 +33,18 @@ dbadmin.DatabaseView = class dbadmin_DatabaseView extends kijs.gui.DataView {
         html += ' <span class="value">' + dataRow['Datenbankname'] + '</span>';
         html += '</div>';
         html += '<div>';
-        html += ' <span class="dbadmin-label">Importdatum: ' + dataRow['Importdatum'] + '</span>';
+        html += ' <span class="dbadmin-label">Importiert: ' + dataRow['Importdatum'] + '</span>';
         html += '</div>';
         html += '<div>';
-        html += ' <span class="dbadmin-label">Änderungsdatum: ' + dataRow['Änderungsdatum'] + '</span>';
+        html += ' <span class="dbadmin-label">Geändert: ' + dataRow['Änderungsdatum'] + '</span>';
         html += '</div>';
         html += '<div>';
-        html += ' <span class="dbadmin-label">Anzahl Tabellen: ' + dataRow['AnzahlTabellen'] + '</span>';
+        html += ' <span class="dbadmin-label">Tabellen: ' + dataRow['AnzahlTabellen'] + '</span>';
         html += '</div>';
         html += '<div>';
-        html += ' <span class="dbadmin-label">Datenbankgrösse: ' + dataRow['DatenbankGrösse'] + '</span>';
+        html += ' <span class="dbadmin-label">Grösse: ' + dataRow['DatenbankGrösse'] + '</span>';
         html += '</div>';
-
+        
         return new kijs.gui.DataViewElement({
             dataRow: dataRow,
             html: html
