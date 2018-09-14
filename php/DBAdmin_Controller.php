@@ -9,14 +9,14 @@ class DBAdmin_Controller {
     
     public function __construct() {
         session_start();
-        require_once 'DBAdmin_Model.php';
-        $this->model = new DBAdmin_Model;
 
         if (count($_SESSION) > 1) {
             $this->root = $_SESSION['root'];
             $this->sessionId = $_SESSION['id'];
             $this->username = $_SESSION['username'];
         }
+        require_once 'DBAdmin_Model.php';
+        $this->model = new DBAdmin_Model;
     }
     
     
