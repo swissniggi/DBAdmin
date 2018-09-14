@@ -67,8 +67,10 @@ class DBAdmin_Model {
      */
     public function deleteDatabase($dbName) {
         $deleteDB = $this->rootPdo->prepare(
-            "DROP DATABASE ".$dbName.";"
+            "DROP DATABASE ".$dbName."; "
+            . "DELETE FROM dbadmin.lastimport WHERE dbName = :dbName;"
             );
+        $deleteDB->bindParam(':dbName', $dbName);
         return $deleteDB->execute();
     }
     

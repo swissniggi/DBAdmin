@@ -244,7 +244,7 @@ dbadmin.App = class dbadmin_App {
     showSelectWindow() {
         const data = {
             database: this._viewport.down('dvDatabases').getSelected().dataRow['Datenbankname'],
-            importDate: this._viewport.down('dvDatabases').getSelected().dataRow['Importdatum']
+            numberOfTables: this._viewport.down('dvDatabases').getSelected().dataRow['AnzahlTabellen']
         };
 
         // Window erstellen
