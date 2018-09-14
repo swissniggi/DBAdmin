@@ -136,7 +136,7 @@ class DBAdmin_Model {
         $getDBSize = $this->rootPdo->prepare(
                 "SELECT REPLACE(FORMAT(SUM("
                 . "data_length + index_length)/1024/1024*1000,0)"
-                . ", ',' ,'\'') AS dbSize FROM information_schema.TABLES "
+                . ",',' ,'\'') AS dbSize FROM information_schema.TABLES "
                 . "WHERE table_schema = :dbName;"
                 );
         $getDBSize->bindParam(':dbName', $dbName);
