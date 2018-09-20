@@ -152,7 +152,7 @@ dbadmin.App = class dbadmin_App {
                 let caption = 'angemeldet als ' + sessionStorage.getItem('Benutzer');
                 mainPanel.headerBar.down('btnLogout').caption = caption;
 
-                this._viewport.down('dvDatabases').load();
+                this._databaseView.load();
             } else {
                 this.showLoginWindow();
             }
@@ -172,8 +172,8 @@ dbadmin.App = class dbadmin_App {
         let data = {};
 
         let oldDbName = '';
-        if (this._viewport.down('dvDatabases').getSelected() !== null) {
-            oldDbName = this._viewport.down('dvDatabases').getSelected().dataRow['Datenbankname'];
+        if (this._databaseView.getSelected() !== null) {
+            oldDbName = this._databaseView.getSelected().dataRow['Datenbankname'];
         }
 
         switch (action) {
@@ -243,8 +243,8 @@ dbadmin.App = class dbadmin_App {
      */
     showSelectWindow() {
         const data = {
-            database: this._viewport.down('dvDatabases').getSelected().dataRow['Datenbankname'],
-            numberOfTables: this._viewport.down('dvDatabases').getSelected().dataRow['AnzahlTabellen']
+            database: this._databaseView.getSelected().dataRow['Datenbankname'],
+            numberOfTables: this._databaseView.getSelected().dataRow['AnzahlTabellen']
         };
 
         // Window erstellen
@@ -270,16 +270,16 @@ dbadmin.App = class dbadmin_App {
     }
 
     _onBtnDeleteClick(e) {
-        if (this._viewport.down('dvDatabases').getSelected() === null) {
+        if (this._databaseView.getSelected() === null) {
             kijs.gui.MsgBox.alert('Achtung','Keine Datenbank ausgewählt!');
         } else {
             kijs.gui.MsgBox.confirm('Wirklich löschen?','Willst du die Datenbank wirklich löschen?', function(e) {
                 if (e.btn === 'yes') {
-                    this._rpc.do('dbadmin.delete', this._viewport.down('dvDatabases').getSelected().dataRow, 
+                    this._rpc.do('dbadmin.delete', this._databaseView.getSelected().dataRow, 
                     function(response) {
                         if (response.data.success === 'true') {
                             kijs.gui.CornerTipContainer.show('Info', 'Datenbank erfolgreich gelöscht.', 'info');
-                            this._viewport.down('dvDatabases').load();
+                            this._databaseView.load();
                         } else {
                             kijs.gui.MsgBox.error('Fehler', response.errorMsg);
                         }
@@ -290,7 +290,7 @@ dbadmin.App = class dbadmin_App {
     }
     
     _onBtnDuplicateClick(e) {
-        if (this._viewport.down('dvDatabases').getSelected() === null) {
+        if (this._databaseView.getSelected() === null) {
             kijs.gui.MsgBox.alert('Achtung','Keine Datenbank ausgewählt!');
         } else {
             this.showActionWindow('duplicate');
@@ -298,16 +298,16 @@ dbadmin.App = class dbadmin_App {
     }
     
     _onBtnExportClick(e) {
-        if (this._viewport.down('dvDatabases').getSelected() === null) {
+        if (this._databaseView.getSelected() === null) {
             kijs.gui.MsgBox.alert('Achtung','Keine Datenbank ausgewählt!');
         } else {
             kijs.gui.MsgBox.confirm('Wirklich exportieren?', 'Willst du die Datenbank wirklich exportieren?', function(e) {
                 if (e.btn === 'yes') {
-                    this._rpc.do('dbadmin.export', this._viewport.down('dvDatabases').getSelected().dataRow, 
+                    this._rpc.do('dbadmin.export', this._databaseView.getSelected().dataRow, 
                     function(response) {
                         if (response.data.success === 'true') {
                             kijs.gui.CornerTipContainer.show('Info', 'Datenbank erfolgreich exportiert.', 'info');
-                            this._viewport.down('dvDatabases').load();
+                            this._databaseView.load();
                         } else {
                             kijs.gui.MsgBox.error('Fehler', response.errorMsg);
                         }
@@ -318,7 +318,7 @@ dbadmin.App = class dbadmin_App {
     }
 
     _onBtnImportClick(e) {
-        if (this._viewport.down('dvDatabases').getSelected() === null) {
+        if (this._databaseView.getSelected() === null) {
             kijs.gui.MsgBox.alert('Achtung','Keine Datenbank ausgewählt!');
         } else {
             this.showSelectWindow();
@@ -332,13 +332,13 @@ dbadmin.App = class dbadmin_App {
             kijs.gui.CornerTipContainer.show('Info', 'Du wurdest erfolgreich ausgelogt.', 'info');
             this.showLoginWindow();
             // DataView leeren
-            this._viewport.down('dvDatabases').data = {};
+            this._databaseView.data = {};
             this._viewport.down('mainPanel').headerBar.down('btnLogout').caption = '';
         }, this, false, this._viewport, 'dom', false);
     }
     
     _onBtnRenameClick(e) {
-        if (this._viewport.down('dvDatabases').getSelected() === null) {
+        if (this._databaseView.getSelected() === null) {
             kijs.gui.MsgBox.alert('Achtung','Keine Datenbank ausgewählt!');
         } else {
             this.showActionWindow('rename');
@@ -357,11 +357,11 @@ dbadmin.App = class dbadmin_App {
         kijs.gui.CornerTipContainer.show('Info', 'Datenbank erfolgreich '+txt, 'info');
         this._actionWindow.destruct();
         
-        this._viewport.down('dvDatabases').load();
+        this._databaseView.load();
     }
 
     _onLoginWindowAfterSave(e) {
-        this._viewport.down('dvDatabases').load();
+        this._databaseView.load();
         
         let username = this._loginWindow.down('username').value;
         sessionStorage.setItem('Benutzer', username);
@@ -376,6 +376,6 @@ dbadmin.App = class dbadmin_App {
         kijs.gui.CornerTipContainer.show('Info', 'Dump erfolgreich importiert.', 'info');
         this._selectWindow.destruct();
         
-        this._viewport.down('dvDatabases').load();
+        this._databaseView.load();
     }
 };
