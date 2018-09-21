@@ -20,7 +20,7 @@ Changed the name of the repository from 'DBAdminJS' to 'DBAdmin'.</br>
 The base repository was changed from 'DBAdminPHP' to 'DBAdminOld' accordingly.
 
 __Important Information__<br />
-All mysql functions are executed with the logged-in user.
+All mysql functions are executed with the logged-in user.<br />
 Therefore it is recommended that standard users are given rights as follows<br />
 - USAGE ON \*.\*<br />
 - ALL PRIVILEDGES ON databases that begin with their username
