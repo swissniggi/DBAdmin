@@ -319,7 +319,7 @@ class DBAdmin_Controller {
         
     
     /**
-     * 
+     * Exportiert eine Datenbank
      * @param string $dbName
      * @param boolean $exportOnly
      * @return \Throwable|boolean
@@ -496,8 +496,8 @@ class DBAdmin_Controller {
     
     
     /**
-    * Stellt eine Verbindung zu Datenbank her
-    */
+     * Stellt eine Verbindung zu Datenbank her
+     */
     private function _openDbConnection() {
         // Benutzerdaten aus conf-File auslesen            
         $userData = [];
