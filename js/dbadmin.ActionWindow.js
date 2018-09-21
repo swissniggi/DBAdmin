@@ -26,9 +26,7 @@ dbadmin.ActionWindow = class dbadmin_ActionWindow extends kijs.gui.Window {
         });
 
         // Event-Weiterleitungen von this._formPanel
-        this._formPanel.on('afterSave', function(e) {
-            this.raiseEvent('afterSave', e);
-        }, this );
+        this._eventForwardsAdd('afterSave', this._formPanel);
 
         // Config anwenden
         if (kijs.isObject(config)) {
@@ -86,7 +84,6 @@ dbadmin.ActionWindow = class dbadmin_ActionWindow extends kijs.gui.Window {
     // FormPanel definieren
     _createFormPanel() {
         return new kijs.gui.FormPanel({
-            xtype: 'kijs.gui.FormPanel',
             name: 'actionFormPanel',            
             elements:[
                 this._textField
@@ -116,10 +113,9 @@ dbadmin.ActionWindow = class dbadmin_ActionWindow extends kijs.gui.Window {
     // muss separat sein, damit das 'value' zugewiesen werden kann
     _createTextField() {
         return new kijs.gui.field.Text({
-            xtype: 'kijs.gui.field.Text',
             width: 380,
             height: 25,
-            labelWidth: 160,
+            labelWidth: 180,
             required: true,
             name: 'newDbName',
             label: 'Neuer Datenbankname',

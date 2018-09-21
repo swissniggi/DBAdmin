@@ -186,6 +186,7 @@ dbadmin.App = class dbadmin_App {
                 caption = 'Datenbank duplizieren';
                 iconChar = '&#xf0c5';
                 data.oldDbName = oldDbName;
+                value = oldDbName;
                 break;
                 
             case 'rename':
@@ -212,7 +213,7 @@ dbadmin.App = class dbadmin_App {
 
         let username = sessionStorage.getItem('Benutzer');
         
-        if (username.includes('_') && action !== 'rename') {
+        if (action !== 'rename' && action !== 'duplicate') {
             this._actionWindow.down('newDbName').value = username;
         }
         this._actionWindow.show();

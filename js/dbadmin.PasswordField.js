@@ -12,7 +12,7 @@ dbadmin.PasswordField = class dbadmin_PasswordField extends kijs.gui.field.Text 
         super(false);
 
         this._inputDom = new kijs.gui.Dom({
-            disableEnterEscBubbeling: true,
+            disableEscBubbeling: true,
             nodeTagName: 'input',
             nodeAttribute:{
                 id: this._inputId,

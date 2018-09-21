@@ -2,7 +2,7 @@
 
 class DBAdmin_Model {
     
-    public $rootPdo = null;
+    public $pdo = null;
         
     // --------------------------------------------------------------
     // PUBLIC MEMBERS
@@ -22,7 +22,7 @@ class DBAdmin_Model {
      * @return boolean
      */
     public function createDatabase($dbName) {
-        $createDb = $this->rootPdo->prepare(
+        $createDb = $this->pdo->prepare(
             "CREATE DATABASE ".$dbName." CHARACTER SET utf8 COLLATE utf8_general_ci;"
             );
         return $createDb->execute();
@@ -66,7 +66,7 @@ class DBAdmin_Model {
      * @return boolean
      */
     public function deleteDatabase($dbName) {
-        $deleteDB = $this->rootPdo->prepare(
+        $deleteDB = $this->pdo->prepare(
             "DROP DATABASE ".$dbName."; "
             . "DELETE FROM dbadmin.lastimport WHERE dbName = :dbName;"
             );
@@ -117,7 +117,7 @@ class DBAdmin_Model {
      * @return array
      */
     public function getDatabase($dbName) {
-        $getDB = $this->rootPdo->prepare(
+        $getDB = $this->pdo->prepare(
             "SELECT SCHEMA_NAME FROM information_schema.SCHEMATA WHERE SCHEMA_NAME = :dbName;"
             );
         $getDB->bindParam(':dbName', $dbName);
@@ -133,7 +133,7 @@ class DBAdmin_Model {
      * @return array
      */
     public function getDatabaseSize($dbName) {
-        $getDBSize = $this->rootPdo->prepare(
+        $getDBSize = $this->pdo->prepare(
                 "SELECT REPLACE(FORMAT(SUM("
                 . "data_length + index_length)/1024/1024*1000,0)"
                 . ",',' ,'\'') AS dbSize FROM information_schema.TABLES "
@@ -151,20 +151,15 @@ class DBAdmin_Model {
      * @param Object $pdo
      * @return array
      */
-    public function getDatabases($pdo) {
-        $exclude = '';
-        if (!$_SESSION['root']) {
-           $exclude = "WHERE is_SCHE.SCHEMA_NAME <> 'dbadmin' ";
-        }
-        
-        $getDBs = $pdo->prepare(
+    public function getDatabases() {
+        $getDBs = $this->pdo->prepare(
             "SELECT is_SCHE.SCHEMA_NAME AS dbName, "
             . "COALESCE(MAX(dba.importDate), '--') AS importDate, "
             . "COALESCE(MAX(is_TAB.UPDATE_TIME), '--') AS changeDate "
             . "FROM information_schema.SCHEMATA AS is_SCHE "
             . "LEFT JOIN dbadmin.lastimport AS dba ON is_SCHE.SCHEMA_NAME = dba.dbName "
             . "LEFT JOIN information_schema.TABLES AS is_TAB ON is_SCHE.SCHEMA_NAME = is_TAB.TABLE_SCHEMA "
-            . $exclude
+            //. $exclude
             . "GROUP BY is_SCHE.SCHEMA_NAME;"
             );  
         $getDBs->execute();
@@ -179,7 +174,7 @@ class DBAdmin_Model {
      * @return array
      */
     public function getNumberOfTables($dbName) {
-        $getTables = $this->rootPdo->prepare(
+        $getTables = $this->pdo->prepare(
             "SELECT COUNT(*) AS numberOfTables FROM information_schema.TABLES "
             . "WHERE table_schema = :dbName;"
             );
@@ -197,7 +192,7 @@ class DBAdmin_Model {
      * @return array
      */
     public function getUserRights($host, $username) {
-        $getUserRights = $this->rootPdo->prepare(
+        $getUserRights = $this->pdo->prepare(
             "SHOW GRANTS FOR '".$username."'@'".$host."';"
             );
         $getUserRights->execute();
@@ -211,7 +206,7 @@ class DBAdmin_Model {
      * @return array
      */
     public function getUsers() {
-        $getUsers = $this->rootPdo->prepare(
+        $getUsers = $this->pdo->prepare(
             "SELECT User FROM mysql.user;"
             );
         $getUsers->execute();
@@ -226,7 +221,7 @@ class DBAdmin_Model {
      * @return boolean
      */
     public function insertImportDate($dbName) {
-        $insertImportDate = $this->rootPdo->prepare(
+        $insertImportDate = $this->pdo->prepare(
             "INSERT INTO dbadmin.lastimport (dbName, importDate) "
             . "VALUES (:dbName, NOW());"
             );

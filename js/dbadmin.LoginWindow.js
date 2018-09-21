@@ -23,11 +23,7 @@ dbadmin.LoginWindow = class dbadmin_LoginWindow extends kijs.gui.Window {
         });
 
         // Event-Weiterleitungen von this._formPanel
-        //this._eventForwardsAdd('afterSave', this._formPanel);
-
-        this._formPanel.on('afterSave', function(e) {
-            this.raiseEvent('afterSave', e);
-        }, this );
+        this._eventForwardsAdd('afterSave', this._formPanel);
 
         // Config anwenden
         if (kijs.isObject(config)) {

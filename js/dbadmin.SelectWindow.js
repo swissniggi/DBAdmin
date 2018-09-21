@@ -27,9 +27,7 @@ dbadmin.SelectWindow = class dbadmin_SelectWindow extends kijs.gui.Window {
         });
 
         // Event-Weiterleitungen von this._formPanel
-        this._formPanel.on('afterSave', function(e) {
-            this.raiseEvent('afterSave', e);
-        }, this );
+        this._eventForwardsAdd('afterSave', this._formPanel);
 
         // Config anwenden
         if (kijs.isObject(config)) {
@@ -103,7 +101,6 @@ dbadmin.SelectWindow = class dbadmin_SelectWindow extends kijs.gui.Window {
     // FormPanel definieren
     _createFormPanel() {
         return new kijs.gui.FormPanel({
-            xtype: 'kijs.gui.FormPanel',
             name: 'actionFormPanel',
             defaults:{
                 width: 380,

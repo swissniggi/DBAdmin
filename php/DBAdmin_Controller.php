@@ -2,8 +2,7 @@
 
 class DBAdmin_Controller {
 
-    protected $model = null;   
-    protected $root = false;
+    protected $model = null;
     protected $sessionId = null;
     protected $username = null;
     
@@ -14,7 +13,6 @@ class DBAdmin_Controller {
         session_start();
 
         if (count($_SESSION) > 1) {
-            $this->root = $_SESSION['root'];
             $this->sessionId = $_SESSION['id'];
             $this->username = $_SESSION['username'];
         }
@@ -190,7 +188,6 @@ class DBAdmin_Controller {
                                     'success' => 'true'
                                 );
                                 // Daten in Session speichern
-                                $_SESSION['root'] = $return['root'];
                                 $_SESSION['username'] = $return['username']; 
                                 $_SESSION['id'] = $return['id'];
                             }
@@ -241,55 +238,25 @@ class DBAdmin_Controller {
     // PRIVATE MEMBERS
     // --------------------------------------------------------------
     /**
-     * Überprüft den Datenbanknamen
-     * @param string $dbName
-     */
-    private function _checkDbname($dbName) {
-        $match = preg_match('/^dev_[a-z]{2}_[a-z]{2,3}_[a-z0-9]{1,50}$/', $dbName);
-        $umlaute = preg_match('/([äÄöÖüÜ])/', $dbName);
-                                                          
-        if ($umlaute === 0) {
-            if (!$this->root) {
-                if ($match === 0) {
-                    throw new Exception(
-                            "Der Datenbankname muss folgendes Format haben:".
-                            "<br />'Benutzername_Applikation_Organisation'".
-                            "<br />Beispiel: 'dev_xy_wz_kkk'"
-                            );
-                }
-                $dbSubstrings = explode('_', $dbName);
-                $check = $dbSubstrings[0].'_'.$dbSubstrings[1];
-
-                if ($check !== $this->username) {
-                    throw new Exception('Recht zum erstellen einer Datenbank mit diesem Namen fehlt!');
-                }
-            }
-        } else {
-            throw new Exception("Der Datenbankname darf keine Umlaute enthalten!");        
-        }
-    }
-    
-    
-    /**
      * Erstellt eine Datenbank
      * @param string $dbName
      * @return \Throwable|boolean
      */
     private function _createDatabase($dbName) {        
         try {
-            $this->_checkDbname($dbName);
-                    
-            $this->_openRootDbConnection();
+            $this->_openDbConnection();
 
             // Prüfen ob gleichnamige Datenbank existiert
             if (count($this->model->getDatabase($dbName)) !== 0) {
                 throw new Exception('Gleichnamige Datenbank existiert schon!');
             }
 
-            if (!$this->model->createDatabase($dbName)) {
-                throw new Exception('Erstellen der Datenbank fehlgeschlagen!');
+            try {
+                $this->model->createDatabase($dbName); 
+            } catch (Exception $ex) {
+                throw new Exception('Erstellen der Datenbank fehlgeschlagen!<br />Möglicherweise hast du keine Berechtigung.');
             }
-            $this->model->closeDbConnection($this->model->rootPdo);
+            $this->model->closeDbConnection($this->model->pdo);
             $return = true;
         } catch (Throwable $ex) {
             $return = $ex;
@@ -305,13 +272,13 @@ class DBAdmin_Controller {
      */
     private function _deleteDatabase($dbName) {   
         try {
-            $this->_openRootDbConnection();
+            $this->_openDbConnection();
             $result = $this->model->deleteDatabase($dbName);            
         
             if (!$result) {
                 throw new Exception('Löschen der Datenbank fehlgeschlagen!');
             }
-            $this->model->closeDbConnection($this->model->rootPdo);
+            $this->model->closeDbConnection($this->model->pdo);
             $return = true;
         } catch (Throwable $ex) {
             $return = $ex;
@@ -328,10 +295,7 @@ class DBAdmin_Controller {
      */
     private function _duplicateDatabase($newDbName, $oldDbName) {        
         try {
-            // Datenbankname prüfen
-            $this->_checkDbname($newDbName);
-           
-            $this->_openRootDbConnection();
+            $this->_openDbConnection();
             
             // neue Datenbank erstellen
             $this->_createDatabase($newDbName);
@@ -345,7 +309,7 @@ class DBAdmin_Controller {
             $data->delete  = true;
             $this->_importDatabase($data);
 
-            $this->model->closeDbConnection($this->model->rootPdo);
+            $this->model->closeDbConnection($this->model->pdo);
             $return = true;
         } catch (Throwable $ex) {
             $return = $ex;
@@ -377,34 +341,9 @@ class DBAdmin_Controller {
      */
     private function _getDatabases() {
         try {
-            // Benutzerdaten aus conf-File auslesen            
-            $userData = [];
-            $userConf = realpath('config').'/user_'.$this->username.'.conf';
+            $this->_openDbConnection();
 
-            if (!is_file($userConf)) {
-                throw new Exception('Die Conf-Datei des Users wurde nicht gefunden!');
-            }
-            $confFile = fopen($userConf, 'r');
-
-            if (!$confFile) {
-                throw new Exception('fopen ist fehlgeschlagen!');
-            }
-
-            while (($line = fgets($confFile)) !== false) {          
-                if (mb_strpos($line, '=') !== false) {
-                    $value = explode('=', $line);
-                    $userData[] = trim($value[1]);
-                }
-            }
-            fclose($confFile);
-
-            // Anführungszeichen vor und nach dem Passwort entfernen
-            $userData[2] = str_replace('"','',$userData[2]);
-
-            // Datenbankverbindung herstellen
-            $this->model->rootPdo = $this->model->openDbConnection($userData[0], $userData[1], $userData[2]);
-
-            $result = $this->model->getDatabases($this->model->rootPdo);
+            $result = $this->model->getDatabases();
             
             $return = [];
             
@@ -437,7 +376,7 @@ class DBAdmin_Controller {
                     'DatenbankGrösse' => $dbSize
                 );
             }
-            $this->model->closeDbConnection($this->model->rootPdo);
+            $this->model->closeDbConnection($this->model->pdo);
         } catch (Throwable $ex) {
             $return = $ex;
         }
@@ -460,28 +399,6 @@ class DBAdmin_Controller {
             }
             return $return;
         }
-    }
-    
-    
-    /**
-     * Ermittelt ob Benutzer Root-Rechte hat
-     * @param string $username
-     * @return boolean
-     */
-    private function _getUserRights($username) {
-        $conf = realpath('config');
-        $host = json_decode(file_get_contents($conf.'/config.json'));
-        
-        if (!isset($host->host)) {
-            throw new Exception('Datei config.json ist fehlerhaft!');
-        }
-        $result = $this->model->getUserRights($host->host, $username);
-
-        if (strpos($result[0][0], 'ALL PRIVILEGES ON *.*') === false) {
-            return false;
-        } else {
-            return true;
-        }
     }    
     
     
@@ -497,11 +414,11 @@ class DBAdmin_Controller {
         try {
             $this->model->executeDump($this->username, $this->sessionId, $dump, $dbName, $delete);
 
-            $this->_openRootDbConnection();
+            $this->_openDbConnection();
             if (!$this->model->insertImportDate($dbName)) {
                 throw new Exception('Speichern des Import-Datums fehlgeschlagen!');
             }
-            $this->model->closeDbConnection($this->model->rootPdo);
+            $this->model->closeDbConnection($this->model->pdo);
             $return = true;
         } catch (Throwable $ex) {
             $return = $ex;
@@ -542,12 +459,6 @@ class DBAdmin_Controller {
             }
             $this->model->closeDbConnection($pdo);
 
-            $this->_openRootDbConnection();
-
-            // Rechte des Benutzers abfragen
-            $root = $this->_getUserRights($username);
-            $this->model->closeDbConnection($this->model->rootPdo);                                     
-
             // conf-File für Benutzer erstellen
             $confFile = fopen($conf.'/user_'.$username.'.conf', 'w');
 
@@ -563,7 +474,6 @@ class DBAdmin_Controller {
             fclose($confFile);
             
             $return = array(
-                'root' => $root,
                 'username' => $username,
                 'id' => md5($password)
             );
@@ -585,21 +495,33 @@ class DBAdmin_Controller {
     }
     
     
-    /**
-     * Erstellt eine Verbindung zur Datenbank
-     */
-    private function _openRootDbConnection() {
-        require_once 'DBAdmin_Model.php';
-        $this->model = new DBAdmin_Model();
-        
-        // MySQL-Verbindung herstellen
-        $conf = realpath('config');
-        $config = json_decode(file_get_contents($conf.'/config.json'));
-        
-        if (!isset($config->host)) {
-            throw new Exception('Datei config.json ist fehlerhaft!');
-        }
-        $this->model->rootPdo = $this->model->openDbConnection($config->host, $config->user, $config->password);
+    private function _openDbConnection() {
+        // Benutzerdaten aus conf-File auslesen            
+            $userData = [];
+            $userConf = realpath('config').'/user_'.$this->username.'.conf';
+
+            if (!is_file($userConf)) {
+                throw new Exception('Die Conf-Datei des Users wurde nicht gefunden!');
+            }
+            $confFile = fopen($userConf, 'r');
+
+            if (!$confFile) {
+                throw new Exception('fopen ist fehlgeschlagen!');
+            }
+
+            while (($line = fgets($confFile)) !== false) {          
+                if (mb_strpos($line, '=') !== false) {
+                    $value = explode('=', $line);
+                    $userData[] = trim($value[1]);
+                }
+            }
+            fclose($confFile);
+
+            // Anführungszeichen vor und nach dem Passwort entfernen
+            $userData[2] = str_replace('"','',$userData[2]);
+
+            // Datenbankverbindung herstellen
+            $this->model->pdo = $this->model->openDbConnection($userData[0], $userData[1], $userData[2]);
     }
     
     
@@ -611,9 +533,7 @@ class DBAdmin_Controller {
      */
     private function _renameDatabase($newDbName, $oldDbName) {        
         try {
-            $this->_checkDbname($newDbName);
-
-            $this->_openRootDbConnection();
+            $this->_openDbConnection();
 
             // neue Datenbank erstellen
             $this->_createDatabase($newDbName);
@@ -630,7 +550,7 @@ class DBAdmin_Controller {
             $data->delete = true;
             $this->_importDatabase($data);
             
-            $this->model->closeDbConnection($this->model->rootPdo);
+            $this->model->closeDbConnection($this->model->pdo);
             $return = true;
         } catch (Throwable $ex) {
             $return = $ex;
