@@ -24,4 +24,4 @@ It is recommended that standard users are given rights as follows<br />
 - USAGE ON \*.\*<br />
 - ALL PRIVILEDGES ON databases that begin with their username
 
-Otherwise users my see databases fpr which they do not have rights.
+Otherwise users my see databases for which they do not have rights.
