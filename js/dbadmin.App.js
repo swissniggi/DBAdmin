@@ -52,7 +52,9 @@ dbadmin.App = class dbadmin_App {
                     iconChar: '&#xf011',
                     toolTip: 'ausloggen',
                     style:{
-                        marginRight: '6px'
+                        marginRight: '6px',
+                        display: 'flex',
+                        flexDirection: 'row-reverse'
                     },
                     on:{
                         click: this._onBtnLogoutClick,
@@ -149,7 +151,7 @@ dbadmin.App = class dbadmin_App {
                 sessionStorage.setItem('Benutzer', response.data.username);
 
                 // Caption des Logout-Buttons setzen
-                let caption = 'angemeldet als ' + sessionStorage.getItem('Benutzer');
+                let caption = 'angemeldet als ' + sessionStorage.getItem('Benutzer') + '&nbsp;';
                 mainPanel.headerBar.down('btnLogout').caption = caption;
 
                 this._databaseView.load();
