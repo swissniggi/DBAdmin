@@ -11,7 +11,7 @@
     margin: 5px;
 }
 
-/* Datenbank-Icon bei Standarddatenbank S*/
+/* Datenbank-Icon bei Standarddatenbank */
 .kijs-dataview .kijs-dataviewelement .dbadmin-defaulticon {
     font: normal normal normal 18px/1 FontAwesome;
     color: #A4A4A4;
@@ -29,6 +29,7 @@
     padding-left: 5px;
 }
 
+/* Opacity für Standarddatenbanken */
 .kijs-dataview .dbadmin-defaultdb {
     opacity: 0.5;
 }
