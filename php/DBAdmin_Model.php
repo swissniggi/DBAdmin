@@ -50,8 +50,8 @@ class DBAdmin_Model {
         $dbPath = realpath($dumps).'/'.$user.'/'.$fileName.'.sql';
         
         // Dump exportieren
-        $command = 'mysqldump --defaults-file="'.escapeshellarg($mysqlConf).'" --events --routines --triggers '
-                   .escapeshellarg($dbName).' > "'.escapeshellarg($dbPath).'" 2>&1';    
+        $command = 'mysqldump --defaults-file='.escapeshellarg($mysqlConf).' --events --routines --triggers '
+                   .escapeshellarg($dbName).' > '.escapeshellarg($dbPath).' 2>&1';    
         exec($command, $out, $return);
         
         if ($return !== 0) {
@@ -98,7 +98,7 @@ class DBAdmin_Model {
         $dbPath = realpath($dumps.'/'.$user.'/'.$fileName);        
         
         // Dump importieren
-        $command = 'mysql --defaults-file="'.escapeshellarg($mysqlConf).'" '.escapeshellarg($dbName).' < "'.escapeshellarg($dbPath).'" 2>&1';  
+        $command = 'mysql --defaults-file='.escapeshellarg($mysqlConf).' '.escapeshellarg($dbName).' < '.escapeshellarg($dbPath).' 2>&1';  
         exec($command, $out, $return);
         
         if ($delete && $return === 0) {            
