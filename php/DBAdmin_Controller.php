@@ -236,14 +236,14 @@ class DBAdmin_Controller {
     
     // --------------------------------------------------------------
     // PRIVATE MEMBERS
-    // --------------------------------------------------------------       
+    // --------------------------------------------------------------
     /**
      * Erstellt eine Datenbank
      * @param string $dbName
      * @return \Throwable|boolean
      */
     private function _createDatabase($dbName) {        
-        try {                   
+        try {
             $this->_openDbConnection();
 
             // Prüfen ob gleichnamige Datenbank existiert
@@ -319,7 +319,7 @@ class DBAdmin_Controller {
         
     
     /**
-     * 
+     * Exportiert eine Datenbank
      * @param string $dbName
      * @param boolean $exportOnly
      * @return \Throwable|boolean
@@ -399,7 +399,7 @@ class DBAdmin_Controller {
             }
             return $return;
         }
-    }   
+    }    
     
     
     /**
@@ -496,7 +496,7 @@ class DBAdmin_Controller {
     
     
     /**
-     * Öffnet eine Datenbankverbindung
+     * Stellt eine Verbindung zu Datenbank her
      */
     private function _openDbConnection() {
         // Benutzerdaten aus conf-File auslesen            
@@ -559,5 +559,6 @@ class DBAdmin_Controller {
             $return = $ex;
         }
         return $return;
-    }   
+    }
+    
 }
