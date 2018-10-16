@@ -1,0 +1,3 @@
+# Zugriff auf dieses Verzeichnis sperren
+order deny,allow
+deny  from all
