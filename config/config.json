@@ -2,14 +2,9 @@
     "dumps":"dumps",
     "host":"localhost",
     "defaultDBs":[
-        {
-            "name":"information_schema"
-        },{
-            "name":"mysql"
-        },{
-            "name":"performance_schema"
-        },{
-            "name":"sys"
-        }
+        "information_schema",
+        "mysql",
+        "performance_schema",
+        "sys"
     ]
 }

@@ -376,7 +376,7 @@ class DBAdmin_Controller {
                 
                 $default = false;
                 foreach ($defaultDBs as $db) {
-                    if ($db->name === $database['dbName']) {
+                    if ($db === $database['dbName']) {
                         $default = true;
                         break;
                     }
