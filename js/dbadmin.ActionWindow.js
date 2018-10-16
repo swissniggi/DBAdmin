@@ -97,8 +97,6 @@ dbadmin.ActionWindow = class dbadmin_ActionWindow extends kijs.gui.Window {
                     name: 'btnAction',
                     iconChar: '&#xf00c',
                     isDefault: true,
-                    width: 100,
-                    height: 30,
                     caption: 'OK',
                     on:{
                         click: this._onBtnActionClick,

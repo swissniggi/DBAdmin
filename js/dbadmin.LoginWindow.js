@@ -102,8 +102,6 @@ dbadmin.LoginWindow = class dbadmin_LoginWindow extends kijs.gui.Window {
                     name: 'btnLogin',
                     iconChar: '&#xf00c',
                     isDefault: true,
-                    width: 100,
-                    height: 30,
                     caption: 'Login',
                     on:{
                         click: this._onBtnLoginClick,

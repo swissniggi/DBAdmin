@@ -126,8 +126,6 @@ dbadmin.SelectWindow = class dbadmin_SelectWindow extends kijs.gui.Window {
                     name: 'btnImport',
                     iconChar: '&#xf00c',
                     isDefault: true,
-                    width: 120,
-                    height: 30,
                     caption: 'Importieren',
                     on:{
                         click: this._onBtnActionClick,
