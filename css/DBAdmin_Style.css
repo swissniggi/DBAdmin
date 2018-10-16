@@ -11,6 +11,15 @@
     margin: 5px;
 }
 
+/* Datenbank-Icon bei Standarddatenbank S*/
+.kijs-dataview .kijs-dataviewelement .dbadmin-defaulticon {
+    font: normal normal normal 18px/1 FontAwesome;
+    color: #A4A4A4;
+    
+    display: inline-block;
+    margin: 5px;
+}
+
 /* Import- und Änderungsdatum in DataView */
 .kijs-dataview .kijs-dataviewelement .dbadmin-label {
     width: 80px;
@@ -18,4 +27,8 @@
     color: #888;
     
     padding-left: 5px;
+}
+
+.kijs-dataview .dbadmin-defaultdb {
+    opacity: 0.5;
 }

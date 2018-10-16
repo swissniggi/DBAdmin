@@ -29,7 +29,11 @@ dbadmin.DatabaseView = class dbadmin_DatabaseView extends kijs.gui.DataView {
         let html = '';
 
         html += '<div>';
-        html += ' <span class="dbadmin-icon">&#xf1c0</span>';
+        if (!dataRow['isDefault']) {            
+            html += ' <span class="dbadmin-icon">&#xf1c0</span>';
+        } else {
+            html += ' <span class="dbadmin-defaulticon">&#xf1c0</span>';
+        }
         html += ' <span class="value">' + dataRow['Datenbankname'] + '</span>';
         html += '</div>';
         html += '<div>';
@@ -45,10 +49,15 @@ dbadmin.DatabaseView = class dbadmin_DatabaseView extends kijs.gui.DataView {
         html += ' <span class="dbadmin-label">Grösse: ' + dataRow['DatenbankGrösse'] + '</span>';
         html += '</div>';
         
-        return new kijs.gui.DataViewElement({
+        let el = new kijs.gui.DataViewElement({
             dataRow: dataRow,
             html: html
         });
+        
+        if (dataRow['isDefault']) {
+            el._dom.clsAdd('dbadmin-defaultdb');
+        }
+        return el;
     }
 
     // PROTECTED

@@ -236,14 +236,14 @@ class DBAdmin_Controller {
     
     // --------------------------------------------------------------
     // PRIVATE MEMBERS
-    // --------------------------------------------------------------
+    // --------------------------------------------------------------       
     /**
      * Erstellt eine Datenbank
      * @param string $dbName
      * @return \Throwable|boolean
      */
     private function _createDatabase($dbName) {        
-        try {
+        try {                   
             $this->_openDbConnection();
 
             // Prüfen ob gleichnamige Datenbank existiert
@@ -319,7 +319,7 @@ class DBAdmin_Controller {
         
     
     /**
-     * Exportiert eine Datenbank
+     * 
      * @param string $dbName
      * @param boolean $exportOnly
      * @return \Throwable|boolean
@@ -347,6 +347,12 @@ class DBAdmin_Controller {
             
             $return = [];
             
+            $conf = realpath('config');
+            if (!is_file($conf.'/config.json')) {
+                throw new Exception('Datei config.json nicht gefunden!');
+            }
+            $defaultDBs = json_decode(file_get_contents($conf.'/config.json'))->defaultDBs;
+            
             foreach ($result as $database) {
                 $numberOfTables = $this->model->getNumberOfTables($database['dbName']);
                 $sizeOfDatabase = $this->model->getDatabaseSize($database['dbName']);
@@ -368,12 +374,21 @@ class DBAdmin_Controller {
                     $changeDate = date('d.m.Y H:i', strtotime($changeDate));
                 }
                 
+                $default = false;
+                foreach ($defaultDBs as $db) {
+                    if ($db->name === $database['dbName']) {
+                        $default = true;
+                        break;
+                    }
+                }
+                
                 $return[] = array(
                     'Datenbankname' => $database['dbName'], 
                     'Importdatum' => $importDate,
                     'Änderungsdatum' => $changeDate,
                     'AnzahlTabellen' => $numberOfTables[0]['numberOfTables'],
-                    'DatenbankGrösse' => $dbSize
+                    'DatenbankGrösse' => $dbSize,
+                    'isDefault' => $default
                 );
             }
             $this->model->closeDbConnection($this->model->pdo);
@@ -399,7 +414,7 @@ class DBAdmin_Controller {
             }
             return $return;
         }
-    }    
+    }   
     
     
     /**
@@ -496,7 +511,7 @@ class DBAdmin_Controller {
     
     
     /**
-     * Stellt eine Verbindung zu Datenbank her
+     * Öffnet eine Datenbankverbindung
      */
     private function _openDbConnection() {
         // Benutzerdaten aus conf-File auslesen            
@@ -559,6 +574,5 @@ class DBAdmin_Controller {
             $return = $ex;
         }
         return $return;
-    }
-    
+    }   
 }
