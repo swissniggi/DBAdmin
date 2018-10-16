@@ -152,6 +152,11 @@ class DBAdmin_Model {
      * @return array
      */
     public function getDatabases() {
+        /*$exclude = '';
+        if (!$_SESSION['root']) {
+           $exclude = "WHERE is_SCHE.SCHEMA_NAME <> 'dbadmin' ";
+        }*/
+        
         $getDBs = $this->pdo->prepare(
             "SELECT is_SCHE.SCHEMA_NAME AS dbName, "
             . "COALESCE(MAX(dba.importDate), '--') AS importDate, "

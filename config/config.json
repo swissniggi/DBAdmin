@@ -1,6 +1,4 @@
 {
-    "host":"localhost",
-    "user":"dbadmin",
-    "password":"jHsqlZ17HTQIYvCY&",
-    "dumps":"dumps"
+    "dumps":"dumps",
+    "host":"localhost"
 }

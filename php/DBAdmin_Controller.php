@@ -236,14 +236,14 @@ class DBAdmin_Controller {
     
     // --------------------------------------------------------------
     // PRIVATE MEMBERS
-    // --------------------------------------------------------------
+    // --------------------------------------------------------------       
     /**
      * Erstellt eine Datenbank
      * @param string $dbName
      * @return \Throwable|boolean
      */
     private function _createDatabase($dbName) {        
-        try {
+        try {                   
             $this->_openDbConnection();
 
             // Prüfen ob gleichnamige Datenbank existiert
@@ -399,7 +399,7 @@ class DBAdmin_Controller {
             }
             return $return;
         }
-    }    
+    }   
     
     
     /**
@@ -495,33 +495,36 @@ class DBAdmin_Controller {
     }
     
     
+    /**
+     * Öffnet eine Datenbankverbindung
+     */
     private function _openDbConnection() {
         // Benutzerdaten aus conf-File auslesen            
-            $userData = [];
-            $userConf = realpath('config').'/user_'.$this->username.'.conf';
+        $userData = [];
+        $userConf = realpath('config').'/user_'.$this->username.'.conf';
 
-            if (!is_file($userConf)) {
-                throw new Exception('Die Conf-Datei des Users wurde nicht gefunden!');
+        if (!is_file($userConf)) {
+            throw new Exception('Die Conf-Datei des Users wurde nicht gefunden!');
+        }
+        $confFile = fopen($userConf, 'r');
+
+        if (!$confFile) {
+            throw new Exception('fopen ist fehlgeschlagen!');
+        }
+
+        while (($line = fgets($confFile)) !== false) {          
+            if (mb_strpos($line, '=') !== false) {
+                $value = explode('=', $line);
+                $userData[] = trim($value[1]);
             }
-            $confFile = fopen($userConf, 'r');
+        }
+        fclose($confFile);
 
-            if (!$confFile) {
-                throw new Exception('fopen ist fehlgeschlagen!');
-            }
+        // Anführungszeichen vor und nach dem Passwort entfernen
+        $userData[2] = str_replace('"','',$userData[2]);
 
-            while (($line = fgets($confFile)) !== false) {          
-                if (mb_strpos($line, '=') !== false) {
-                    $value = explode('=', $line);
-                    $userData[] = trim($value[1]);
-                }
-            }
-            fclose($confFile);
-
-            // Anführungszeichen vor und nach dem Passwort entfernen
-            $userData[2] = str_replace('"','',$userData[2]);
-
-            // Datenbankverbindung herstellen
-            $this->model->pdo = $this->model->openDbConnection($userData[0], $userData[1], $userData[2]);
+        // Datenbankverbindung herstellen
+        $this->model->pdo = $this->model->openDbConnection($userData[0], $userData[1], $userData[2]);
     }
     
     
@@ -556,6 +559,5 @@ class DBAdmin_Controller {
             $return = $ex;
         }
         return $return;
-    }
-    
+    }   
 }
