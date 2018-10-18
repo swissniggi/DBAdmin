@@ -26,4 +26,4 @@ Therefore it is recommended that standard users are given rights as follows<br /
 - USAGE ON \*.\*<br />
 - ALL PRIVILEDGES ON databases that begin with their username
 
-Otherwise users my see databases for which they do not have rights.
+All users need select rights on database 'dbadmin'
