@@ -1,7 +1,5 @@
 # DBAdmin Version 2.0
 
-(based on https://github.com/swissniggi/DBAdminOld)
-
 !! requires the new kijs-Framework // mail me for more details !!
 
 ==> additional folder 'dumps' must be created in root directory on install
@@ -18,7 +16,8 @@ __kijs.gui.field.Password__ works now
 
 __2018/09/14__<br />
 Changed the name of the repository from 'DBAdminJS' to 'DBAdmin'.</br>
-The base repository was changed from 'DBAdminPHP' to 'DBAdminOld' accordingly.
+~The base repository was changed from 'DBAdminPHP' to 'DBAdminOld' accordingly.~</br>
+_DBAdminOld was removed on November 13th 2018_
 
 __Important Information__<br />
 All mysql functions are executed with the logged-in user.<br />
