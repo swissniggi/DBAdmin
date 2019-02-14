@@ -103,7 +103,7 @@ dbadmin.App = class dbadmin_App {
                     xtype: 'kijs.gui.Button',
                     name: 'btnDuplicate',
                     iconChar: '&#xf0c5',
-                    toolTip: 'selektierte Datenbank dumplizieren',
+                    toolTip: 'selektierte Datenbank duplizieren',
                     on:{
                         click: this._onBtnDuplicateClick,
                         context: this
