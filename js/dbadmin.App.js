@@ -369,7 +369,7 @@ dbadmin.App = class dbadmin_App {
         let username = this._loginWindow.down('username').value;
         sessionStorage.setItem('Benutzer', username);
 
-        let caption = 'angemeldet als ' + username;
+        let caption = 'angemeldet als ' + username + '&nbsp;';
         this._viewport.down('mainPanel').headerBar.down('btnLogout').caption = caption;
 
         this._loginWindow.destruct();
