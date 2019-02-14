@@ -33,3 +33,7 @@
 .kijs-dataview .dbadmin-defaultdb {
     opacity: 0.5;
 }
+
+.kijs-inputwrapper select {
+    width: 370px;
+}
