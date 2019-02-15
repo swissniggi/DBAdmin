@@ -168,7 +168,7 @@ dbadmin.SelectWindow = class dbadmin_SelectWindow extends kijs.gui.Window {
         // Elemente/DOM-Objekte entladen
 
         // Variablen (Objekte/Arrays) leeren
-        this._comboField = null;
+        this._comboField.destruct();
         this._formPanel = null;
 
         // Basisklasse auch entladen
